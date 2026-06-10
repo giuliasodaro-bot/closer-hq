@@ -494,14 +494,30 @@ async function parseYouTubeFeed(xml) {
     type: 'youtube',
     title: e.querySelector('title')?.textContent || '',
     url: e.querySelector('link')?.getAttribute('href') || '',
-    desc: (e.querySelector('media\\:description,description')?.textContent || '').slice(0, 300),
+    desc: (e.querySelector('media\:description,description')?.textContent || '').slice(0, 300),
     date: e.querySelector('published')?.textContent?.slice(0, 10) || ''
   })).filter(i => i.title && i.url);
 }
 
 async function fetchYouTubeDirect(channelId) {
-  // Try direct fetch first — YouTube RSS feeds allow CORS
   const feedUrl = `https://www.youtube.com/feeds/videos.xml?channel_id=${channelId}`;
+
+  // Method 1: rss2json.com — reliable, designed for this, no CORS issues
+  try {
+    const r = await fetch(`https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(feedUrl)}`, { signal: AbortSignal.timeout(12000) });
+    const d = await r.json();
+    if (d.status === 'ok' && d.items?.length) {
+      return d.items.slice(0, 30).map(i => ({
+        type: 'youtube',
+        title: i.title || '',
+        url: i.link || '',
+        desc: (i.description || '').replace(/<[^>]+>/g, '').slice(0, 300),
+        date: (i.pubDate || '').slice(0, 10)
+      })).filter(i => i.title);
+    }
+  } catch(e) {}
+
+  // Method 2: direct fetch (works in some environments)
   try {
     const r = await fetch(feedUrl, { signal: AbortSignal.timeout(10000) });
     if (r.ok) {
@@ -510,9 +526,14 @@ async function fetchYouTubeDirect(channelId) {
       if (items.length) return items;
     }
   } catch(e) {}
-  // Fallback: proxy
-  const xml = await proxyFetchMulti(feedUrl);
-  return parseYouTubeFeed(xml);
+
+  // Method 3: proxy chain
+  try {
+    const xml = await proxyFetchMulti(feedUrl);
+    return parseYouTubeFeed(xml);
+  } catch(e) {}
+
+  throw new Error(`All methods failed for channel ${channelId}. YouTube may be temporarily blocking requests — try again in a few minutes.`);
 }
 
 async function resolveChannelId(handle) {
@@ -537,7 +558,7 @@ async function resolveChannelId(handle) {
 }
 
 async function fetchYouTube(rawUrl) {
-  // UC channel ID in URL — most reliable, use directly
+  // UC channel ID in URL — most reliable
   const ucm = rawUrl.match(/(UC[A-Za-z0-9_-]{22})/);
   if (ucm) return fetchYouTubeDirect(ucm[1]);
 
@@ -545,15 +566,20 @@ async function fetchYouTube(rawUrl) {
   const hm = rawUrl.match(/youtube\.com\/@([A-Za-z0-9_.\-]+)/i);
   const handle = hm ? hm[1] : null;
   if (handle) {
-    // Try legacy username RSS (works for some channels)
+    // Try legacy username RSS via rss2json first
     try {
-      const r = await fetch(`https://www.youtube.com/feeds/videos.xml?user=${handle}`, { signal: AbortSignal.timeout(8000) });
-      if (r.ok) { const xml = await r.text(); const items = await parseYouTubeFeed(xml); if (items.length) return items; }
+      const userFeed = `https://www.youtube.com/feeds/videos.xml?user=${handle}`;
+      const r = await fetch(`https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(userFeed)}`, { signal: AbortSignal.timeout(10000) });
+      const d = await r.json();
+      if (d.status === 'ok' && d.items?.length) {
+        return d.items.slice(0, 30).map(i => ({ type: 'youtube', title: i.title || '', url: i.link || '', desc: (i.description || '').replace(/<[^>]+>/g, '').slice(0, 300), date: (i.pubDate || '').slice(0, 10) })).filter(i => i.title);
+      }
     } catch(e) {}
-    // Resolve handle → channel ID via proxy scrape
+
+    // Resolve handle to channel ID
     const channelId = await resolveChannelId(handle);
     if (channelId) return fetchYouTubeDirect(channelId);
-    throw new Error(`Could not resolve @${handle}. Go to their YouTube channel → right-click page → View Page Source → search "channelId" → paste the UC... URL directly.`);
+    throw new Error(`Could not resolve @${handle}. Go to their YouTube channel → right-click → View Page Source → search "channelId" → paste the UC... URL directly.`);
   }
 
   throw new Error('Unrecognized YouTube URL. Use youtube.com/@handle or a UC... channel URL.');
