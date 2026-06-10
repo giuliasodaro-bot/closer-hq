@@ -588,7 +588,7 @@ async function fetchYouTube(rawUrl) {
 async function fetchPodcast(rssUrl) {
   const xml = await proxyFetch(rssUrl);
   const doc = new DOMParser().parseFromString(xml, 'text/xml');
-  return Array.from(doc.querySelectorAll('item')).slice(0, 30).map(i => ({
+  return Array.from(doc.querySelectorAll('item')).slice(0, 100).map(i => ({
     type: 'podcast',
     title: i.querySelector('title')?.textContent || '',
     url: i.querySelector('enclosure')?.getAttribute('url') || i.querySelector('link')?.textContent || '',
