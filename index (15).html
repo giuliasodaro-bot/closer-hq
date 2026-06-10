@@ -1,0 +1,1205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Closer's Command Center</title>
+<style>
+  :root {
+    --bg: #fafaf9;
+    --bg2: #f4f3f0;
+    --bg3: #eceae5;
+    --text: #1a1a18;
+    --text2: #6b6b67;
+    --text3: #9b9b96;
+    --border: rgba(0,0,0,0.1);
+    --border2: rgba(0,0,0,0.18);
+    --accent: #1a1a18;
+    --green-bg: #e8f5ee; --green-text: #1a5c36;
+    --blue-bg: #e8f0fb; --blue-text: #1a3a6b;
+    --amber-bg: #fdf3e3; --amber-text: #7a4a0a;
+    --red-bg: #fde8e8; --red-text: #7a1a1a;
+    --purple-bg: #f0eafe; --purple-text: #4a2a8a;
+    --teal-bg: #e5f7f5; --teal-text: #0f5a52;
+    --radius: 8px; --radius-lg: 12px;
+    --shadow: 0 1px 3px rgba(0,0,0,0.06);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); font-size: 14px; line-height: 1.5; }
+
+  /* Layout */
+  .app { display: grid; grid-template-columns: 220px 1fr; min-height: 100vh; }
+  .sidebar { background: var(--bg2); border-right: 1px solid var(--border); padding: 1.25rem 0; position: sticky; top: 0; height: 100vh; overflow-y: auto; }
+  .main { overflow-y: auto; padding: 2rem; max-width: 900px; }
+  .logo { padding: 0 1.25rem 1.25rem; border-bottom: 1px solid var(--border); margin-bottom: .75rem; }
+  .logo-title { font-size: 13px; font-weight: 600; letter-spacing: .02em; color: var(--text); }
+  .logo-sub { font-size: 11px; color: var(--text3); margin-top: 2px; }
+  .nav-section { padding: .5rem 1.25rem .25rem; font-size: 10px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--text3); }
+  .nav-item { display: flex; align-items: center; gap: 8px; padding: .5rem 1.25rem; font-size: 13px; color: var(--text2); cursor: pointer; border-left: 2px solid transparent; transition: all .15s; text-decoration: none; }
+  .nav-item:hover { color: var(--text); background: var(--bg3); }
+  .nav-item.active { color: var(--text); border-left-color: var(--accent); background: var(--bg3); font-weight: 500; }
+  .nav-item svg { width: 15px; height: 15px; flex-shrink: 0; }
+
+  /* Panels */
+  .panel { display: none; } .panel.active { display: block; }
+  .panel-header { margin-bottom: 1.5rem; }
+  .panel-title { font-size: 20px; font-weight: 600; }
+  .panel-desc { font-size: 13px; color: var(--text2); margin-top: 4px; }
+
+  /* Cards */
+  .card { background: #fff; border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 1rem 1.25rem; margin-bottom: .75rem; box-shadow: var(--shadow); }
+  .card-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; }
+
+  /* Forms */
+  label { font-size: 12px; color: var(--text2); display: block; margin-bottom: 3px; font-weight: 500; }
+  input[type=text], input[type=url], select, textarea { width: 100%; padding: 7px 10px; border: 1px solid var(--border2); border-radius: var(--radius); font-size: 13px; font-family: inherit; background: #fff; color: var(--text); transition: border-color .15s; }
+  input[type=text]:focus, input[type=url]:focus, select:focus, textarea:focus { outline: none; border-color: var(--accent); }
+  textarea { resize: vertical; min-height: 70px; line-height: 1.5; }
+  .field { display: flex; flex-direction: column; margin-bottom: 10px; }
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .grid3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+
+  /* Buttons */
+  .btn { display: inline-flex; align-items: center; gap: 5px; padding: 7px 14px; font-size: 12px; font-weight: 500; border-radius: var(--radius); cursor: pointer; font-family: inherit; transition: all .15s; border: 1px solid transparent; white-space: nowrap; }
+  .btn-primary { background: var(--accent); color: #fff; border-color: var(--accent); }
+  .btn-primary:hover { opacity: .85; }
+  .btn-secondary { background: #fff; color: var(--text); border-color: var(--border2); }
+  .btn-secondary:hover { background: var(--bg2); }
+  .btn-ghost { background: transparent; color: var(--text2); border-color: transparent; }
+  .btn-ghost:hover { background: var(--bg2); color: var(--text); }
+  .btn-danger { background: transparent; color: #991b1b; border-color: #fca5a5; }
+  .btn-danger:hover { background: var(--red-bg); }
+  .btn-sm { padding: 4px 9px; font-size: 11px; }
+  .btn-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+
+  /* Badges / Tags */
+  .badge { display: inline-flex; align-items: center; gap: 3px; font-size: 10px; padding: 2px 7px; border-radius: 99px; font-weight: 500; }
+  .badge-green { background: var(--green-bg); color: var(--green-text); }
+  .badge-blue { background: var(--blue-bg); color: var(--blue-text); }
+  .badge-amber { background: var(--amber-bg); color: var(--amber-text); }
+  .badge-red { background: var(--red-bg); color: var(--red-text); }
+  .badge-purple { background: var(--purple-bg); color: var(--purple-text); }
+  .badge-teal { background: var(--teal-bg); color: var(--teal-text); }
+  .badge-gray { background: var(--bg3); color: var(--text2); }
+
+  /* Misc UI */
+  .divider { border: none; border-top: 1px solid var(--border); margin: 1.25rem 0; }
+  .empty { text-align: center; padding: 2rem 1rem; color: var(--text3); font-size: 13px; }
+  .scroll-list { max-height: 400px; overflow-y: auto; padding-right: 2px; }
+  .sec-label { font-size: 11px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--text3); margin-bottom: 8px; }
+  .split { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+  .info-box { background: var(--blue-bg); border: 1px solid #bfcfe8; border-radius: var(--radius); padding: 8px 12px; font-size: 12px; color: var(--blue-text); margin-bottom: 10px; }
+  .warn-box { background: var(--amber-bg); border: 1px solid #e8c87a; border-radius: var(--radius); padding: 8px 12px; font-size: 12px; color: var(--amber-text); margin-bottom: 10px; }
+  .source-row { display: grid; grid-template-columns: 110px 1fr auto; gap: 8px; align-items: end; margin-bottom: 8px; }
+  .topic-pill { font-size: 11px; padding: 2px 8px; border-radius: 99px; background: var(--bg3); color: var(--text2); border: 1px solid var(--border); display: inline-block; margin: 2px; }
+  .progress-bar { height: 3px; background: var(--bg3); border-radius: 2px; margin: 6px 0; overflow: hidden; }
+  .progress-fill { height: 100%; background: var(--accent); transition: width .3s; }
+  .item-row { display: flex; align-items: flex-start; gap: 8px; padding: 6px 0; border-bottom: 1px solid var(--border); font-size: 12px; }
+  .item-row:last-child { border-bottom: none; }
+  .item-title { flex: 1; color: var(--text); line-height: 1.4; }
+  .item-title a { color: var(--blue-text); text-decoration: none; }
+  .item-title a:hover { text-decoration: underline; }
+  .item-meta { font-size: 11px; color: var(--text3); margin-top: 1px; }
+  .ai-out { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 1rem 1.25rem; font-size: 13px; line-height: 1.8; white-space: pre-wrap; color: var(--text); min-height: 80px; }
+  .ai-out.loading { color: var(--text3); font-style: italic; }
+  .copy-btn { font-size: 11px; padding: 3px 8px; background: #fff; border: 1px solid var(--border2); border-radius: var(--radius); cursor: pointer; color: var(--text2); font-family: inherit; }
+  .copy-btn:hover { background: var(--bg2); }
+  .history-item { border: 1px solid var(--border); border-radius: var(--radius-lg); padding: .875rem 1rem; margin-bottom: .5rem; background: #fff; }
+  .history-meta { font-size: 11px; color: var(--text3); margin-bottom: 6px; display: flex; gap: 10px; flex-wrap: wrap; }
+  .history-preview { font-size: 12px; color: var(--text2); line-height: 1.5; }
+  .avatar { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 13px; flex-shrink: 0; background: var(--blue-bg); color: var(--blue-text); }
+  .inf-handle { font-size: 11px; color: var(--text3); }
+  .tabs-inline { display: flex; gap: 2px; border-bottom: 1px solid var(--border); margin-bottom: 1rem; }
+  .tab-inline { padding: 7px 12px; font-size: 12px; border: none; background: none; cursor: pointer; color: var(--text2); border-bottom: 2px solid transparent; margin-bottom: -1px; font-family: inherit; font-weight: 500; }
+  .tab-inline.active { color: var(--text); border-bottom-color: var(--accent); }
+  .slack-badge { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; padding: 2px 8px; border-radius: 99px; background: #4a154b1a; color: #4a154b; font-weight: 500; }
+  .content-count-row { display: flex; gap: 8px; flex-wrap: wrap; margin: 6px 0; }
+
+  /* Prospect card */
+  .prospect-card { background: #fff; border: 1px solid var(--border); border-radius: var(--radius-lg); padding: .875rem 1rem; margin-bottom: .5rem; cursor: default; }
+  .prospect-name { font-size: 14px; font-weight: 600; }
+
+  /* Responsive */
+  @media (max-width: 700px) {
+    .app { grid-template-columns: 1fr; }
+    .sidebar { position: static; height: auto; }
+    .split { grid-template-columns: 1fr; }
+    .grid2, .grid3 { grid-template-columns: 1fr; }
+    .source-row { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+<div class="app">
+
+<!-- SIDEBAR -->
+<nav class="sidebar">
+  <div class="logo">
+    <div class="logo-title">Closer's HQ</div>
+    <div class="logo-sub">Content bank + call prep</div>
+  </div>
+  <div class="nav-section">Content</div>
+  <a class="nav-item active" onclick="showPanel('bank',this)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 10h16M4 14h8M4 18h8"/></svg>
+    Content bank
+  </a>
+  <a class="nav-item" onclick="showPanel('slack',this)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 9h6M9 12h6M9 15h4"/></svg>
+    Sync social
+  </a>
+  <div class="nav-section">Prospects</div>
+  <a class="nav-item" onclick="showPanel('prospects',this)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="7" r="4"/><path d="M3 21v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/><path d="M21 21v-2a4 4 0 0 0-3-3.85"/></svg>
+    Prospects
+  </a>
+  <div class="nav-section">Call tools</div>
+  <a class="nav-item" onclick="showPanel('prep',this)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01z"/></svg>
+    Pre-call prep
+  </a>
+  <a class="nav-item" onclick="showPanel('followup',this)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+    Post-call follow-up
+  </a>
+  <a class="nav-item" onclick="showPanel('history',this)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+    History
+  </a>
+  <div class="divider" style="margin: .75rem 1.25rem;"></div>
+  <a class="nav-item" onclick="showPanel('settings',this)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg>
+    Settings
+  </a>
+</nav>
+
+<!-- MAIN -->
+<main class="main">
+
+  <!-- ═══ CONTENT BANK ═══ -->
+  <div id="panel-bank" class="panel active">
+    <div class="panel-header">
+      <div class="panel-title">Content bank</div>
+      <div class="panel-desc">Add influencers and their content sources. All sources are analyzed by AI and used for prospect matching.</div>
+    </div>
+    <div class="split">
+      <div>
+        <div class="sec-label">Add influencer</div>
+        <div class="field"><label>Name</label><input type="text" id="inf-name" placeholder="e.g. ScottyK Fitness"></div>
+        <div class="field"><label>Handle / username</label><input type="text" id="inf-handle" placeholder="e.g. @scottykfitness"></div>
+        <div class="field"><label>Niche / topic</label><input type="text" id="inf-niche" placeholder="e.g. fitness coaching, weight loss"></div>
+
+        <div class="sec-label" style="margin-top:1rem">Content sources</div>
+        <div class="info-box">Add any combination of sources. YouTube and podcast feeds are fetched automatically. Website/blog URLs are crawled for content.</div>
+
+        <div id="source-rows">
+          <div class="source-row" id="src-0">
+            <select id="stype-0">
+              <option value="youtube">YouTube channel</option>
+              <option value="podcast">Podcast RSS</option>
+              <option value="blog-index">Blog index URL</option>
+              <option value="article">Article / page URL</option>
+            </select>
+            <input type="url" id="surl-0" placeholder="Paste URL...">
+            <button class="btn btn-sm btn-secondary" onclick="addSourceRow()">+</button>
+          </div>
+        </div>
+
+        <div class="field" style="margin-top:8px"><label>Extra notes for AI (optional)</label><textarea id="inf-notes" placeholder="Key themes, target audience, signature frameworks, selling style..."></textarea></div>
+        <button class="btn btn-primary" onclick="addInfluencer()">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="8 17 12 21 16 17"/><line x1="12" y1="3" x2="12" y2="21"/></svg>
+          Fetch &amp; analyze
+        </button>
+      </div>
+      <div>
+        <div class="sec-label">Influencers <span id="inf-count" style="font-weight:400;color:var(--text3)"></span></div>
+        <div class="scroll-list" id="inf-list"><div class="empty">No influencers yet.</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ SYNC SOCIAL ═══ -->
+  <div id="panel-slack" class="panel">
+    <div class="panel-header">
+      <div class="panel-title">Sync social content</div>
+      <div class="panel-desc">Pull Instagram posts from <strong>#creator-socials</strong> in Slack. Posts are auto-attributed to influencers by account name.</div>
+    </div>
+    <div class="info-box">
+      This fetches the Slack channel via the Anthropic API (which has your Slack connection). Posts are automatically sorted to the matching influencer by their account name. Run this periodically to keep social content fresh.
+    </div>
+    <div class="warn-box">
+      Influencers must be added in the Content Bank first. The sync matches posts by account name — make sure influencer names match exactly (e.g. "ScottyK Fitness", "OB Health and Fitness").
+    </div>
+    <div style="margin-bottom:1rem">
+      <div class="sec-label">Influencers in bank</div>
+      <div id="slack-inf-list"><div class="empty" style="padding:.5rem">No influencers added yet.</div></div>
+    </div>
+    <div class="field" style="max-width:320px">
+      <label>How many posts to fetch (most recent)</label>
+      <select id="slack-limit">
+        <option value="50">50 posts</option>
+        <option value="100" selected>100 posts</option>
+        <option value="200">200 posts</option>
+      </select>
+    </div>
+    <button class="btn btn-primary" onclick="syncSlack()">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.5"/></svg>
+      Sync from #creator-socials
+    </button>
+    <div id="slack-status" style="margin-top:12px;font-size:13px;color:var(--text2)"></div>
+  </div>
+
+  <!-- ═══ PROSPECTS ═══ -->
+  <div id="panel-prospects" class="panel">
+    <div class="panel-header">
+      <div class="panel-title">Prospects</div>
+      <div class="panel-desc">Build profiles for each call. The more detail you add, the sharper the AI prep.</div>
+    </div>
+    <div class="split">
+      <div>
+        <div class="sec-label">Add prospect</div>
+        <div class="grid2">
+          <div class="field"><label>Full name</label><input type="text" id="p-name" placeholder="Name"></div>
+          <div class="field"><label>Role / title</label><input type="text" id="p-role" placeholder="e.g. CEO, gym owner"></div>
+        </div>
+        <div class="grid2">
+          <div class="field"><label>Company / industry</label><input type="text" id="p-company" placeholder="Company or industry"></div>
+          <div class="field"><label>Offer they're considering</label><input type="text" id="p-offer" placeholder="e.g. 12-week coaching program"></div>
+        </div>
+        <div class="field"><label>Stated pain points</label><textarea id="p-pain" placeholder="What have they said they struggle with?"></textarea></div>
+        <div class="field"><label>Personality / buyer type</label><input type="text" id="p-style" placeholder="e.g. analytical, emotional, fast decision maker, price-sensitive..."></div>
+        <div class="field"><label>Influencer they follow / came through</label><select id="p-inf"><option value="">— select influencer —</option></select></div>
+        <div class="field"><label>Notes (objections raised, content they've seen, funnel stage)</label><textarea id="p-notes" placeholder="Any extra context..."></textarea></div>
+        <button class="btn btn-primary" onclick="saveProspect()">Save prospect</button>
+      </div>
+      <div>
+        <div class="sec-label">Saved prospects <span id="p-count" style="font-weight:400;color:var(--text3)"></span></div>
+        <div class="scroll-list" id="prospect-list"><div class="empty">No prospects yet.</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ PRE-CALL PREP ═══ -->
+  <div id="panel-prep" class="panel">
+    <div class="panel-header">
+      <div class="panel-title">Pre-call prep</div>
+      <div class="panel-desc">AI-generated strategy and content recommendations for your next call.</div>
+    </div>
+    <div class="grid2" style="margin-bottom:10px">
+      <div class="field"><label>Select prospect</label><select id="prep-sel" onchange="loadPrepProspect()"><option value="">— choose prospect —</option></select></div>
+      <div class="field"><label>Call goal (optional)</label><input type="text" id="prep-goal" placeholder="e.g. close on program, handle price objection"></div>
+    </div>
+    <div id="prep-prospect-card" style="display:none;margin-bottom:12px"></div>
+    <div class="btn-row">
+      <button class="btn btn-primary" onclick="runPrep('strategy')">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01z"/></svg>
+        Generate strategy
+      </button>
+      <button class="btn btn-secondary" onclick="runPrep('content')">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+        Match content to send
+      </button>
+    </div>
+    <div id="prep-outputs" style="margin-top:1.25rem"></div>
+  </div>
+
+  <!-- ═══ POST-CALL FOLLOW-UP ═══ -->
+  <div id="panel-followup" class="panel">
+    <div class="panel-header">
+      <div class="panel-title">Post-call follow-up</div>
+      <div class="panel-desc">Paste your Fathom transcript. AI reads what actually happened on the call and recommends the exact content to send.</div>
+    </div>
+    <div class="grid2" style="margin-bottom:10px">
+      <div class="field"><label>Select prospect</label><select id="fu-sel" onchange="loadFollowupProspect()"><option value="">— choose prospect —</option></select></div>
+      <div class="field"><label>Call goal / what you were trying to close</label><input type="text" id="fu-goal" placeholder="e.g. close on $2k program"></div>
+    </div>
+    <div id="fu-prospect-card" style="display:none;margin-bottom:12px"></div>
+    <div class="field">
+      <label>Fathom transcript (paste full transcript here)</label>
+      <textarea id="fu-transcript" style="min-height:160px" placeholder="Paste the Fathom call transcript here..."></textarea>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-primary" onclick="runFollowup('content')">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+        Recommend follow-up content
+      </button>
+      <button class="btn btn-secondary" onclick="runFollowup('email')">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+        Draft follow-up message
+      </button>
+      <button class="btn btn-secondary" onclick="runFollowup('analysis')">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        Analyze call
+      </button>
+    </div>
+    <div id="followup-outputs" style="margin-top:1.25rem"></div>
+  </div>
+
+  <!-- ═══ HISTORY ═══ -->
+  <div id="panel-history" class="panel">
+    <div class="panel-header">
+      <div class="panel-title">History</div>
+      <div class="panel-desc">All saved AI suggestions, timestamped per prospect.</div>
+    </div>
+    <div style="display:flex;gap:10px;margin-bottom:1rem;flex-wrap:wrap">
+      <select id="hist-filter-prospect" onchange="renderHistory()" style="width:180px">
+        <option value="">All prospects</option>
+      </select>
+      <select id="hist-filter-type" onchange="renderHistory()" style="width:160px">
+        <option value="">All types</option>
+        <option value="strategy">Pre-call strategy</option>
+        <option value="content">Content recs</option>
+        <option value="followup-content">Follow-up content</option>
+        <option value="followup-email">Follow-up email</option>
+        <option value="followup-analysis">Call analysis</option>
+      </select>
+      <button class="btn btn-danger btn-sm" onclick="clearHistory()">Clear all history</button>
+    </div>
+    <div id="history-list"><div class="empty">No history yet. Run pre-call prep or post-call follow-up to save suggestions.</div></div>
+  </div>
+
+  <!-- ═══ SETTINGS ═══ -->
+  <div id="panel-settings" class="panel">
+    <div class="panel-header">
+      <div class="panel-title">Settings</div>
+      <div class="panel-desc">Configure your API keys and preferences.</div>
+    </div>
+    <div class="card" style="max-width:520px">
+      <div style="font-weight:600;margin-bottom:.75rem">Anthropic API key</div>
+      <div class="info-box" style="margin-bottom:10px">Required for AI features. Get your key at <a href="https://console.anthropic.com" target="_blank" style="color:var(--blue-text)">console.anthropic.com</a>. Stored locally in your browser only.</div>
+      <div class="field"><label>API key</label><input type="text" id="api-key-input" placeholder="sk-ant-..."></div>
+      <div class="field">
+        <label>Slack MCP URL (optional — for syncing #creator-socials)</label>
+        <input type="url" id="slack-mcp-url" placeholder="https://mcp.slack.com/mcp">
+        <div style="font-size:11px;color:var(--text3);margin-top:3px">Only needed if running outside Claude.ai. Leave blank when using Claude.ai directly.</div>
+      </div>
+      <button class="btn btn-primary" onclick="saveSettings()">Save settings</button>
+      <div id="settings-msg" style="font-size:12px;color:var(--green-text);margin-top:8px;display:none">Saved.</div>
+    </div>
+    <div class="card" style="max-width:520px;margin-top:.75rem">
+      <div style="font-weight:600;margin-bottom:.75rem">Data</div>
+      <div style="font-size:13px;color:var(--text2);margin-bottom:10px">All data is stored locally in your browser. Export to back it up.</div>
+      <div class="btn-row" style="margin-top:0">
+        <button class="btn btn-secondary" onclick="exportData()">Export JSON backup</button>
+        <button class="btn btn-secondary" onclick="document.getElementById('import-file').click()">Import backup</button>
+        <input type="file" id="import-file" accept=".json" style="display:none" onchange="importData(event)">
+        <button class="btn btn-danger" onclick="if(confirm('Delete all data?')){localStorage.clear();location.reload()}">Reset all data</button>
+      </div>
+    </div>
+  </div>
+
+</main>
+</div>
+
+<script>
+// ─── STATE ────────────────────────────────────────────────────────────────────
+let DB = { influencers: [], prospects: [], history: [], settings: {} };
+let srcCount = 1;
+
+function loadDB() {
+  try {
+    const s = localStorage.getItem('ccc_v3');
+    if (s) DB = { ...DB, ...JSON.parse(s) };
+    const sk = localStorage.getItem('ccc_settings');
+    if (sk) DB.settings = JSON.parse(sk);
+  } catch(e) {}
+}
+
+function saveDB() {
+  try {
+    localStorage.setItem('ccc_v3', JSON.stringify({ influencers: DB.influencers, prospects: DB.prospects, history: DB.history }));
+    localStorage.setItem('ccc_settings', JSON.stringify(DB.settings));
+  } catch(e) {}
+}
+
+loadDB();
+
+// ─── NAVIGATION ───────────────────────────────────────────────────────────────
+function showPanel(name, el) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('panel-' + name).classList.add('active');
+  if (el) el.classList.add('active');
+  if (name === 'slack') renderSlackPanel();
+  if (name === 'history') { refreshHistoryFilters(); renderHistory(); }
+  if (name === 'settings') loadSettings();
+}
+
+// ─── SETTINGS ─────────────────────────────────────────────────────────────────
+function loadSettings() {
+  document.getElementById('api-key-input').value = DB.settings.apiKey || '';
+  document.getElementById('slack-mcp-url').value = DB.settings.slackMcpUrl || '';
+}
+
+function saveSettings() {
+  DB.settings.apiKey = document.getElementById('api-key-input').value.trim();
+  DB.settings.slackMcpUrl = document.getElementById('slack-mcp-url').value.trim();
+  saveDB();
+  const msg = document.getElementById('settings-msg');
+  msg.style.display = 'block';
+  setTimeout(() => msg.style.display = 'none', 2000);
+}
+
+function getApiKey() {
+  return DB.settings.apiKey || '';
+}
+
+// ─── AI CALL ──────────────────────────────────────────────────────────────────
+async function callAI(prompt, maxTokens = 1200) {
+  const key = getApiKey();
+  if (!key) throw new Error('No API key set. Go to Settings and add your Anthropic API key.');
+  const res = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'x-api-key': key, 'anthropic-version': '2023-06-01' },
+    body: JSON.stringify({ model: 'claude-sonnet-4-20250514', max_tokens: maxTokens, messages: [{ role: 'user', content: prompt }] })
+  });
+  const d = await res.json();
+  if (d.error) throw new Error(d.error.message);
+  return (d.content || []).map(b => b.text || '').join('');
+}
+
+// ─── PROXY FETCH ──────────────────────────────────────────────────────────────
+const PROXY = 'https://api.allorigins.win/get?url=';
+
+async function proxyFetch(url) {
+  const r = await fetch(PROXY + encodeURIComponent(url));
+  const d = await r.json();
+  return d.contents || '';
+}
+
+// ─── YOUTUBE FETCH ────────────────────────────────────────────────────────────
+async function fetchYouTube(rawUrl) {
+  let channelId = '';
+  const m1 = rawUrl.match(/youtube\.com\/channel\/(UC[A-Za-z0-9_-]+)/);
+  if (m1) channelId = m1[1];
+
+  if (!channelId) {
+    const handleMatch = rawUrl.match(/youtube\.com\/(@[A-Za-z0-9_.-]+|c\/[A-Za-z0-9_.-]+|user\/[A-Za-z0-9_.-]+)/);
+    if (handleMatch) {
+      try {
+        const html = await proxyFetch('https://www.youtube.com/' + handleMatch[1]);
+        const cm = html.match(/"channelId":"(UC[A-Za-z0-9_-]{22})"/);
+        if (cm) channelId = cm[1];
+      } catch(e) {}
+    }
+  }
+  if (!channelId) {
+    const cm = rawUrl.match(/(UC[A-Za-z0-9_-]{22})/);
+    if (cm) channelId = cm[1];
+  }
+  if (!channelId) throw new Error('Could not resolve YouTube channel. Try the channel/UC... URL directly.');
+
+  const xml = await proxyFetch(`https://www.youtube.com/feeds/videos.xml?channel_id=${channelId}`);
+  const doc = new DOMParser().parseFromString(xml, 'text/xml');
+  return Array.from(doc.querySelectorAll('entry')).slice(0, 30).map(e => ({
+    type: 'youtube',
+    title: e.querySelector('title')?.textContent || '',
+    url: e.querySelector('link')?.getAttribute('href') || '',
+    desc: (e.querySelector('media\\:description,description')?.textContent || '').slice(0, 300),
+    date: e.querySelector('published')?.textContent?.slice(0, 10) || ''
+  })).filter(i => i.title && i.url);
+}
+
+// ─── PODCAST FETCH ────────────────────────────────────────────────────────────
+async function fetchPodcast(rssUrl) {
+  const xml = await proxyFetch(rssUrl);
+  const doc = new DOMParser().parseFromString(xml, 'text/xml');
+  return Array.from(doc.querySelectorAll('item')).slice(0, 30).map(i => ({
+    type: 'podcast',
+    title: i.querySelector('title')?.textContent || '',
+    url: i.querySelector('enclosure')?.getAttribute('url') || i.querySelector('link')?.textContent || '',
+    desc: (i.querySelector('description,summary')?.textContent || '').replace(/<[^>]+>/g, '').slice(0, 300),
+    date: i.querySelector('pubDate')?.textContent?.slice(0, 16) || ''
+  })).filter(i => i.title);
+}
+
+// ─── BLOG / ARTICLE FETCH ─────────────────────────────────────────────────────
+async function fetchBlogIndex(indexUrl) {
+  const html = await proxyFetch(indexUrl);
+  // Extract all internal links that look like article URLs
+  const base = new URL(indexUrl);
+  const links = new Set();
+  const regex = /href="([^"]+)"/g;
+  let m;
+  while ((m = regex.exec(html)) !== null) {
+    try {
+      const u = new URL(m[1], base.origin);
+      if (u.hostname === base.hostname && u.pathname !== '/' && u.pathname !== base.pathname && !u.pathname.match(/\.(jpg|jpeg|png|gif|svg|css|js|xml|json|pdf)$/i)) {
+        links.add(u.href);
+      }
+    } catch(e) {}
+  }
+  const urls = Array.from(links).slice(0, 15);
+  const items = [];
+  for (const url of urls.slice(0, 8)) {
+    try {
+      const art = await fetchArticle(url);
+      if (art) items.push(art);
+    } catch(e) {}
+  }
+  return items;
+}
+
+async function fetchArticle(url) {
+  const html = await proxyFetch(url);
+  const doc = new DOMParser().parseFromString(html, 'text/html');
+  // Remove nav/footer/script/style noise
+  ['nav','footer','header','script','style','aside'].forEach(t => doc.querySelectorAll(t).forEach(el => el.remove()));
+  const title = doc.querySelector('h1')?.textContent?.trim() || doc.querySelector('title')?.textContent?.trim() || '';
+  const body = (doc.querySelector('article,main,.post,.entry-content,.content') || doc.body)?.textContent?.replace(/\s+/g, ' ').trim().slice(0, 500) || '';
+  if (!title && !body) return null;
+  return { type: 'blog', title: title.slice(0, 120), url, desc: body, date: '' };
+}
+
+// ─── ADD INFLUENCER ───────────────────────────────────────────────────────────
+function addSourceRow() {
+  const n = srcCount++;
+  const div = document.createElement('div');
+  div.className = 'source-row'; div.id = 'src-' + n;
+  div.innerHTML = `<select id="stype-${n}"><option value="youtube">YouTube channel</option><option value="podcast">Podcast RSS</option><option value="blog-index">Blog index URL</option><option value="article">Article / page URL</option></select><input type="url" id="surl-${n}" placeholder="Paste URL..."><button class="btn btn-sm btn-danger" onclick="document.getElementById('src-${n}').remove()">×</button>`;
+  document.getElementById('source-rows').appendChild(div);
+}
+
+function collectSources() {
+  const sources = [];
+  for (let i = 0; i < srcCount; i++) {
+    const t = document.getElementById('stype-' + i);
+    const u = document.getElementById('surl-' + i);
+    if (t && u && u.value.trim()) sources.push({ type: t.value, url: u.value.trim() });
+  }
+  return sources;
+}
+
+async function addInfluencer() {
+  const name = document.getElementById('inf-name').value.trim();
+  const handle = document.getElementById('inf-handle').value.trim();
+  const niche = document.getElementById('inf-niche').value.trim();
+  const notes = document.getElementById('inf-notes').value.trim();
+  const sources = collectSources();
+  if (!name) { alert('Enter influencer name.'); return; }
+  if (!sources.length) { alert('Add at least one source URL.'); return; }
+
+  const inf = { id: Date.now(), name, handle, niche, notes, sources, items: [], socialItems: [], analysis: null, status: 'fetching', syncedAt: null };
+  DB.influencers.push(inf);
+  saveDB();
+  renderInfluencers(); updateAllSelects();
+
+  // Reset form
+  document.getElementById('inf-name').value = '';
+  document.getElementById('inf-handle').value = '';
+  document.getElementById('inf-niche').value = '';
+  document.getElementById('inf-notes').value = '';
+  document.getElementById('source-rows').innerHTML = `<div class="source-row" id="src-0"><select id="stype-0"><option value="youtube">YouTube channel</option><option value="podcast">Podcast RSS</option><option value="blog-index">Blog index URL</option><option value="article">Article / page URL</option></select><input type="url" id="surl-0" placeholder="Paste URL..."><button class="btn btn-sm btn-secondary" onclick="addSourceRow()">+</button></div>`;
+  srcCount = 1;
+
+  await fetchAndAnalyzeInfluencer(inf.id);
+}
+
+async function fetchAndAnalyzeInfluencer(infId) {
+  const inf = DB.influencers.find(x => x.id === infId);
+  if (!inf) return;
+  updateInfStatus(infId, 'Fetching content sources...', 10);
+
+  let allItems = [];
+  let srcDone = 0;
+  for (const src of inf.sources) {
+    try {
+      let items = [];
+      if (src.type === 'youtube') items = await fetchYouTube(src.url);
+      else if (src.type === 'podcast') items = await fetchPodcast(src.url);
+      else if (src.type === 'blog-index') items = await fetchBlogIndex(src.url);
+      else if (src.type === 'article') { const a = await fetchArticle(src.url); if (a) items = [a]; }
+      allItems = [...allItems, ...items];
+    } catch(e) { console.warn('Source fetch failed:', src.url, e.message); }
+    srcDone++;
+    updateInfStatus(infId, `Fetched ${srcDone}/${inf.sources.length} sources (${allItems.length} items)...`, Math.round(10 + (srcDone / inf.sources.length) * 50));
+  }
+
+  inf.items = allItems;
+  if (!allItems.length) { inf.status = 'error'; saveDB(); renderInfluencers(); return; }
+
+  updateInfStatus(infId, `Analyzing ${allItems.length} pieces of content with AI...`, 65);
+
+  const summary = allItems.slice(0, 25).map(i => `[${i.type.toUpperCase()}] ${i.title}${i.desc ? ' — ' + i.desc.slice(0, 120) : ''}`).join('\n');
+  const prompt = `Analyze content from influencer "${inf.name}" (handle: ${inf.handle || 'N/A'}, niche: ${inf.niche || 'N/A'}).
+
+Recent content:
+${summary}
+
+${inf.notes ? 'Extra context: ' + inf.notes : ''}
+
+Return a JSON object (no markdown, no backticks):
+{
+  "themes": ["theme1","theme2","theme3","theme4","theme5"],
+  "frameworks": ["framework or method 1","framework 2"],
+  "audience": "one sentence: who their content targets and what they want",
+  "tone": "one sentence: their communication style and energy",
+  "salesAngles": ["pain point / angle 1 a closer can use","angle 2","angle 3"],
+  "contentSummary": "2-3 sentence summary of what this influencer's content is about"
+}`;
+
+  try {
+    const text = await callAI(prompt, 600);
+    inf.analysis = JSON.parse(text.replace(/```json|```/g, '').trim());
+    inf.status = 'ready';
+  } catch(e) {
+    inf.status = 'ready';
+    inf.analysis = { themes: [], frameworks: [], audience: '', tone: '', salesAngles: [], contentSummary: '' };
+  }
+  inf.syncedAt = new Date().toISOString().slice(0, 10);
+  saveDB();
+  renderInfluencers();
+}
+
+function updateInfStatus(infId, msg, pct) {
+  const el = document.getElementById('inf-status-' + infId);
+  if (!el) return;
+  el.innerHTML = `<div style="font-size:11px;color:var(--text3);margin:4px 0">${msg}</div><div class="progress-bar"><div class="progress-fill" style="width:${pct}%"></div></div>`;
+}
+
+function deleteInfluencer(id) {
+  if (!confirm('Delete this influencer and all their content?')) return;
+  DB.influencers = DB.influencers.filter(i => i.id !== id);
+  saveDB(); renderInfluencers(); updateAllSelects();
+}
+
+async function reanalyze(id) {
+  const inf = DB.influencers.find(x => x.id === id);
+  if (!inf) return;
+  inf.status = 'fetching'; inf.items = []; saveDB(); renderInfluencers();
+  await fetchAndAnalyzeInfluencer(id);
+}
+
+function renderInfluencers() {
+  const el = document.getElementById('inf-list');
+  const cnt = document.getElementById('inf-count');
+  if (!DB.influencers.length) { el.innerHTML = '<div class="empty">No influencers yet.</div>'; cnt.textContent = ''; return; }
+  cnt.textContent = `(${DB.influencers.length})`;
+
+  el.innerHTML = DB.influencers.map(inf => {
+    const yt = inf.items.filter(i => i.type === 'youtube').length;
+    const pod = inf.items.filter(i => i.type === 'podcast').length;
+    const blog = inf.items.filter(i => i.type === 'blog').length;
+    const social = (inf.socialItems || []).length;
+    const statusBadge = inf.status === 'ready'
+      ? `<span class="badge badge-green">✓ Ready</span>`
+      : inf.status === 'error'
+      ? `<span class="badge badge-red">Error</span>`
+      : `<span class="badge badge-amber">Processing…</span>`;
+    const topics = (inf.analysis?.themes || []).slice(0, 5).map(t => `<span class="topic-pill">${t}</span>`).join('');
+    const recent = inf.items.slice(0, 3).map(i => `<div class="item-row"><span class="badge ${i.type==='youtube'?'badge-red':i.type==='podcast'?'badge-green':'badge-blue'}" style="flex-shrink:0;font-size:9px">${i.type.slice(0,3).toUpperCase()}</span><div class="item-title"><span>${i.title}</span><div class="item-meta">${i.date || ''}</div></div></div>`).join('');
+    return `<div class="card">
+      <div class="card-header">
+        <div>
+          <div style="font-weight:600;font-size:14px">${inf.name} ${inf.handle ? `<span class="inf-handle">${inf.handle}</span>` : ''}</div>
+          ${inf.niche ? `<div style="font-size:12px;color:var(--text2)">${inf.niche}</div>` : ''}
+        </div>
+        <div style="display:flex;gap:6px;align-items:center">
+          ${statusBadge}
+          <button class="btn btn-sm btn-danger" onclick="deleteInfluencer(${inf.id})">✕</button>
+        </div>
+      </div>
+      <div id="inf-status-${inf.id}"></div>
+      <div class="content-count-row">
+        ${yt ? `<span class="badge badge-red">${yt} videos</span>` : ''}
+        ${pod ? `<span class="badge badge-green">${pod} episodes</span>` : ''}
+        ${blog ? `<span class="badge badge-blue">${blog} articles</span>` : ''}
+        ${social ? `<span class="slack-badge">${social} posts</span>` : ''}
+        ${inf.syncedAt ? `<span class="badge badge-gray">Analyzed ${inf.syncedAt}</span>` : ''}
+      </div>
+      ${topics ? `<div style="margin-top:6px">${topics}</div>` : ''}
+      ${inf.analysis?.contentSummary ? `<div style="font-size:12px;color:var(--text2);margin-top:6px;line-height:1.5">${inf.analysis.contentSummary}</div>` : ''}
+      ${recent ? `<div style="margin-top:8px;border-top:1px solid var(--border);padding-top:6px">${recent}</div>` : ''}
+      ${inf.status === 'ready' ? `<button class="btn btn-sm btn-secondary" style="margin-top:8px" onclick="reanalyze(${inf.id})">↺ Refresh</button>` : ''}
+    </div>`;
+  }).join('');
+}
+
+// ─── SLACK SYNC ───────────────────────────────────────────────────────────────
+function renderSlackPanel() {
+  const el = document.getElementById('slack-inf-list');
+  if (!DB.influencers.length) { el.innerHTML = '<div class="empty" style="padding:.5rem">Add influencers first.</div>'; return; }
+  el.innerHTML = DB.influencers.map(inf => {
+    const social = (inf.socialItems || []).length;
+    return `<div style="display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid var(--border)">
+      <div style="flex:1;font-size:13px;font-weight:500">${inf.name} <span style="font-size:11px;color:var(--text3);font-weight:400">${inf.handle || ''}</span></div>
+      ${social ? `<span class="slack-badge">${social} posts synced</span>` : '<span class="badge badge-gray">No posts yet</span>'}
+    </div>`;
+  }).join('');
+}
+
+async function syncSlack() {
+  const status = document.getElementById('slack-status');
+  const limit = parseInt(document.getElementById('slack-limit').value);
+
+  if (!getApiKey()) { status.textContent = 'Add your API key in Settings first.'; return; }
+
+  status.textContent = 'Fetching posts from #creator-socials...';
+
+  // Use Claude with Slack MCP to fetch the channel
+  const prompt = `Use the Slack MCP tool to read the last ${limit} messages from channel ID C0B1TNT12CW (#creator-socials).
+
+For each message, extract:
+- account: the text after "Account:" 
+- creator: the text after "Creator:"
+- type: the text after "Type:"
+- caption: the text after "Caption:" (if present)
+- posted: the date after "Posted:"
+
+Return ONLY a JSON array like:
+[{"account":"ScottyK Fitness","creator":"@scottykfitness","type":"Reel","caption":"...","posted":"2026-06-10"},...]
+
+Only include Instagram posts (messages with "New Instagram Post"). No markdown, no explanation.`;
+
+  try {
+    const key = getApiKey();
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'x-api-key': key, 'anthropic-version': '2023-06-01' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 4000,
+        messages: [{ role: 'user', content: prompt }],
+        mcp_servers: [{ type: 'url', url: 'https://mcp.slack.com/mcp', name: 'slack' }]
+      })
+    });
+    const d = await res.json();
+    if (d.error) throw new Error(d.error.message);
+    const text = (d.content || []).map(b => b.text || '').join('').replace(/```json|```/g, '').trim();
+    // Find JSON array in response
+    const jsonMatch = text.match(/\[[\s\S]*\]/);
+    if (!jsonMatch) throw new Error('Could not parse Slack data');
+    const posts = JSON.parse(jsonMatch[0]);
+
+    // Distribute posts to influencers
+    let matched = 0;
+    for (const inf of DB.influencers) {
+      const infPosts = posts.filter(p => {
+        const acc = (p.account || '').toLowerCase();
+        const infName = inf.name.toLowerCase();
+        const handle = (inf.handle || '').toLowerCase().replace('@', '');
+        return acc.includes(infName) || acc.includes(handle) || (p.creator || '').toLowerCase().includes(handle);
+      }).map(p => ({
+        type: 'social',
+        platform: 'instagram',
+        postType: p.type || '',
+        title: p.caption ? p.caption.slice(0, 100) : `${p.type || 'Post'} — ${p.posted || ''}`,
+        url: '',
+        desc: p.caption || '',
+        date: p.posted || ''
+      }));
+      inf.socialItems = infPosts;
+      matched += infPosts.length;
+    }
+
+    saveDB(); renderInfluencers(); renderSlackPanel();
+    status.textContent = `Synced ${posts.length} posts. Matched ${matched} to influencers.`;
+    status.style.color = 'var(--green-text)';
+  } catch(e) {
+    status.textContent = 'Sync failed: ' + e.message;
+    status.style.color = 'var(--red-text)';
+  }
+}
+
+// ─── PROSPECTS ────────────────────────────────────────────────────────────────
+function saveProspect() {
+  const name = document.getElementById('p-name').value.trim();
+  if (!name) { alert('Enter a name.'); return; }
+  const p = {
+    id: Date.now(), name,
+    role: document.getElementById('p-role').value.trim(),
+    company: document.getElementById('p-company').value.trim(),
+    offer: document.getElementById('p-offer').value.trim(),
+    pain: document.getElementById('p-pain').value.trim(),
+    style: document.getElementById('p-style').value.trim(),
+    infId: document.getElementById('p-inf').value,
+    notes: document.getElementById('p-notes').value.trim()
+  };
+  DB.prospects.push(p); saveDB(); renderProspects(); updateAllSelects();
+  ['p-name','p-role','p-company','p-offer','p-pain','p-style','p-notes'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('p-inf').value = '';
+}
+
+function deleteProspect(id) {
+  if (!confirm('Delete this prospect?')) return;
+  DB.prospects = DB.prospects.filter(p => p.id !== id);
+  saveDB(); renderProspects(); updateAllSelects();
+}
+
+function renderProspects() {
+  const el = document.getElementById('prospect-list');
+  const cnt = document.getElementById('p-count');
+  if (!DB.prospects.length) { el.innerHTML = '<div class="empty">No prospects yet.</div>'; cnt.textContent = ''; return; }
+  cnt.textContent = `(${DB.prospects.length})`;
+  el.innerHTML = DB.prospects.map(p => {
+    const inf = DB.influencers.find(i => String(i.id) === String(p.infId));
+    return `<div class="prospect-card">
+      <div class="card-header">
+        <div style="display:flex;align-items:center;gap:8px">
+          <div class="avatar">${p.name.split(' ').map(w => w[0]).slice(0,2).join('')}</div>
+          <div>
+            <div class="prospect-name">${p.name}</div>
+            <div style="font-size:11px;color:var(--text3)">${[p.role, p.company].filter(Boolean).join(' · ')}</div>
+          </div>
+        </div>
+        <div style="display:flex;gap:6px;align-items:center">
+          ${inf ? `<span class="badge badge-blue">${inf.name}</span>` : ''}
+          <button class="btn btn-sm btn-danger" onclick="deleteProspect(${p.id})">✕</button>
+        </div>
+      </div>
+      ${p.offer ? `<div style="font-size:12px;color:var(--text2);margin-top:6px">Offer: ${p.offer}</div>` : ''}
+      ${p.pain ? `<div style="font-size:12px;color:var(--text3);margin-top:3px">${p.pain.slice(0,100)}${p.pain.length>100?'...':''}</div>` : ''}
+    </div>`;
+  }).join('');
+}
+
+// ─── SELECTS ──────────────────────────────────────────────────────────────────
+function updateAllSelects() {
+  const infOpts = '<option value="">— select influencer —</option>' + DB.influencers.map(i => `<option value="${i.id}">${i.name}</option>`).join('');
+  document.getElementById('p-inf').innerHTML = infOpts;
+
+  const pOpts = '<option value="">— choose prospect —</option>' + DB.prospects.map(p => `<option value="${p.id}">${p.name}${p.company ? ' · ' + p.company : ''}</option>`).join('');
+  document.getElementById('prep-sel').innerHTML = pOpts;
+  document.getElementById('fu-sel').innerHTML = pOpts;
+
+  refreshHistoryFilters();
+}
+
+// ─── PROSPECT CARDS ───────────────────────────────────────────────────────────
+function buildProspectCard(p) {
+  if (!p) return '';
+  const inf = DB.influencers.find(i => String(i.id) === String(p.infId));
+  return `<div class="card" style="margin:0">
+    <div style="display:flex;align-items:center;gap:10px">
+      <div class="avatar">${p.name.split(' ').map(w=>w[0]).slice(0,2).join('')}</div>
+      <div style="flex:1">
+        <div style="font-weight:600">${p.name}</div>
+        <div style="font-size:12px;color:var(--text2)">${[p.role,p.company,p.offer].filter(Boolean).join(' · ')}</div>
+      </div>
+      ${inf ? `<span class="badge badge-blue">${inf.name}</span>` : ''}
+    </div>
+    ${p.pain ? `<div style="font-size:12px;margin-top:8px;border-top:1px solid var(--border);padding-top:6px"><strong>Pain:</strong> ${p.pain}</div>` : ''}
+    ${p.style ? `<div style="font-size:12px;margin-top:3px"><strong>Style:</strong> ${p.style}</div>` : ''}
+    ${p.notes ? `<div style="font-size:12px;margin-top:3px;color:var(--text2)">${p.notes}</div>` : ''}
+  </div>`;
+}
+
+function loadPrepProspect() {
+  const id = document.getElementById('prep-sel').value;
+  const el = document.getElementById('prep-prospect-card');
+  if (!id) { el.style.display = 'none'; return; }
+  const p = DB.prospects.find(x => String(x.id) === id);
+  el.innerHTML = buildProspectCard(p);
+  el.style.display = p ? 'block' : 'none';
+}
+
+function loadFollowupProspect() {
+  const id = document.getElementById('fu-sel').value;
+  const el = document.getElementById('fu-prospect-card');
+  if (!id) { el.style.display = 'none'; return; }
+  const p = DB.prospects.find(x => String(x.id) === id);
+  el.innerHTML = buildProspectCard(p);
+  el.style.display = p ? 'block' : 'none';
+}
+
+// ─── CONTEXT BUILDERS ─────────────────────────────────────────────────────────
+function buildProspectContext(p) {
+  const inf = DB.influencers.find(i => String(i.id) === String(p.infId));
+  let ctx = `Prospect: ${p.name}`;
+  if (p.role) ctx += `\nRole: ${p.role}`;
+  if (p.company) ctx += `\nCompany/Industry: ${p.company}`;
+  if (p.offer) ctx += `\nOffer considering: ${p.offer}`;
+  if (p.pain) ctx += `\nStated pain points: ${p.pain}`;
+  if (p.style) ctx += `\nPersonality/buyer type: ${p.style}`;
+  if (p.notes) ctx += `\nNotes: ${p.notes}`;
+  if (inf) {
+    ctx += `\n\nInfluencer they follow: ${inf.name}`;
+    if (inf.handle) ctx += ` (${inf.handle})`;
+    if (inf.niche) ctx += ` — ${inf.niche}`;
+    if (inf.analysis?.themes?.length) ctx += `\nInfluencer themes: ${inf.analysis.themes.join(', ')}`;
+    if (inf.analysis?.frameworks?.length) ctx += `\nInfluencer frameworks: ${inf.analysis.frameworks.join(', ')}`;
+    if (inf.analysis?.audience) ctx += `\nInfluencer audience: ${inf.analysis.audience}`;
+    if (inf.analysis?.salesAngles?.length) ctx += `\nSales angles from this content: ${inf.analysis.salesAngles.join('; ')}`;
+    if (inf.analysis?.tone) ctx += `\nInfluencer tone: ${inf.analysis.tone}`;
+  }
+  return ctx;
+}
+
+function buildContentBank(p) {
+  const inf = DB.influencers.find(i => String(i.id) === String(p.infId));
+  if (!inf) return '\n\nNo influencer linked to this prospect.';
+  const allItems = [...(inf.items || []), ...(inf.socialItems || [])];
+  if (!allItems.length) return '\n\nNo content fetched yet for this influencer.';
+  const lines = allItems.slice(0, 40).map(i => {
+    const prefix = i.type === 'youtube' ? '[YT]' : i.type === 'podcast' ? '[POD]' : i.type === 'blog' ? '[BLOG]' : '[IG]';
+    const link = i.url ? ` | ${i.url}` : '';
+    const desc = i.desc ? ` | ${i.desc.slice(0, 100)}` : '';
+    return `${prefix} ${i.title}${link}${desc}`;
+  }).join('\n');
+  return `\n\nContent bank for ${inf.name} (${allItems.length} items):\n${lines}`;
+}
+
+// ─── PRE-CALL PREP ────────────────────────────────────────────────────────────
+async function runPrep(mode) {
+  const id = document.getElementById('prep-sel').value;
+  if (!id) { alert('Select a prospect first.'); return; }
+  const p = DB.prospects.find(x => String(x.id) === id);
+  if (!p) return;
+  const goal = document.getElementById('prep-goal').value.trim();
+  const ctx = buildProspectContext(p);
+
+  const outId = 'prep-out-' + mode;
+  const label = mode === 'strategy' ? 'Pre-call strategy' : 'Content to send';
+  const container = document.getElementById('prep-outputs');
+
+  let block = document.getElementById(outId);
+  if (!block) {
+    block = document.createElement('div');
+    block.style.marginBottom = '1rem';
+    block.id = outId;
+    container.appendChild(block);
+  }
+  block.innerHTML = `<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px"><div class="sec-label" style="margin:0">${label}</div><button class="copy-btn" onclick="copyEl('${outId}-text')">Copy</button></div><div id="${outId}-text" class="ai-out loading">Generating…</div>`;
+
+  let prompt = '';
+  if (mode === 'strategy') {
+    prompt = `You are an expert sales coach. A closer needs pre-call prep.
+
+${ctx}
+${goal ? '\nCall goal: ' + goal : ''}
+
+Write a focused pre-call brief:
+
+1. DEEPER MOTIVES — What is this person REALLY buying? What identity shift, fear, or desire sits underneath their stated pain? Be specific to their role, industry, and the influencer content they've been consuming.
+
+2. OPENING + KEY QUESTIONS — How to open the call, and 3-4 specific questions to surface their real motives.
+
+3. LIKELY OBJECTIONS + RESPONSES — The 2-3 objections most likely from this person, and how to handle each given what they know from the influencer's content.
+
+4. CLOSING ANGLE — The frame that will land best given their personality and what they've been exposed to.
+
+Be direct and specific. Use what you know about the influencer's worldview and the prospect's psychology.`;
+  } else {
+    const bank = buildContentBank(p);
+    prompt = `You are an expert sales coach. A closer needs to know what content to send this prospect.
+
+${ctx}
+${bank}
+${goal ? '\nCall goal: ' + goal : ''}
+
+Recommend the best content to send. For each piece:
+- The exact title and URL (if available)
+- Why it matches THIS prospect specifically — connect it to their pain/motive
+- When to send it (before call / right after / after a specific objection)
+- A short 1-2 sentence message to accompany it, ready to copy-paste
+
+Prioritize YouTube videos, podcast episodes, and blog posts with specific relevance. Be tactical.`;
+  }
+
+  try {
+    const text = await callAI(prompt, 1200);
+    document.getElementById(outId + '-text').className = 'ai-out';
+    document.getElementById(outId + '-text').textContent = text;
+    saveToHistory({ type: mode, prospectId: p.id, prospectName: p.name, content: text, goal });
+  } catch(e) {
+    document.getElementById(outId + '-text').className = 'ai-out';
+    document.getElementById(outId + '-text').textContent = 'Error: ' + e.message;
+  }
+}
+
+// ─── POST-CALL FOLLOW-UP ──────────────────────────────────────────────────────
+async function runFollowup(mode) {
+  const id = document.getElementById('fu-sel').value;
+  if (!id) { alert('Select a prospect first.'); return; }
+  const transcript = document.getElementById('fu-transcript').value.trim();
+  if (!transcript) { alert('Paste the Fathom transcript first.'); return; }
+
+  const p = DB.prospects.find(x => String(x.id) === id);
+  if (!p) return;
+  const goal = document.getElementById('fu-goal').value.trim();
+  const ctx = buildProspectContext(p);
+
+  const outId = 'fu-out-' + mode;
+  const labels = { content: 'Follow-up content', email: 'Follow-up message', analysis: 'Call analysis' };
+  const container = document.getElementById('followup-outputs');
+
+  let block = document.getElementById(outId);
+  if (!block) {
+    block = document.createElement('div');
+    block.style.marginBottom = '1rem';
+    block.id = outId;
+    container.appendChild(block);
+  }
+  block.innerHTML = `<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px"><div class="sec-label" style="margin:0">${labels[mode]}</div><button class="copy-btn" onclick="copyEl('${outId}-text')">Copy</button></div><div id="${outId}-text" class="ai-out loading">Generating…</div>`;
+
+  const bank = buildContentBank(p);
+  let prompt = '';
+
+  if (mode === 'content') {
+    prompt = `You are an expert sales coach. Based on a sales call transcript, recommend follow-up content to send this prospect.
+
+${ctx}
+${goal ? '\nCall goal: ' + goal : ''}
+
+CALL TRANSCRIPT:
+${transcript.slice(0, 3000)}
+
+${bank}
+
+Based on what was discussed, objections raised, and what resonated:
+1. What specific content from the bank should be sent and why?
+2. For each recommendation: exact URL/title, why it addresses what came up on the call, and a ready-to-send message (1-2 sentences).
+3. What content is MISSING from the bank that would have been useful?
+
+Be specific to what actually happened on this call.`;
+  } else if (mode === 'email') {
+    prompt = `You are an expert sales coach. Write a follow-up message after this sales call.
+
+${ctx}
+${goal ? '\nCall goal: ' + goal : ''}
+
+CALL TRANSCRIPT:
+${transcript.slice(0, 3000)}
+
+Write a follow-up message (text/DM style, not formal email) that:
+- References something specific from the conversation to show you listened
+- Reframes their main objection or hesitation
+- Creates a soft next step without being pushy
+- Sounds human, not salesy
+
+Write 2 versions: one shorter (3-4 sentences) and one slightly longer with more substance.`;
+  } else if (mode === 'analysis') {
+    prompt = `Analyze this sales call transcript and give a closer honest feedback.
+
+${ctx}
+${goal ? '\nCall goal: ' + goal : ''}
+
+CALL TRANSCRIPT:
+${transcript.slice(0, 3000)}
+
+Cover:
+1. WHAT WORKED — moments of rapport, good questions, effective frames
+2. WHERE YOU LOST THEM — moments of resistance, missed signals, weak responses
+3. THE REAL OBJECTION — what was the actual blocker (not just what they said)?
+4. WHAT TO DO NEXT — specific next action to move this forward
+5. COACHING NOTE — one key skill to work on based on this call
+
+Be direct and honest. This closer wants to improve.`;
+  }
+
+  try {
+    const text = await callAI(prompt, 1400);
+    document.getElementById(outId + '-text').className = 'ai-out';
+    document.getElementById(outId + '-text').textContent = text;
+    saveToHistory({ type: 'followup-' + mode, prospectId: p.id, prospectName: p.name, content: text, goal });
+  } catch(e) {
+    document.getElementById(outId + '-text').className = 'ai-out';
+    document.getElementById(outId + '-text').textContent = 'Error: ' + e.message;
+  }
+}
+
+// ─── HISTORY ──────────────────────────────────────────────────────────────────
+function saveToHistory(entry) {
+  entry.id = Date.now();
+  entry.timestamp = new Date().toISOString();
+  DB.history.unshift(entry);
+  if (DB.history.length > 200) DB.history = DB.history.slice(0, 200);
+  saveDB();
+}
+
+function refreshHistoryFilters() {
+  const pSel = document.getElementById('hist-filter-prospect');
+  if (!pSel) return;
+  const cur = pSel.value;
+  pSel.innerHTML = '<option value="">All prospects</option>' + DB.prospects.map(p => `<option value="${p.id}">${p.name}</option>`).join('');
+  if (cur) pSel.value = cur;
+}
+
+function renderHistory() {
+  const el = document.getElementById('history-list');
+  if (!el) return;
+  const pFilter = document.getElementById('hist-filter-prospect')?.value || '';
+  const tFilter = document.getElementById('hist-filter-type')?.value || '';
+
+  let items = DB.history;
+  if (pFilter) items = items.filter(h => String(h.prospectId) === pFilter);
+  if (tFilter) items = items.filter(h => h.type === tFilter);
+
+  if (!items.length) { el.innerHTML = '<div class="empty">No history yet.</div>'; return; }
+
+  const typeLabels = { strategy: 'Pre-call strategy', content: 'Content recs', 'followup-content': 'Follow-up content', 'followup-email': 'Follow-up message', 'followup-analysis': 'Call analysis' };
+  const typeBadge = { strategy: 'badge-purple', content: 'badge-teal', 'followup-content': 'badge-blue', 'followup-email': 'badge-green', 'followup-analysis': 'badge-amber' };
+
+  el.innerHTML = items.map(h => {
+    const dt = new Date(h.timestamp);
+    const dateStr = dt.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) + ' ' + dt.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+    return `<div class="history-item">
+      <div class="history-meta">
+        <span class="badge ${typeBadge[h.type] || 'badge-gray'}">${typeLabels[h.type] || h.type}</span>
+        <span style="font-weight:500;color:var(--text2)">${h.prospectName}</span>
+        <span>${dateStr}</span>
+        ${h.goal ? `<span>Goal: ${h.goal}</span>` : ''}
+      </div>
+      <div class="history-preview">${h.content.slice(0, 200)}…</div>
+      <div style="margin-top:6px;display:flex;gap:6px">
+        <button class="copy-btn" onclick="copyText('${h.id}')">Copy full</button>
+        <button class="copy-btn" onclick="expandHistory('${h.id}')">View full</button>
+      </div>
+      <div id="hist-expand-${h.id}" style="display:none;margin-top:8px">
+        <div class="ai-out" style="font-size:12px">${h.content}</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function expandHistory(id) {
+  const el = document.getElementById('hist-expand-' + id);
+  if (el) el.style.display = el.style.display === 'none' ? 'block' : 'none';
+}
+
+function copyText(histId) {
+  const h = DB.history.find(x => String(x.id) === String(histId));
+  if (h) navigator.clipboard.writeText(h.content).catch(() => {});
+}
+
+function clearHistory() {
+  if (!confirm('Delete all history?')) return;
+  DB.history = []; saveDB(); renderHistory();
+}
+
+// ─── UTILS ────────────────────────────────────────────────────────────────────
+function copyEl(id) {
+  const el = document.getElementById(id);
+  if (el) navigator.clipboard.writeText(el.textContent).catch(() => {});
+}
+
+function exportData() {
+  const blob = new Blob([JSON.stringify(DB, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'closer-hq-backup-' + new Date().toISOString().slice(0,10) + '.json';
+  a.click();
+}
+
+function importData(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    try {
+      const data = JSON.parse(e.target.result);
+      if (confirm('This will replace all current data. Continue?')) {
+        DB = { ...DB, ...data };
+        saveDB(); location.reload();
+      }
+    } catch(err) { alert('Invalid backup file.'); }
+  };
+  reader.readAsText(file);
+}
+
+// ─── INIT ─────────────────────────────────────────────────────────────────────
+renderInfluencers();
+renderProspects();
+updateAllSelects();
+</script>
+</body>
+</html>
