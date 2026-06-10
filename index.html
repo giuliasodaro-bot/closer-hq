@@ -221,56 +221,149 @@
   <div id="panel-slack" class="panel">
     <div class="panel-header">
       <div class="panel-title">Sync social content</div>
-      <div class="panel-desc">Pull Instagram posts from <strong>#creator-socials</strong> in Slack. Posts are auto-attributed to influencers by account name.</div>
+      <div class="panel-desc">Pull Instagram posts from <strong>#creator-socials</strong> and import them into the content bank.</div>
     </div>
-    <div class="info-box">
-      This fetches the Slack channel via the Anthropic API (which has your Slack connection). Posts are automatically sorted to the matching influencer by their account name. Run this periodically to keep social content fresh.
+
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:1px;background:var(--border);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;margin-bottom:1.5rem">
+      <div style="background:var(--bg);padding:.875rem 1rem">
+        <div style="font-size:11px;font-weight:600;color:var(--text3);margin-bottom:4px">STEP 1</div>
+        <div style="font-size:13px;font-weight:500;margin-bottom:3px">Open Claude.ai</div>
+        <div style="font-size:12px;color:var(--text2)">Click the button below — it opens Claude with the exact prompt pre-filled.</div>
+      </div>
+      <div style="background:var(--bg);padding:.875rem 1rem">
+        <div style="font-size:11px;font-weight:600;color:var(--text3);margin-bottom:4px">STEP 2</div>
+        <div style="font-size:13px;font-weight:500;margin-bottom:3px">Run &amp; copy JSON</div>
+        <div style="font-size:12px;color:var(--text2)">Claude reads Slack and outputs a JSON block. Copy it.</div>
+      </div>
+      <div style="background:var(--bg);padding:.875rem 1rem">
+        <div style="font-size:11px;font-weight:600;color:var(--text3);margin-bottom:4px">STEP 3</div>
+        <div style="font-size:13px;font-weight:500;margin-bottom:3px">Paste &amp; import</div>
+        <div style="font-size:12px;color:var(--text2)">Paste the JSON below and click Import. Done.</div>
+      </div>
     </div>
-    <div class="warn-box">
-      Influencers must be added in the Content Bank first. The sync matches posts by account name — make sure influencer names match exactly (e.g. "ScottyK Fitness", "OB Health and Fitness").
+
+    <div style="display:flex;gap:10px;align-items:center;margin-bottom:1.25rem;flex-wrap:wrap">
+      <div class="field" style="margin:0;min-width:160px">
+        <label>Posts to fetch</label>
+        <select id="slack-limit" style="width:160px">
+          <option value="50">50 most recent</option>
+          <option value="100" selected>100 most recent</option>
+          <option value="200">200 most recent</option>
+        </select>
+      </div>
+      <div style="padding-top:18px">
+        <button class="btn btn-primary" onclick="openClaudePrompt()">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+          Open Claude.ai with prompt
+        </button>
+      </div>
     </div>
-    <div style="margin-bottom:1rem">
-      <div class="sec-label">Influencers in bank</div>
-      <div id="slack-inf-list"><div class="empty" style="padding:.5rem">No influencers added yet.</div></div>
+
+    <div class="field" style="margin-bottom:10px">
+      <label>Paste JSON from Claude here</label>
+      <textarea id="slack-json-paste" style="min-height:100px;font-family:monospace;font-size:12px" placeholder='[{"account":"ScottyK Fitness","creator":"@scottykfitness","type":"Reel","caption":"...","posted":"2026-06-10"},...]'></textarea>
     </div>
-    <div class="field" style="max-width:320px">
-      <label>How many posts to fetch (most recent)</label>
-      <select id="slack-limit">
-        <option value="50">50 posts</option>
-        <option value="100" selected>100 posts</option>
-        <option value="200">200 posts</option>
-      </select>
-    </div>
-    <button class="btn btn-primary" onclick="syncSlack()">
-      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.5"/></svg>
-      Sync from #creator-socials
+    <button class="btn btn-primary" onclick="importSlackJSON()">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="8 17 12 21 16 17"/><line x1="12" y1="3" x2="12" y2="21"/></svg>
+      Import posts
     </button>
-    <div id="slack-status" style="margin-top:12px;font-size:13px;color:var(--text2)"></div>
+    <div id="slack-status" style="margin-top:10px;font-size:13px"></div>
+
+    <hr class="divider">
+    <div class="sec-label">Current social content</div>
+    <div id="slack-inf-list"><div class="empty" style="padding:.5rem">No influencers added yet.</div></div>
   </div>
 
   <!-- ═══ PROSPECTS ═══ -->
   <div id="panel-prospects" class="panel">
     <div class="panel-header">
       <div class="panel-title">Prospects</div>
-      <div class="panel-desc">Build profiles for each call. The more detail you add, the sharper the AI prep.</div>
+      <div class="panel-desc">Paste any info or drop a screenshot — AI extracts and fills the profile automatically.</div>
     </div>
     <div class="split">
       <div>
-        <div class="sec-label">Add prospect</div>
-        <div class="grid2">
-          <div class="field"><label>Full name</label><input type="text" id="p-name" placeholder="Name"></div>
-          <div class="field"><label>Role / title</label><input type="text" id="p-role" placeholder="e.g. CEO, gym owner"></div>
+        <!-- INPUT MODE TABS -->
+        <div class="tabs-inline" style="margin-bottom:1rem">
+          <button class="tab-inline active" onclick="switchProspectTab('smart',this)">Smart extract</button>
+          <button class="tab-inline" onclick="switchProspectTab('manual',this)">Manual</button>
         </div>
-        <div class="grid2">
-          <div class="field"><label>Company / industry</label><input type="text" id="p-company" placeholder="Company or industry"></div>
-          <div class="field"><label>Offer they're considering</label><input type="text" id="p-offer" placeholder="e.g. 12-week coaching program"></div>
+
+        <!-- SMART EXTRACT -->
+        <div id="prospect-smart">
+          <div class="info-box" style="margin-bottom:10px">Paste anything — DM thread, notes, form submission, email — or drop a screenshot. AI will extract name, role, pain points, personality and fill all fields.</div>
+
+          <!-- Screenshot drop zone -->
+          <div id="screenshot-drop" onclick="document.getElementById('screenshot-input').click()" style="border:2px dashed var(--border2);border-radius:var(--radius-lg);padding:1rem;text-align:center;cursor:pointer;margin-bottom:10px;transition:background .15s;background:#fff">
+            <div id="screenshot-preview" style="display:none"><img id="screenshot-img" style="max-height:120px;border-radius:var(--radius);margin-bottom:6px"><div style="font-size:11px;color:var(--text3)">Screenshot loaded — will be analyzed with text</div></div>
+            <div id="screenshot-placeholder">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--text3)" stroke-width="1.5" style="margin-bottom:4px"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+              <div style="font-size:12px;color:var(--text3)">Drop screenshot here or click to upload</div>
+              <div style="font-size:11px;color:var(--text3);margin-top:2px">Intake form, CRM, chat, anything visual</div>
+            </div>
+            <input type="file" id="screenshot-input" accept="image/*" style="display:none" onchange="handleScreenshot(event)">
+          </div>
+
+          <div class="field" style="margin-bottom:10px">
+            <label>Paste text (optional — combine with screenshot or use alone)</label>
+            <textarea id="smart-text" style="min-height:90px" placeholder="Paste DM conversation, intake form notes, email thread, anything..."></textarea>
+          </div>
+
+          <div class="field" style="margin-bottom:12px">
+            <label>Influencer they came through</label>
+            <select id="smart-inf"><option value="">— select influencer —</option></select>
+          </div>
+
+          <div style="display:flex;gap:8px;align-items:center">
+            <button class="btn btn-primary" onclick="smartExtract()">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01z"/></svg>
+              Extract &amp; fill fields
+            </button>
+            <button class="btn btn-ghost btn-sm" onclick="clearScreenshot()">Clear screenshot</button>
+          </div>
+          <div id="smart-status" style="font-size:12px;margin-top:8px"></div>
         </div>
-        <div class="field"><label>Stated pain points</label><textarea id="p-pain" placeholder="What have they said they struggle with?"></textarea></div>
-        <div class="field"><label>Personality / buyer type</label><input type="text" id="p-style" placeholder="e.g. analytical, emotional, fast decision maker, price-sensitive..."></div>
-        <div class="field"><label>Influencer they follow / came through</label><select id="p-inf"><option value="">— select influencer —</option></select></div>
-        <div class="field"><label>Notes (objections raised, content they've seen, funnel stage)</label><textarea id="p-notes" placeholder="Any extra context..."></textarea></div>
-        <button class="btn btn-primary" onclick="saveProspect()">Save prospect</button>
+
+        <!-- MANUAL FORM -->
+        <div id="prospect-manual" style="display:none">
+          <div class="grid2">
+            <div class="field"><label>Full name</label><input type="text" id="m-name" placeholder="Name"></div>
+            <div class="field"><label>Role / title</label><input type="text" id="m-role" placeholder="e.g. CEO, gym owner"></div>
+          </div>
+          <div class="grid2">
+            <div class="field"><label>Company / industry</label><input type="text" id="m-company" placeholder="Company or industry"></div>
+            <div class="field"><label>Offer they're considering</label><input type="text" id="m-offer" placeholder="e.g. 12-week coaching program"></div>
+          </div>
+          <div class="field"><label>Stated pain points</label><textarea id="m-pain" placeholder="What have they said they struggle with?"></textarea></div>
+          <div class="field"><label>Personality / buyer type</label><input type="text" id="m-style" placeholder="e.g. analytical, emotional, fast decision maker..."></div>
+          <div class="field"><label>Influencer they follow / came through</label><select id="m-inf"><option value="">— select influencer —</option></select></div>
+          <div class="field"><label>Notes</label><textarea id="m-notes" placeholder="Objections raised, content they've seen, funnel stage..."></textarea></div>
+        </div>
+
+        <!-- EXTRACTED PREVIEW — shown after smart extract -->
+        <div id="extracted-preview" style="display:none;margin-top:1rem">
+          <hr class="divider" style="margin:.75rem 0">
+          <div class="sec-label">Extracted profile — review &amp; edit</div>
+          <div class="grid2">
+            <div class="field"><label>Full name</label><input type="text" id="p-name" placeholder="Name"></div>
+            <div class="field"><label>Role / title</label><input type="text" id="p-role" placeholder="e.g. CEO, gym owner"></div>
+          </div>
+          <div class="grid2">
+            <div class="field"><label>Company / industry</label><input type="text" id="p-company" placeholder="Company or industry"></div>
+            <div class="field"><label>Offer they're considering</label><input type="text" id="p-offer" placeholder="e.g. 12-week coaching program"></div>
+          </div>
+          <div class="field"><label>Stated pain points</label><textarea id="p-pain" placeholder="Pain points"></textarea></div>
+          <div class="field"><label>Personality / buyer type</label><input type="text" id="p-style" placeholder="Personality type"></div>
+          <div class="field"><label>Influencer they follow / came through</label><select id="p-inf"><option value="">— select influencer —</option></select></div>
+          <div class="field"><label>Notes</label><textarea id="p-notes" placeholder="Any extra context..."></textarea></div>
+          <button class="btn btn-primary" onclick="saveProspect()">Save prospect</button>
+        </div>
+
+        <!-- Manual save button (shown in manual tab) -->
+        <div id="manual-save-btn" style="display:none;margin-top:10px">
+          <button class="btn btn-primary" onclick="saveProspect()">Save prospect</button>
+        </div>
       </div>
+
       <div>
         <div class="sec-label">Saved prospects <span id="p-count" style="font-weight:400;color:var(--text3)"></span></div>
         <div class="scroll-list" id="prospect-list"><div class="empty">No prospects yet.</div></div>
@@ -815,106 +908,258 @@ function renderInfluencers() {
 // ─── SLACK SYNC ───────────────────────────────────────────────────────────────
 function renderSlackPanel() {
   const el = document.getElementById('slack-inf-list');
+  if (!el) return;
   if (!DB.influencers.length) { el.innerHTML = '<div class="empty" style="padding:.5rem">Add influencers first.</div>'; return; }
   el.innerHTML = DB.influencers.map(inf => {
     const social = (inf.socialItems || []).length;
-    return `<div style="display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid var(--border)">
+    const lastSync = inf.lastSocialSync ? `<span class="badge badge-gray">Last synced ${inf.lastSocialSync}</span>` : '';
+    return `<div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--border)">
       <div style="flex:1;font-size:13px;font-weight:500">${inf.name} <span style="font-size:11px;color:var(--text3);font-weight:400">${inf.handle || ''}</span></div>
-      ${social ? `<span class="slack-badge">${social} posts synced</span>` : '<span class="badge badge-gray">No posts yet</span>'}
+      <div style="display:flex;gap:6px;align-items:center">
+        ${social ? `<span class="slack-badge">${social} posts</span>` : '<span class="badge badge-gray">No posts yet</span>'}
+        ${lastSync}
+      </div>
     </div>`;
   }).join('');
 }
 
-async function syncSlack() {
-  const status = document.getElementById('slack-status');
-  const limit = parseInt(document.getElementById('slack-limit').value);
+function openClaudePrompt() {
+  const limit = document.getElementById('slack-limit').value;
+  const infNames = DB.influencers.map(i => `"${i.name}"`).join(', ');
+  const prompt = `Read the last ${limit} messages from the Slack channel #creator-socials (channel ID: C0B1TNT12CW).
 
-  if (!getApiKey()) { status.textContent = 'Add your API key in Settings first.'; return; }
+For each message that contains "New Instagram Post", extract:
+- account: text after "Account:"
+- creator: text after "Creator:"
+- type: text after "Type:" (Reel, Story, Image, Video)
+- caption: text after "Caption:" (if present, first 150 chars only)
+- posted: date after "Posted:" (YYYY-MM-DD format only)
 
-  status.textContent = 'Fetching posts from #creator-socials...';
+The influencers in the system are: ${infNames}
 
-  // Use Claude with Slack MCP to fetch the channel
-  const prompt = `Use the Slack MCP tool to read the last ${limit} messages from channel ID C0B1TNT12CW (#creator-socials).
-
-For each message, extract:
-- account: the text after "Account:" 
-- creator: the text after "Creator:"
-- type: the text after "Type:"
-- caption: the text after "Caption:" (if present)
-- posted: the date after "Posted:"
-
-Return ONLY a JSON array like:
+Return ONLY a raw JSON array, no markdown, no backticks, no explanation:
 [{"account":"ScottyK Fitness","creator":"@scottykfitness","type":"Reel","caption":"...","posted":"2026-06-10"},...]
 
-Only include Instagram posts (messages with "New Instagram Post"). No markdown, no explanation.`;
+Important: return ONLY the JSON array, nothing else.`;
+
+  const encodedPrompt = encodeURIComponent(prompt);
+  const url = `https://claude.ai/new?q=${encodedPrompt}`;
+  window.open(url, '_blank');
+}
+
+function importSlackJSON() {
+  const status = document.getElementById('slack-status');
+  const raw = document.getElementById('slack-json-paste').value.trim();
+  if (!raw) { status.textContent = 'Paste the JSON from Claude first.'; status.style.color = 'var(--red-text)'; return; }
+
+  let posts;
+  try {
+    const jsonMatch = raw.match(/\[[\s\S]*\]/);
+    if (!jsonMatch) throw new Error('No JSON array found');
+    posts = JSON.parse(jsonMatch[0]);
+  } catch(e) {
+    status.textContent = 'Could not parse JSON — make sure you copied the full output from Claude.';
+    status.style.color = 'var(--red-text)';
+    return;
+  }
+
+  let matched = 0;
+  const today = new Date().toISOString().slice(0, 10);
+  for (const inf of DB.influencers) {
+    const infPosts = posts.filter(p => {
+      const acc = (p.account || '').toLowerCase();
+      const infName = inf.name.toLowerCase();
+      const handle = (inf.handle || '').toLowerCase().replace('@', '');
+      return acc.includes(infName) || infName.includes(acc) || acc.includes(handle) || (p.creator || '').toLowerCase().includes(handle);
+    }).map(p => ({
+      type: 'social',
+      platform: 'instagram',
+      postType: p.type || '',
+      title: p.caption ? p.caption.slice(0, 100) : `${p.type || 'Post'} — ${p.posted || ''}`,
+      url: '',
+      desc: p.caption || '',
+      date: p.posted || ''
+    }));
+    if (infPosts.length) {
+      inf.socialItems = infPosts;
+      inf.lastSocialSync = today;
+      matched += infPosts.length;
+    }
+  }
+
+  saveDB();
+  renderSlackPanel();
+  renderInfluencers();
+  document.getElementById('slack-json-paste').value = '';
+
+  if (matched) {
+    status.textContent = `Imported ${posts.length} posts — matched ${matched} to influencers.`;
+    status.style.color = 'var(--green-text)';
+  } else {
+    status.textContent = `Parsed ${posts.length} posts but none matched your influencer names. Check that names match exactly (e.g. "ScottyK Fitness" not "Scotty K").`;
+    status.style.color = 'var(--amber-text)';
+  }
+}
+// ─── PROSPECTS ────────────────────────────────────────────────────────────────
+// ─── PROSPECT SMART EXTRACT ──────────────────────────────────────────────────
+let screenshotBase64 = null;
+let screenshotType = null;
+
+function switchProspectTab(tab, btn) {
+  document.querySelectorAll('.tabs-inline .tab-inline').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('prospect-smart').style.display = tab === 'smart' ? 'block' : 'none';
+  document.getElementById('prospect-manual').style.display = tab === 'manual' ? 'block' : 'none';
+  document.getElementById('extracted-preview').style.display = 'none';
+  document.getElementById('manual-save-btn').style.display = tab === 'manual' ? 'block' : 'none';
+}
+
+function handleScreenshot(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    screenshotBase64 = e.target.result.split(',')[1];
+    screenshotType = file.type;
+    document.getElementById('screenshot-img').src = e.target.result;
+    document.getElementById('screenshot-preview').style.display = 'block';
+    document.getElementById('screenshot-placeholder').style.display = 'none';
+  };
+  reader.readAsDataURL(file);
+}
+
+function clearScreenshot() {
+  screenshotBase64 = null; screenshotType = null;
+  document.getElementById('screenshot-img').src = '';
+  document.getElementById('screenshot-preview').style.display = 'none';
+  document.getElementById('screenshot-placeholder').style.display = 'block';
+  document.getElementById('screenshot-input').value = '';
+}
+
+// drag and drop
+document.addEventListener('DOMContentLoaded', () => {
+  const zone = document.getElementById('screenshot-drop');
+  if (!zone) return;
+  zone.addEventListener('dragover', e => { e.preventDefault(); zone.style.background = 'var(--blue-bg)'; });
+  zone.addEventListener('dragleave', () => { zone.style.background = '#fff'; });
+  zone.addEventListener('drop', e => {
+    e.preventDefault(); zone.style.background = '#fff';
+    const file = e.dataTransfer.files[0];
+    if (file && file.type.startsWith('image/')) {
+      const reader = new FileReader();
+      reader.onload = ev => {
+        screenshotBase64 = ev.target.result.split(',')[1];
+        screenshotType = file.type;
+        document.getElementById('screenshot-img').src = ev.target.result;
+        document.getElementById('screenshot-preview').style.display = 'block';
+        document.getElementById('screenshot-placeholder').style.display = 'none';
+      };
+      reader.readAsDataURL(file);
+    }
+  });
+});
+
+async function smartExtract() {
+  const text = document.getElementById('smart-text').value.trim();
+  const infId = document.getElementById('smart-inf').value;
+  const status = document.getElementById('smart-status');
+
+  if (!text && !screenshotBase64) { status.textContent = 'Add some text or a screenshot first.'; status.style.color = 'var(--red-text)'; return; }
+  if (!getApiKey()) { status.textContent = 'Add your API key in Settings first.'; status.style.color = 'var(--red-text)'; return; }
+
+  status.textContent = 'Extracting prospect info…'; status.style.color = 'var(--text2)';
+
+  const infNames = DB.influencers.map(i => i.name).join(', ') || 'none';
+  const systemPrompt = `Extract prospect information from the provided content (text, screenshot, or both).
+Return ONLY a JSON object with these exact fields (use empty string if unknown):
+{"name":"","role":"","company":"","offer":"","pain":"","style":"","notes":""}
+
+- name: full name of the prospect
+- role: job title or role
+- company: company name or industry  
+- offer: what product/service/program they are considering
+- pain: their stated struggles, problems, goals — be specific and thorough
+- style: inferred personality/buyer type (analytical, emotional, skeptical, fast decision maker, price-sensitive, etc.)
+- notes: anything else relevant — objections mentioned, urgency, timeline, social proof they've seen, funnel context
+
+Be thorough on pain and notes — extract everything useful for a sales closer.
+Return ONLY valid JSON, no markdown, no explanation.`;
 
   try {
+    const messages = [];
+    const userContent = [];
+
+    if (screenshotBase64) {
+      userContent.push({ type: 'image', source: { type: 'base64', media_type: screenshotType, data: screenshotBase64 } });
+    }
+    if (text) {
+      userContent.push({ type: 'text', text: `Extract prospect info from this:
+
+${text}` });
+    } else {
+      userContent.push({ type: 'text', text: 'Extract prospect info from this screenshot.' });
+    }
+    messages.push({ role: 'user', content: userContent });
+
     const key = getApiKey();
     const res = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'x-api-key': key, 'anthropic-version': '2023-06-01' },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: 4000,
-        messages: [{ role: 'user', content: prompt }],
-        mcp_servers: [{ type: 'url', url: 'https://mcp.slack.com/mcp', name: 'slack' }]
-      })
+      body: JSON.stringify({ model: 'claude-sonnet-4-20250514', max_tokens: 800, system: systemPrompt, messages })
     });
     const d = await res.json();
     if (d.error) throw new Error(d.error.message);
-    const text = (d.content || []).map(b => b.text || '').join('').replace(/```json|```/g, '').trim();
-    // Find JSON array in response
-    const jsonMatch = text.match(/\[[\s\S]*\]/);
-    if (!jsonMatch) throw new Error('Could not parse Slack data');
-    const posts = JSON.parse(jsonMatch[0]);
+    const raw = (d.content || []).map(b => b.text || '').join('').replace(/```json|```/g,'').trim();
+    const extracted = JSON.parse(raw);
 
-    // Distribute posts to influencers
-    let matched = 0;
-    for (const inf of DB.influencers) {
-      const infPosts = posts.filter(p => {
-        const acc = (p.account || '').toLowerCase();
-        const infName = inf.name.toLowerCase();
-        const handle = (inf.handle || '').toLowerCase().replace('@', '');
-        return acc.includes(infName) || acc.includes(handle) || (p.creator || '').toLowerCase().includes(handle);
-      }).map(p => ({
-        type: 'social',
-        platform: 'instagram',
-        postType: p.type || '',
-        title: p.caption ? p.caption.slice(0, 100) : `${p.type || 'Post'} — ${p.posted || ''}`,
-        url: '',
-        desc: p.caption || '',
-        date: p.posted || ''
-      }));
-      inf.socialItems = infPosts;
-      matched += infPosts.length;
-    }
+    // Fill the extracted preview fields
+    document.getElementById('p-name').value = extracted.name || '';
+    document.getElementById('p-role').value = extracted.role || '';
+    document.getElementById('p-company').value = extracted.company || '';
+    document.getElementById('p-offer').value = extracted.offer || '';
+    document.getElementById('p-pain').value = extracted.pain || '';
+    document.getElementById('p-style').value = extracted.style || '';
+    document.getElementById('p-notes').value = extracted.notes || '';
+    document.getElementById('p-inf').value = infId;
 
-    saveDB(); renderInfluencers(); renderSlackPanel();
-    status.textContent = `Synced ${posts.length} posts. Matched ${matched} to influencers.`;
+    document.getElementById('extracted-preview').style.display = 'block';
+    document.getElementById('extracted-preview').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    status.textContent = 'Extracted! Review the fields below and save.';
     status.style.color = 'var(--green-text)';
   } catch(e) {
-    status.textContent = 'Sync failed: ' + e.message;
+    status.textContent = 'Error: ' + e.message;
     status.style.color = 'var(--red-text)';
   }
 }
 
-// ─── PROSPECTS ────────────────────────────────────────────────────────────────
 function saveProspect() {
-  const name = document.getElementById('p-name').value.trim();
+  // Read from whichever set of fields is visible
+  const isManual = document.getElementById('prospect-manual').style.display !== 'none';
+  const prefix = isManual ? 'm' : 'p';
+  const name = document.getElementById(prefix+'-name').value.trim();
   if (!name) { alert('Enter a name.'); return; }
   const p = {
     id: Date.now(), name,
-    role: document.getElementById('p-role').value.trim(),
-    company: document.getElementById('p-company').value.trim(),
-    offer: document.getElementById('p-offer').value.trim(),
-    pain: document.getElementById('p-pain').value.trim(),
-    style: document.getElementById('p-style').value.trim(),
-    infId: document.getElementById('p-inf').value,
-    notes: document.getElementById('p-notes').value.trim()
+    role: document.getElementById(prefix+'-role').value.trim(),
+    company: document.getElementById(prefix+'-company').value.trim(),
+    offer: document.getElementById(prefix+'-offer').value.trim(),
+    pain: document.getElementById(prefix+'-pain').value.trim(),
+    style: document.getElementById(prefix+'-style').value.trim(),
+    infId: document.getElementById(prefix+'-inf').value,
+    notes: document.getElementById(prefix+'-notes').value.trim()
   };
   DB.prospects.push(p); saveDB(); renderProspects(); updateAllSelects();
-  ['p-name','p-role','p-company','p-offer','p-pain','p-style','p-notes'].forEach(id => document.getElementById(id).value = '');
-  document.getElementById('p-inf').value = '';
+  // Clear
+  ['name','role','company','offer','pain','style','notes'].forEach(f => {
+    const el = document.getElementById(prefix+'-'+f);
+    if (el) el.value = '';
+  });
+  const infEl = document.getElementById(prefix+'-inf');
+  if (infEl) infEl.value = '';
+  document.getElementById('extracted-preview').style.display = 'none';
+  document.getElementById('smart-text').value = '';
+  document.getElementById('smart-status').textContent = '';
+  clearScreenshot();
 }
 
 function deleteProspect(id) {
@@ -953,7 +1198,7 @@ function renderProspects() {
 // ─── SELECTS ──────────────────────────────────────────────────────────────────
 function updateAllSelects() {
   const infOpts = '<option value="">— select influencer —</option>' + DB.influencers.map(i => `<option value="${i.id}">${i.name}</option>`).join('');
-  document.getElementById('p-inf').innerHTML = infOpts;
+  ['p-inf','m-inf','smart-inf'].forEach(id => { const el = document.getElementById(id); if (el) el.innerHTML = infOpts; });
 
   const pOpts = '<option value="">— choose prospect —</option>' + DB.prospects.map(p => `<option value="${p.id}">${p.name}${p.company ? ' · ' + p.company : ''}</option>`).join('');
   document.getElementById('prep-sel').innerHTML = pOpts;
