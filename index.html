@@ -681,13 +681,26 @@ async function fetchYouTube(rawUrl) {
 async function fetchPodcast(rssUrl) {
   const xml = await proxyFetch(rssUrl);
   const doc = new DOMParser().parseFromString(xml, 'text/xml');
-  return Array.from(doc.querySelectorAll('item')).slice(0, 100).map(i => ({
-    type: 'podcast',
-    title: i.querySelector('title')?.textContent || '',
-    url: i.querySelector('enclosure')?.getAttribute('url') || i.querySelector('link')?.textContent || '',
-    desc: (i.querySelector('description,summary')?.textContent || '').replace(/<[^>]+>/g, '').slice(0, 300),
-    date: i.querySelector('pubDate')?.textContent?.slice(0, 16) || ''
-  })).filter(i => i.title);
+  return Array.from(doc.querySelectorAll('item')).slice(0, 100).map(i => {
+    // Prefer <link> (web page URL) over <enclosure> (raw audio file)
+    const enclosureUrl = i.querySelector('enclosure')?.getAttribute('url') || '';
+    const rawLink = i.querySelector('link')?.textContent?.trim() || i.querySelector('link')?.nextSibling?.textContent?.trim() || '';
+    const isAudio = u => /\.(mp3|m4a|ogg|wav|aac)/i.test(u);
+    // Pick best URL: web link > Spotify episode page > enclosure
+    let url = (!isAudio(rawLink) && rawLink) ? rawLink : enclosureUrl;
+    // For Anchor/Spotify RSS, build a proper shareable episode URL
+    if (isAudio(url) && enclosureUrl.includes('anchor.fm')) {
+      const m = enclosureUrl.match(/\/episodes\/([^/?]+)/);
+      if (m) url = 'https://anchor.fm/episode/' + m[1];
+    }
+    return {
+      type: 'podcast',
+      title: i.querySelector('title')?.textContent || '',
+      url,
+      desc: (i.querySelector('description,summary')?.textContent || '').replace(/<[^>]+>/g, '').slice(0, 300),
+      date: i.querySelector('pubDate')?.textContent?.slice(0, 16) || ''
+    };
+  }).filter(i => i.title);
 }
 
 // ─── BLOG / ARTICLE FETCH ─────────────────────────────────────────────────────
@@ -1329,13 +1342,21 @@ ${ctx}
 ${bank}
 ${goal ? '\nCall goal: ' + goal : ''}
 
-Recommend the best content to send. For each piece:
-- The exact title and URL (if available)
-- Why it matches THIS prospect specifically — connect it to their pain/motive
-- When to send it (before call / right after / after a specific objection)
-- A short 1-2 sentence message to accompany it, ready to copy-paste
+Recommend the best content to send before this call. For each piece (up to 3):
 
-Prioritize YouTube videos, podcast episodes, and blog posts with specific relevance. Be tactical.`;
+1. CONTENT — title and full URL
+2. WHY THIS PERSON — connect it specifically to their pain point or motive, not generic reasons
+3. WHEN TO SEND — how many days/hours before the call
+
+4. MESSAGE — write a complete ready-to-send text/DM message (not email) to accompany this link.
+   - 2-4 sentences max
+   - Warm and curious tone, not salesy
+   - Reference something specific about them or their situation
+   - End with a soft hook that makes them want to consume it before the call
+   - Sound like a real person, not a marketer
+   - Each message must be meaningfully different in wording and angle from the others
+
+Prioritize YouTube videos and podcast episodes. Be tactical and specific.`;
   }
 
   try {
@@ -1388,12 +1409,22 @@ ${transcript.slice(0, 3000)}
 
 ${bank}
 
-Based on what was discussed, objections raised, and what resonated:
-1. What specific content from the bank should be sent and why?
-2. For each recommendation: exact URL/title, why it addresses what came up on the call, and a ready-to-send message (1-2 sentences).
-3. What content is MISSING from the bank that would have been useful?
+Based on what was discussed, objections raised, and what resonated, recommend up to 3 pieces of content to send after this call.
 
-Be specific to what actually happened on this call.`;
+For each piece:
+
+1. CONTENT — title and full URL
+2. WHY NOW — connect it directly to something specific that came up in the transcript (a hesitation, a question, something they resonated with)
+3. TIMING — exactly when to send (e.g. "within 1 hour", "next morning", "if she hasn't replied in 2 days")
+
+4. MESSAGE — write a complete ready-to-send text/DM (not formal email) to accompany this link.
+   - 3-5 sentences
+   - Reference something specific from the call to show you were listening
+   - Personal and warm, not templated
+   - The link should feel like a natural continuation of the conversation, not a sales push
+   - Each message must be meaningfully different in tone, angle and opening from the others — no copy-paste structure
+
+5. MISSING CONTENT — at the end, briefly note any content that would have been useful but isn't in the bank.`;
   } else if (mode === 'email') {
     prompt = `You are an expert sales coach. Write a follow-up message after this sales call.
 
