@@ -499,63 +499,65 @@ async function parseYouTubeFeed(xml) {
   })).filter(i => i.title && i.url);
 }
 
-async function fetchYouTube(rawUrl) {
-  // Strategy 1: direct UC channel ID in URL
-  const m1 = rawUrl.match(/youtube\.com\/channel\/(UC[A-Za-z0-9_-]+)/);
-  if (m1) {
-    const xml = await proxyFetchMulti(`https://www.youtube.com/feeds/videos.xml?channel_id=${m1[1]}`);
-    return parseYouTubeFeed(xml);
-  }
-
-  // Strategy 2: UC channel ID anywhere in the URL
-  const ucm = rawUrl.match(/(UC[A-Za-z0-9_-]{22})/);
-  if (ucm) {
-    const xml = await proxyFetchMulti(`https://www.youtube.com/feeds/videos.xml?channel_id=${ucm[1]}`);
-    return parseYouTubeFeed(xml);
-  }
-
-  // Strategy 3: @handle — try RSS feed directly with username (works for older channels)
-  const handleMatch = rawUrl.match(/youtube\.com\/@([A-Za-z0-9_.-]+)/);
-  const handle = handleMatch ? handleMatch[1] : null;
-
-  if (handle) {
-    // Try user RSS feed directly
-    try {
-      const xml = await proxyFetchMulti(`https://www.youtube.com/feeds/videos.xml?user=${handle}`);
+async function fetchYouTubeDirect(channelId) {
+  // Try direct fetch first — YouTube RSS feeds allow CORS
+  const feedUrl = `https://www.youtube.com/feeds/videos.xml?channel_id=${channelId}`;
+  try {
+    const r = await fetch(feedUrl, { signal: AbortSignal.timeout(10000) });
+    if (r.ok) {
+      const xml = await r.text();
       const items = await parseYouTubeFeed(xml);
       if (items.length) return items;
-    } catch(e) {}
-
-    // Try scraping the channel page for channelId
-    for (const proxyBase of [
-      `https://api.allorigins.win/get?url=`,
-      `https://corsproxy.io/?url=`
-    ]) {
-      try {
-        const r = await fetch(proxyBase + encodeURIComponent(`https://www.youtube.com/@${handle}`), { signal: AbortSignal.timeout(10000) });
-        const d = await r.json();
-        const html = d.contents || d.body || '';
-        const cm = html.match(/"channelId":"(UC[A-Za-z0-9_-]{22})"/);
-        if (cm) {
-          const xml = await proxyFetchMulti(`https://www.youtube.com/feeds/videos.xml?channel_id=${cm[1]}`);
-          return parseYouTubeFeed(xml);
-        }
-        // Also try externalId pattern
-        const em = html.match(/"externalId":"(UC[A-Za-z0-9_-]{22})"/);
-        if (em) {
-          const xml = await proxyFetchMulti(`https://www.youtube.com/feeds/videos.xml?channel_id=${em[1]}`);
-          return parseYouTubeFeed(xml);
-        }
-      } catch(e) {}
     }
-
-    // Last resort: guide user to find channel ID manually
-    throw new Error(`Could not auto-resolve @${handle}. Please find the channel ID: go to the YouTube channel → view page source → search for "channelId" → paste the UC... value as the URL instead.`);
-  }
-
-  throw new Error('Unrecognized YouTube URL format. Use: youtube.com/@handle or youtube.com/channel/UC...');
+  } catch(e) {}
+  // Fallback: proxy
+  const xml = await proxyFetchMulti(feedUrl);
+  return parseYouTubeFeed(xml);
 }
 
+async function resolveChannelId(handle) {
+  const channelUrl = `https://www.youtube.com/@${handle}`;
+  const proxies = [
+    { url: `https://corsproxy.io/?url=${encodeURIComponent(channelUrl)}`, isJson: false },
+    { url: `https://api.allorigins.win/get?url=${encodeURIComponent(channelUrl)}`, isJson: true },
+  ];
+  for (const p of proxies) {
+    try {
+      const r = await fetch(p.url, { signal: AbortSignal.timeout(12000) });
+      const html = p.isJson ? (await r.json()).contents || '' : await r.text();
+      const patterns = [/"channelId":"(UC[A-Za-z0-9_-]{22})"/, /"externalId":"(UC[A-Za-z0-9_-]{22})"/, /channel\/(UC[A-Za-z0-9_-]{22})/];
+      for (const pat of patterns) {
+        const m = html.match(pat);
+        if (m) return m[1];
+      }
+    } catch(e) {}
+    await new Promise(res => setTimeout(res, 800));
+  }
+  return null;
+}
+
+async function fetchYouTube(rawUrl) {
+  // UC channel ID in URL — most reliable, use directly
+  const ucm = rawUrl.match(/(UC[A-Za-z0-9_-]{22})/);
+  if (ucm) return fetchYouTubeDirect(ucm[1]);
+
+  // @handle URL
+  const hm = rawUrl.match(/youtube\.com\/@([A-Za-z0-9_.\-]+)/i);
+  const handle = hm ? hm[1] : null;
+  if (handle) {
+    // Try legacy username RSS (works for some channels)
+    try {
+      const r = await fetch(`https://www.youtube.com/feeds/videos.xml?user=${handle}`, { signal: AbortSignal.timeout(8000) });
+      if (r.ok) { const xml = await r.text(); const items = await parseYouTubeFeed(xml); if (items.length) return items; }
+    } catch(e) {}
+    // Resolve handle → channel ID via proxy scrape
+    const channelId = await resolveChannelId(handle);
+    if (channelId) return fetchYouTubeDirect(channelId);
+    throw new Error(`Could not resolve @${handle}. Go to their YouTube channel → right-click page → View Page Source → search "channelId" → paste the UC... URL directly.`);
+  }
+
+  throw new Error('Unrecognized YouTube URL. Use youtube.com/@handle or a UC... channel URL.');
+}
 // ─── PODCAST FETCH ────────────────────────────────────────────────────────────
 async function fetchPodcast(rssUrl) {
   const xml = await proxyFetch(rssUrl);
