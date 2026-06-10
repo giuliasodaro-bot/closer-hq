@@ -467,36 +467,92 @@ async function proxyFetch(url) {
 }
 
 // ─── YOUTUBE FETCH ────────────────────────────────────────────────────────────
-async function fetchYouTube(rawUrl) {
-  let channelId = '';
-  const m1 = rawUrl.match(/youtube\.com\/channel\/(UC[A-Za-z0-9_-]+)/);
-  if (m1) channelId = m1[1];
-
-  if (!channelId) {
-    const handleMatch = rawUrl.match(/youtube\.com\/(@[A-Za-z0-9_.-]+|c\/[A-Za-z0-9_.-]+|user\/[A-Za-z0-9_.-]+)/);
-    if (handleMatch) {
-      try {
-        const html = await proxyFetch('https://www.youtube.com/' + handleMatch[1]);
-        const cm = html.match(/"channelId":"(UC[A-Za-z0-9_-]{22})"/);
-        if (cm) channelId = cm[1];
-      } catch(e) {}
-    }
+async function proxyFetchMulti(url) {
+  // Try multiple proxies in order
+  const proxies = [
+    `https://api.allorigins.win/get?url=${encodeURIComponent(url)}`,
+    `https://corsproxy.io/?url=${encodeURIComponent(url)}`,
+    `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(url)}`
+  ];
+  for (const proxy of proxies) {
+    try {
+      const r = await fetch(proxy, { signal: AbortSignal.timeout(8000) });
+      const d = await r.json();
+      const content = d.contents || d.body || d;
+      if (typeof content === 'string' && content.length > 100) return content;
+    } catch(e) {}
   }
-  if (!channelId) {
-    const cm = rawUrl.match(/(UC[A-Za-z0-9_-]{22})/);
-    if (cm) channelId = cm[1];
-  }
-  if (!channelId) throw new Error('Could not resolve YouTube channel. Try the channel/UC... URL directly.');
+  throw new Error('All proxies failed for: ' + url);
+}
 
-  const xml = await proxyFetch(`https://www.youtube.com/feeds/videos.xml?channel_id=${channelId}`);
+async function parseYouTubeFeed(xml) {
   const doc = new DOMParser().parseFromString(xml, 'text/xml');
-  return Array.from(doc.querySelectorAll('entry')).slice(0, 30).map(e => ({
+  const entries = Array.from(doc.querySelectorAll('entry'));
+  if (!entries.length) throw new Error('No entries in feed');
+  return entries.slice(0, 30).map(e => ({
     type: 'youtube',
     title: e.querySelector('title')?.textContent || '',
     url: e.querySelector('link')?.getAttribute('href') || '',
     desc: (e.querySelector('media\\:description,description')?.textContent || '').slice(0, 300),
     date: e.querySelector('published')?.textContent?.slice(0, 10) || ''
   })).filter(i => i.title && i.url);
+}
+
+async function fetchYouTube(rawUrl) {
+  // Strategy 1: direct UC channel ID in URL
+  const m1 = rawUrl.match(/youtube\.com\/channel\/(UC[A-Za-z0-9_-]+)/);
+  if (m1) {
+    const xml = await proxyFetchMulti(`https://www.youtube.com/feeds/videos.xml?channel_id=${m1[1]}`);
+    return parseYouTubeFeed(xml);
+  }
+
+  // Strategy 2: UC channel ID anywhere in the URL
+  const ucm = rawUrl.match(/(UC[A-Za-z0-9_-]{22})/);
+  if (ucm) {
+    const xml = await proxyFetchMulti(`https://www.youtube.com/feeds/videos.xml?channel_id=${ucm[1]}`);
+    return parseYouTubeFeed(xml);
+  }
+
+  // Strategy 3: @handle — try RSS feed directly with username (works for older channels)
+  const handleMatch = rawUrl.match(/youtube\.com\/@([A-Za-z0-9_.-]+)/);
+  const handle = handleMatch ? handleMatch[1] : null;
+
+  if (handle) {
+    // Try user RSS feed directly
+    try {
+      const xml = await proxyFetchMulti(`https://www.youtube.com/feeds/videos.xml?user=${handle}`);
+      const items = await parseYouTubeFeed(xml);
+      if (items.length) return items;
+    } catch(e) {}
+
+    // Try scraping the channel page for channelId
+    for (const proxyBase of [
+      `https://api.allorigins.win/get?url=`,
+      `https://corsproxy.io/?url=`
+    ]) {
+      try {
+        const r = await fetch(proxyBase + encodeURIComponent(`https://www.youtube.com/@${handle}`), { signal: AbortSignal.timeout(10000) });
+        const d = await r.json();
+        const html = d.contents || d.body || '';
+        const cm = html.match(/"channelId":"(UC[A-Za-z0-9_-]{22})"/);
+        if (cm) {
+          const xml = await proxyFetchMulti(`https://www.youtube.com/feeds/videos.xml?channel_id=${cm[1]}`);
+          return parseYouTubeFeed(xml);
+        }
+        // Also try externalId pattern
+        const em = html.match(/"externalId":"(UC[A-Za-z0-9_-]{22})"/);
+        if (em) {
+          const xml = await proxyFetchMulti(`https://www.youtube.com/feeds/videos.xml?channel_id=${em[1]}`);
+          return parseYouTubeFeed(xml);
+        }
+      } catch(e) {}
+    }
+
+    // Last resort: guide user to find channel ID manually
+    throw new Error(`Could not auto-resolve @${handle}. Please find the channel ID: go to the YouTube channel → view page source → search for "channelId" → paste the UC... value as the URL instead.`);
+  }
+
+  throw new Error('Unrecognized YouTube URL format. Use: youtube.com/@handle or youtube.com/channel/UC...');
 }
 
 // ─── PODCAST FETCH ────────────────────────────────────────────────────────────
@@ -601,6 +657,7 @@ async function fetchAndAnalyzeInfluencer(infId) {
 
   let allItems = [];
   let srcDone = 0;
+  let lastError = '';
   for (const src of inf.sources) {
     try {
       let items = [];
@@ -609,13 +666,22 @@ async function fetchAndAnalyzeInfluencer(infId) {
       else if (src.type === 'blog-index') items = await fetchBlogIndex(src.url);
       else if (src.type === 'article') { const a = await fetchArticle(src.url); if (a) items = [a]; }
       allItems = [...allItems, ...items];
-    } catch(e) { console.warn('Source fetch failed:', src.url, e.message); }
+    } catch(e) {
+      lastError = e.message;
+      console.warn('Source fetch failed:', src.url, e.message);
+      updateInfStatus(infId, `⚠ Error on source ${srcDone+1}: ${e.message.slice(0,120)}`, Math.round(10 + (srcDone / inf.sources.length) * 50));
+      await new Promise(r => setTimeout(r, 2000));
+    }
     srcDone++;
-    updateInfStatus(infId, `Fetched ${srcDone}/${inf.sources.length} sources (${allItems.length} items)...`, Math.round(10 + (srcDone / inf.sources.length) * 50));
+    if (allItems.length) updateInfStatus(infId, `Fetched ${srcDone}/${inf.sources.length} sources (${allItems.length} items)...`, Math.round(10 + (srcDone / inf.sources.length) * 50));
   }
 
   inf.items = allItems;
-  if (!allItems.length) { inf.status = 'error'; saveDB(); renderInfluencers(); return; }
+  if (!allItems.length) {
+    inf.status = 'error';
+    inf.errorMsg = lastError || 'Could not fetch content. Check the URL.';
+    saveDB(); renderInfluencers(); return;
+  }
 
   updateInfStatus(infId, `Analyzing ${allItems.length} pieces of content with AI...`, 65);
 
@@ -685,6 +751,8 @@ function renderInfluencers() {
       : inf.status === 'error'
       ? `<span class="badge badge-red">Error</span>`
       : `<span class="badge badge-amber">Processing…</span>`;
+    const errorBlock = (inf.status === 'error' && inf.errorMsg)
+      ? `<div style="font-size:11px;color:var(--red-text);background:var(--red-bg);padding:6px 8px;border-radius:var(--radius);margin-top:6px;line-height:1.5">${inf.errorMsg}</div>` : '';
     const topics = (inf.analysis?.themes || []).slice(0, 5).map(t => `<span class="topic-pill">${t}</span>`).join('');
     const recent = inf.items.slice(0, 3).map(i => `<div class="item-row"><span class="badge ${i.type==='youtube'?'badge-red':i.type==='podcast'?'badge-green':'badge-blue'}" style="flex-shrink:0;font-size:9px">${i.type.slice(0,3).toUpperCase()}</span><div class="item-title"><span>${i.title}</span><div class="item-meta">${i.date || ''}</div></div></div>`).join('');
     return `<div class="card">
@@ -699,6 +767,7 @@ function renderInfluencers() {
         </div>
       </div>
       <div id="inf-status-${inf.id}"></div>
+      ${errorBlock}
       <div class="content-count-row">
         ${yt ? `<span class="badge badge-red">${yt} videos</span>` : ''}
         ${pod ? `<span class="badge badge-green">${pod} episodes</span>` : ''}
@@ -709,7 +778,7 @@ function renderInfluencers() {
       ${topics ? `<div style="margin-top:6px">${topics}</div>` : ''}
       ${inf.analysis?.contentSummary ? `<div style="font-size:12px;color:var(--text2);margin-top:6px;line-height:1.5">${inf.analysis.contentSummary}</div>` : ''}
       ${recent ? `<div style="margin-top:8px;border-top:1px solid var(--border);padding-top:6px">${recent}</div>` : ''}
-      ${inf.status === 'ready' ? `<button class="btn btn-sm btn-secondary" style="margin-top:8px" onclick="reanalyze(${inf.id})">↺ Refresh</button>` : ''}
+      ${(inf.status === 'ready' || inf.status === 'error') ? `<button class="btn btn-sm btn-secondary" style="margin-top:8px" onclick="reanalyze(${inf.id})">↺ Refresh</button>` : ''}
     </div>`;
   }).join('');
 }
