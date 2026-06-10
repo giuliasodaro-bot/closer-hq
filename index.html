@@ -147,6 +147,10 @@
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 9h6M9 12h6M9 15h4"/></svg>
     Sync social
   </a>
+  <a class="nav-item" onclick="showPanel('feed',this)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 11a9 9 0 0 1 9 9"/><path d="M4 4a16 16 0 0 1 16 16"/><circle cx="5" cy="19" r="1"/></svg>
+    Social feed
+  </a>
   <div class="nav-section">Prospects</div>
   <a class="nav-item" onclick="showPanel('prospects',this)">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="7" r="4"/><path d="M3 21v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/><path d="M21 21v-2a4 4 0 0 0-3-3.85"/></svg>
@@ -166,6 +170,10 @@
     History
   </a>
   <div class="divider" style="margin: .75rem 1.25rem;"></div>
+  <a class="nav-item" onclick="openDailyDigest()" style="color:var(--green-text)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+    Email today's digest
+  </a>
   <a class="nav-item" onclick="showPanel('settings',this)">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg>
     Settings
@@ -399,7 +407,7 @@
   <div id="panel-followup" class="panel">
     <div class="panel-header">
       <div class="panel-title">Post-call follow-up</div>
-      <div class="panel-desc">Paste your Fathom transcript. AI reads what actually happened on the call and recommends the exact content to send.</div>
+      <div class="panel-desc">Paste the Fathom transcript — get a full 7-day follow-up sequence with messages, content, and send timing.</div>
     </div>
     <div class="grid2" style="margin-bottom:10px">
       <div class="field"><label>Select prospect</label><select id="fu-sel" onchange="loadFollowupProspect()"><option value="">— choose prospect —</option></select></div>
@@ -407,17 +415,13 @@
     </div>
     <div id="fu-prospect-card" style="display:none;margin-bottom:12px"></div>
     <div class="field">
-      <label>Fathom transcript (paste full transcript here)</label>
-      <textarea id="fu-transcript" style="min-height:160px" placeholder="Paste the Fathom call transcript here..."></textarea>
+      <label>Fathom transcript</label>
+      <textarea id="fu-transcript" style="min-height:140px" placeholder="Paste the Fathom call transcript here..."></textarea>
     </div>
     <div class="btn-row">
-      <button class="btn btn-primary" onclick="runFollowup('content')">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
-        Recommend follow-up content
-      </button>
-      <button class="btn btn-secondary" onclick="runFollowup('email')">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
-        Draft follow-up message
+      <button class="btn btn-primary" onclick="runFollowup('sequence')">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+        Build follow-up sequence
       </button>
       <button class="btn btn-secondary" onclick="runFollowup('analysis')">
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
@@ -428,12 +432,47 @@
   </div>
 
   <!-- ═══ HISTORY ═══ -->
+  <!-- ═══ SOCIAL FEED ═══ -->
+  <div id="panel-feed" class="panel">
+    <div class="panel-header">
+      <div class="panel-title">Social feed</div>
+      <div class="panel-desc">Recent posts from the last 2 weeks, broken down by topic — focus, problem, key learning.</div>
+    </div>
+    <div style="display:flex;gap:10px;align-items:flex-end;margin-bottom:1.25rem;flex-wrap:wrap">
+      <div class="field" style="margin:0;min-width:180px">
+        <label>Influencer</label>
+        <select id="feed-inf-sel" style="width:200px" onchange="renderFeedRaw()"><option value="">— all influencers —</option></select>
+      </div>
+      <div class="field" style="margin:0;min-width:120px">
+        <label>Time window</label>
+        <select id="feed-window" style="width:140px" onchange="renderFeedRaw()">
+          <option value="14">Last 2 weeks</option>
+          <option value="7">Last week</option>
+          <option value="30">Last month</option>
+          <option value="0">All time</option>
+        </select>
+      </div>
+      <button class="btn btn-primary" onclick="generateFeedRecap()">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01z"/></svg>
+        Generate recap
+      </button>
+    </div>
+    <div id="feed-raw" style="margin-bottom:1rem"></div>
+    <div id="feed-recap-section" style="display:none">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+        <div class="sec-label" style="margin:0">Content recap</div>
+        <button class="copy-btn" onclick="copyEl('feed-recap-out')">Copy</button>
+      </div>
+      <div id="feed-recap-out" class="ai-out loading">Generating...</div>
+    </div>
+  </div>
+
   <div id="panel-history" class="panel">
     <div class="panel-header">
       <div class="panel-title">History</div>
       <div class="panel-desc">All saved AI suggestions, timestamped per prospect.</div>
     </div>
-    <div style="display:flex;gap:10px;margin-bottom:1rem;flex-wrap:wrap">
+    <div style="display:flex;gap:10px;margin-bottom:1rem;flex-wrap:wrap;align-items:center">
       <select id="hist-filter-prospect" onchange="renderHistory()" style="width:180px">
         <option value="">All prospects</option>
       </select>
@@ -441,11 +480,14 @@
         <option value="">All types</option>
         <option value="strategy">Pre-call strategy</option>
         <option value="content">Content recs</option>
-        <option value="followup-content">Follow-up content</option>
-        <option value="followup-email">Follow-up email</option>
-        <option value="followup-analysis">Call analysis</option>
+        <option value="sequence">Follow-up sequence</option>
+        <option value="analysis">Call analysis</option>
       </select>
-      <button class="btn btn-danger btn-sm" onclick="clearHistory()">Clear all history</button>
+      <button class="btn btn-secondary btn-sm" onclick="openDailyDigest()" style="margin-left:auto">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+        Email today's digest
+      </button>
+      <button class="btn btn-danger btn-sm" onclick="clearHistory()">Clear all</button>
     </div>
     <div id="history-list"><div class="empty">No history yet. Run pre-call prep or post-call follow-up to save suggestions.</div></div>
   </div>
@@ -513,6 +555,7 @@ function showPanel(name, el) {
   document.getElementById('panel-' + name).classList.add('active');
   if (el) el.classList.add('active');
   if (name === 'slack') renderSlackPanel();
+  if (name === 'feed') renderFeedPanel();
   if (name === 'history') { refreshHistoryFilters(); renderHistory(); }
   if (name === 'settings') loadSettings();
 }
@@ -1227,7 +1270,7 @@ function renderProspects() {
 // ─── SELECTS ──────────────────────────────────────────────────────────────────
 function updateAllSelects() {
   const infOpts = '<option value="">— select influencer —</option>' + DB.influencers.map(i => `<option value="${i.id}">${i.name}</option>`).join('');
-  ['p-inf','m-inf','smart-inf'].forEach(id => { const el = document.getElementById(id); if (el) el.innerHTML = infOpts; });
+  ['p-inf','m-inf','smart-inf','feed-inf-sel'].forEach(id => { const el = document.getElementById(id); if (el) el.innerHTML = infOpts; });
 
   const pOpts = '<option value="">— choose prospect —</option>' + DB.prospects.map(p => `<option value="${p.id}">${p.name}${p.company ? ' · ' + p.company : ''}</option>`).join('');
   document.getElementById('prep-sel').innerHTML = pOpts;
@@ -1292,6 +1335,18 @@ function buildProspectContext(p) {
     if (inf.analysis?.audience) ctx += `\nInfluencer audience: ${inf.analysis.audience}`;
     if (inf.analysis?.salesAngles?.length) ctx += `\nSales angles from this content: ${inf.analysis.salesAngles.join('; ')}`;
     if (inf.analysis?.tone) ctx += `\nInfluencer tone: ${inf.analysis.tone}`;
+    // Include recent social posts so AI can reference actual captions
+    const socialItems = (inf.socialItems || []).slice(0, 8);
+    if (socialItems.length) {
+      ctx += `\n\nRecent Instagram posts from ${inf.name}:\n`;
+      ctx += socialItems.map(s => `- [${s.postType || 'Post'}] "${s.desc || s.title}"`).join('\n');
+    }
+    // Include recent YouTube/podcast titles for freshness
+    const recentContent = (inf.items || []).slice(0, 6);
+    if (recentContent.length) {
+      ctx += `\n\nRecent content titles from ${inf.name}:\n`;
+      ctx += recentContent.map(i => `- [${i.type.toUpperCase()}] ${i.title}`).join('\n');
+    }
   }
   return ctx;
 }
@@ -1344,20 +1399,21 @@ Format exactly like this, no extra explanation:
 🎯 REAL MOTIVE
 One sentence: what they actually want underneath the stated pain.
 
-🔑 KEY QUESTIONS (pick 2-3)
-• [question]
-• [question]
-• [question]
+🔑 KEY QUESTIONS (pick 2-3, NEPQ + SPIN only)
+Use NEPQ-style questions (problem-aware, consequence-focused, identity-based) and SPIN questions (Situation, Problem, Implication, Need-payoff). No surface-level questions.
+• [question — label it: Situation / Problem / Implication / Need-payoff / Identity]
+• [question — label it]
+• [question — label it]
 
 ⚡ OPENING ANGLE
-One sentence on how to open — what frame or hook to lead with.
+One sentence on how to open — what frame or hook to lead with given their influencer background.
 
 🚧 WATCH OUT FOR
-• [likely objection + one-line response]
-• [likely objection + one-line response]
+• [likely objection + one-line NEPQ response that redirects to their deeper motive]
+• [likely objection + one-line NEPQ response]
 
 📱 SOCIAL CONTENT ANGLES
-1-2 bullet points on themes from their influencer's recent content that are relevant to this call.
+1-2 specific references from their influencer's recent posts or content that you can drop naturally in the call.
 
 Keep every section tight. Max 2-3 lines each. No padding.`;
   } else {
@@ -1389,7 +1445,8 @@ Prioritize YouTube videos and podcast episodes. Be tactical and specific.`;
     const text = await callAI(prompt, 1200);
     document.getElementById(outId + '-text').className = 'ai-out';
     document.getElementById(outId + '-text').textContent = text;
-    saveToHistory({ type: mode, prospectId: p.id, prospectName: p.name, content: text, goal });
+    const histType = mode === 'sequence' ? 'sequence' : mode;
+    saveToHistory({ type: histType, prospectId: p.id, prospectName: p.name, content: text, goal, callDate: new Date().toISOString().slice(0,10) });
   } catch(e) {
     document.getElementById(outId + '-text').className = 'ai-out';
     document.getElementById(outId + '-text').textContent = 'Error: ' + e.message;
@@ -1407,9 +1464,10 @@ async function runFollowup(mode) {
   if (!p) return;
   const goal = document.getElementById('fu-goal').value.trim();
   const ctx = buildProspectContext(p);
+  const bank = buildContentBank(p);
 
   const outId = 'fu-out-' + mode;
-  const labels = { content: 'Follow-up content', email: 'Follow-up message', analysis: 'Call analysis' };
+  const labels = { sequence: '7-day follow-up sequence', analysis: 'Call analysis' };
   const container = document.getElementById('followup-outputs');
 
   let block = document.getElementById(outId);
@@ -1419,13 +1477,18 @@ async function runFollowup(mode) {
     block.id = outId;
     container.appendChild(block);
   }
-  block.innerHTML = `<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px"><div class="sec-label" style="margin:0">${labels[mode]}</div><button class="copy-btn" onclick="copyEl('${outId}-text')">Copy</button></div><div id="${outId}-text" class="ai-out loading">Generating…</div>`;
 
-  const bank = buildContentBank(p);
+  const copyBtn = mode === 'sequence'
+    ? `<button class="copy-btn" onclick="copyEl('${outId}-text')">Copy</button>
+       <button class="copy-btn" onclick="emailSequence('${outId}-text', '${p.name}')">📧 Email to me</button>`
+    : `<button class="copy-btn" onclick="copyEl('${outId}-text')">Copy</button>`;
+
+  block.innerHTML = `<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;flex-wrap:wrap;gap:6px"><div class="sec-label" style="margin:0">${labels[mode]}</div><div style="display:flex;gap:6px">${copyBtn}</div></div><div id="${outId}-text" class="ai-out loading">Generating…</div>`;
+
   let prompt = '';
 
-  if (mode === 'content') {
-    prompt = `You are an expert sales coach. Based on a sales call transcript, recommend follow-up content to send this prospect.
+  if (mode === 'sequence') {
+    prompt = `You are an expert sales closer. Build a complete post-call follow-up sequence for this prospect.
 
 ${ctx}
 ${goal ? '\nCall goal: ' + goal : ''}
@@ -1435,38 +1498,31 @@ ${transcript.slice(0, 3000)}
 
 ${bank}
 
-Based on what was discussed, objections raised, and what resonated, recommend up to 3 pieces of content to send after this call.
+Build a 7-day follow-up sequence. For each touchpoint output exactly this structure:
 
-For each piece:
+---
+📅 DAY [X] — [timing label e.g. "Same day", "Next morning", "Day 3"]
+📱 FORMAT: [Text/DM] or [Email]
+🎯 GOAL: [one sentence — what this message is trying to do]
 
-1. CONTENT — title and full URL
-2. WHY NOW — connect it directly to something specific that came up in the transcript (a hesitation, a question, something they resonated with)
-3. TIMING — exactly when to send (e.g. "within 1 hour", "next morning", "if she hasn't replied in 2 days")
+MESSAGE:
+[Full ready-to-send message. For texts: 2-4 sentences, casual, personal. For emails: subject line first, then 4-8 sentences, warmer but still human. NO placeholders — write it out fully using the prospect's actual name and specifics from the call.]
 
-4. MESSAGE — write a complete ready-to-send text/DM (not formal email) to accompany this link.
-   - 3-5 sentences
-   - Reference something specific from the call to show you were listening
-   - Personal and warm, not templated
-   - The link should feel like a natural continuation of the conversation, not a sales push
-   - Each message must be meaningfully different in tone, angle and opening from the others — no copy-paste structure
+📎 ATTACH: [If relevant, one piece of content from the bank to attach — title + URL. Otherwise write "None"]
+WHY: [One sentence on why this content fits this specific moment in the sequence]
+---
 
-5. MISSING CONTENT — at the end, briefly note any content that would have been useful but isn't in the bank.`;
-  } else if (mode === 'email') {
-    prompt = `You are an expert sales coach. Write a follow-up message after this sales call.
+Sequence must cover: Day 0 (same day), Day 1, Day 3, Day 5, Day 7, Day 10, Day 14.
 
-${ctx}
-${goal ? '\nCall goal: ' + goal : ''}
+Rules:
+- Use texts/DMs for Days 0, 1, 3 — shorter, warmer, more casual
+- Use email for Days 5, 7, 10, 14 — slightly more structured but still human
+- Each message must reference something SPECIFIC from the call — no generic follow-ups
+- Use NEPQ language: ask questions that surface consequences and identity, don't push features
+- Never use the word "just" — it kills authority
+- The sequence should feel like a real human wrote it, not a CRM template
+- Vary the angle each time — don't repeat the same hook or framing`;
 
-CALL TRANSCRIPT:
-${transcript.slice(0, 3000)}
-
-Write a follow-up message (text/DM style, not formal email) that:
-- References something specific from the conversation to show you listened
-- Reframes their main objection or hesitation
-- Creates a soft next step without being pushy
-- Sounds human, not salesy
-
-Write 2 versions: one shorter (3-4 sentences) and one slightly longer with more substance.`;
   } else if (mode === 'analysis') {
     prompt = `Analyze this sales call transcript and give a closer honest feedback.
 
@@ -1480,8 +1536,8 @@ Cover:
 1. WHAT WORKED — moments of rapport, good questions, effective frames
 2. WHERE YOU LOST THEM — moments of resistance, missed signals, weak responses
 3. THE REAL OBJECTION — what was the actual blocker (not just what they said)?
-4. WHAT TO DO NEXT — specific next action to move this forward
-5. COACHING NOTE — one key skill to work on based on this call
+4. WHAT TO DO NEXT — specific next action to move this forward, including an NEPQ or SPIN question to open with on the next touch
+5. COACHING NOTE — one specific NEPQ or SPIN technique to sharpen based on what happened on this call
 
 Be direct and honest. This closer wants to improve.`;
   }
@@ -1501,9 +1557,87 @@ Be direct and honest. This closer wants to improve.`;
 function saveToHistory(entry) {
   entry.id = Date.now();
   entry.timestamp = new Date().toISOString();
+  // Store call date for digest grouping (date of the call, not when saved)
+  if (!entry.callDate) entry.callDate = new Date().toISOString().slice(0, 10);
   DB.history.unshift(entry);
   if (DB.history.length > 200) DB.history = DB.history.slice(0, 200);
   saveDB();
+}
+
+// ─── EMAIL SEQUENCE ───────────────────────────────────────────────────────────
+function emailSequence(elId, prospectName) {
+  const text = document.getElementById(elId)?.textContent || '';
+  if (!text || text === 'Generating…') { alert('Wait for the sequence to finish generating.'); return; }
+  const subject = encodeURIComponent(`Follow-up sequence — ${prospectName}`);
+  const body = encodeURIComponent(text);
+  window.location.href = `mailto:?subject=${subject}&body=${body}`;
+}
+
+// ─── DAILY DIGEST ─────────────────────────────────────────────────────────────
+function buildDailyDigest() {
+  const today = new Date().toISOString().slice(0, 10);
+  const todayLabel = new Date().toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+
+  // Gather today's pre-call preps
+  const preps = DB.history.filter(h => h.type === 'strategy' && h.timestamp?.slice(0, 10) === today);
+  // Gather sequences due today (Day 0 items from sequences saved today, or sequences from recent days)
+  const sequences = DB.history.filter(h => h.type === 'sequence' && h.timestamp?.slice(0, 10) === today);
+  // Also grab sequences from last 14 days that have steps due today
+  const recentSeqs = DB.history.filter(h => {
+    if (h.type !== 'sequence') return false;
+    const saved = new Date(h.timestamp);
+    const daysSince = Math.floor((Date.now() - saved) / 86400000);
+    return daysSince >= 0 && daysSince <= 14;
+  });
+
+  let digest = `CLOSER'S DAILY DIGEST — ${todayLabel}\n`;
+  digest += '='.repeat(50) + '\n\n';
+
+  if (preps.length) {
+    digest += '📋 PRE-CALL PREP\n' + '-'.repeat(30) + '\n\n';
+    for (const p of preps) {
+      digest += `👤 ${p.prospectName}\n`;
+      if (p.goal) digest += `Goal: ${p.goal}\n`;
+      digest += p.content + '\n\n';
+      digest += '-'.repeat(20) + '\n\n';
+    }
+  }
+
+  if (recentSeqs.length) {
+    digest += '\n📨 FOLLOW-UP SEQUENCES — MESSAGES DUE TODAY\n' + '-'.repeat(30) + '\n\n';
+    for (const seq of recentSeqs) {
+      const saved = new Date(seq.timestamp);
+      const daysSince = Math.floor((Date.now() - saved) / 86400000);
+      // Extract day blocks that match today
+      const dayBlocks = seq.content.split('---').filter(b => b.trim());
+      const dueDays = [0, 1, 3, 5, 7, 10, 14];
+      const dueToday = dueDays.includes(daysSince);
+      if (!dueToday) continue;
+      const matchingBlock = dayBlocks.find(b => {
+        const m = b.match(/DAY\s*(\d+)/i);
+        return m && parseInt(m[1]) === daysSince;
+      });
+      if (matchingBlock) {
+        digest += `👤 ${seq.prospectName} — Day ${daysSince}\n`;
+        digest += matchingBlock.trim() + '\n\n';
+        digest += '-'.repeat(20) + '\n\n';
+      }
+    }
+  }
+
+  if (!preps.length && !recentSeqs.length) {
+    digest += 'No calls or follow-ups scheduled for today.\n';
+  }
+
+  return digest;
+}
+
+function openDailyDigest() {
+  const digest = buildDailyDigest();
+  const today = new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+  const subject = encodeURIComponent(`Closer's daily digest — ${today}`);
+  const body = encodeURIComponent(digest);
+  window.location.href = `mailto:?subject=${subject}&body=${body}`;
 }
 
 function refreshHistoryFilters() {
@@ -1594,6 +1728,124 @@ function importData(event) {
     } catch(err) { alert('Invalid backup file.'); }
   };
   reader.readAsText(file);
+}
+
+// ─── SOCIAL FEED ─────────────────────────────────────────────────────────────
+function renderFeedPanel() {
+  // Populate influencer select
+  const sel = document.getElementById('feed-inf-sel');
+  if (sel) {
+    sel.innerHTML = '<option value="">— all influencers —</option>' + DB.influencers.map(i => `<option value="${i.id}">${i.name}</option>`).join('');
+  }
+  renderFeedRaw();
+}
+
+function renderFeedRaw() {
+  const el = document.getElementById('feed-raw');
+  if (!el) return;
+  const infId = document.getElementById('feed-inf-sel')?.value || '';
+  const days = parseInt(document.getElementById('feed-window')?.value || '14');
+  const cutoff = days > 0 ? new Date(Date.now() - days * 86400000) : null;
+
+  const infs = infId ? DB.influencers.filter(i => String(i.id) === infId) : DB.influencers;
+  let allPosts = [];
+  for (const inf of infs) {
+    const posts = (inf.socialItems || []).filter(p => {
+      if (!cutoff) return true;
+      if (!p.date) return true;
+      return new Date(p.date) >= cutoff;
+    }).map(p => ({ ...p, infName: inf.name }));
+    allPosts = [...allPosts, ...posts];
+  }
+
+  if (!allPosts.length) {
+    el.innerHTML = `<div class="empty">No posts found for this time window. Sync social content first.</div>`;
+    return;
+  }
+
+  // Group by influencer
+  const byInf = {};
+  for (const p of allPosts) {
+    if (!byInf[p.infName]) byInf[p.infName] = [];
+    byInf[p.infName].push(p);
+  }
+
+  el.innerHTML = Object.entries(byInf).map(([name, posts]) => `
+    <div class="card" style="margin-bottom:.75rem">
+      <div style="font-weight:600;font-size:13px;margin-bottom:8px">${name} <span style="font-weight:400;color:var(--text3)">(${posts.length} posts)</span></div>
+      ${posts.slice(0, 10).map(p => `
+        <div class="item-row">
+          <span class="badge badge-purple" style="flex-shrink:0;font-size:9px">${p.postType || 'IG'}</span>
+          <div class="item-title">
+            <span>${p.desc ? p.desc.slice(0, 120) + (p.desc.length > 120 ? '...' : '') : p.title}</span>
+            <div class="item-meta">${p.date || ''}</div>
+          </div>
+        </div>`).join('')}
+      ${posts.length > 10 ? `<div style="font-size:11px;color:var(--text3);margin-top:4px">+ ${posts.length - 10} more posts</div>` : ''}
+    </div>`).join('');
+}
+
+async function generateFeedRecap() {
+  const infId = document.getElementById('feed-inf-sel')?.value || '';
+  const days = parseInt(document.getElementById('feed-window')?.value || '14');
+  const cutoff = days > 0 ? new Date(Date.now() - days * 86400000) : null;
+
+  const infs = infId ? DB.influencers.filter(i => String(i.id) === infId) : DB.influencers;
+  let allPosts = [];
+  for (const inf of infs) {
+    const posts = (inf.socialItems || []).filter(p => {
+      if (!cutoff || !p.date) return !cutoff;
+      return new Date(p.date) >= cutoff;
+    }).map(p => ({ ...p, infName: inf.name }));
+    allPosts = [...allPosts, ...posts];
+  }
+
+  if (!allPosts.length) { alert('No posts to recap for this window.'); return; }
+  if (!getApiKey()) { alert('Add your API key in Settings first.'); return; }
+
+  document.getElementById('feed-recap-section').style.display = 'block';
+  const out = document.getElementById('feed-recap-out');
+  out.className = 'ai-out loading';
+  out.textContent = 'Generating recap...';
+
+  const postText = allPosts.slice(0, 40).map(p => `[${p.infName}] ${p.postType || 'Post'}: ${p.desc || p.title}`).join('
+');
+  const windowLabel = days > 0 ? `last ${days} days` : 'all time';
+
+  const prompt = `You are analyzing recent Instagram posts from fitness/health influencers to brief a sales closer.
+
+Posts from the ${windowLabel}:
+${postText}
+
+For each influencer, produce a tight content recap using this format:
+
+## [Influencer Name]
+
+**🎯 Main focus this period**
+One sentence on what they've been pushing most.
+
+**😣 Problems they're highlighting**
+• [problem or pain point from posts]
+• [problem or pain point from posts]
+
+**💡 Key messages / learnings**
+• [key angle, lesson, or idea from posts]
+• [key angle, lesson, or idea from posts]
+
+**❓ Useful angles for a closer**
+• [how a closer could reference this content in a call — specific and tactical]
+• [another angle]
+
+Keep each section to 2-3 bullets max. Be specific to the actual post content, not generic.`;
+
+  try {
+    const text = await callAI(prompt, 1200);
+    out.className = 'ai-out';
+    out.textContent = text;
+  } catch(e) {
+    out.className = 'ai-out';
+    out.textContent = 'Error: ' + e.message;
+  }
 }
 
 // ─── INIT ─────────────────────────────────────────────────────────────────────
