@@ -1445,8 +1445,7 @@ Prioritize YouTube videos and podcast episodes. Be tactical and specific.`;
     const text = await callAI(prompt, 1200);
     document.getElementById(outId + '-text').className = 'ai-out';
     document.getElementById(outId + '-text').textContent = text;
-    const histType = mode === 'sequence' ? 'sequence' : mode;
-    saveToHistory({ type: histType, prospectId: p.id, prospectName: p.name, content: text, goal, callDate: new Date().toISOString().slice(0,10) });
+    saveToHistory({ type: mode, prospectId: p.id, prospectName: p.name, content: text, goal, callDate: new Date().toISOString().slice(0,10) });
   } catch(e) {
     document.getElementById(outId + '-text').className = 'ai-out';
     document.getElementById(outId + '-text').textContent = 'Error: ' + e.message;
@@ -1546,7 +1545,7 @@ Be direct and honest. This closer wants to improve.`;
     const text = await callAI(prompt, 1400);
     document.getElementById(outId + '-text').className = 'ai-out';
     document.getElementById(outId + '-text').textContent = text;
-    saveToHistory({ type: 'followup-' + mode, prospectId: p.id, prospectName: p.name, content: text, goal });
+    saveToHistory({ type: mode, prospectId: p.id, prospectName: p.name, content: text, goal, callDate: new Date().toISOString().slice(0,10) });
   } catch(e) {
     document.getElementById(outId + '-text').className = 'ai-out';
     document.getElementById(outId + '-text').textContent = 'Error: ' + e.message;
@@ -1808,8 +1807,7 @@ async function generateFeedRecap() {
   out.className = 'ai-out loading';
   out.textContent = 'Generating recap...';
 
-  const postText = allPosts.slice(0, 40).map(p => `[${p.infName}] ${p.postType || 'Post'}: ${p.desc || p.title}`).join('
-');
+  const postText = allPosts.slice(0, 40).map(p => `[${p.infName}] ${p.postType || 'Post'}: ${p.desc || p.title}`).join('\n');
   const windowLabel = days > 0 ? `last ${days} days` : 'all time';
 
   const prompt = `You are analyzing recent Instagram posts from fitness/health influencers to brief a sales closer.
