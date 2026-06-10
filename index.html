@@ -967,13 +967,29 @@ function importSlackJSON() {
 
   let posts;
   try {
-    const jsonMatch = raw.match(/\[[\s\S]*\]/);
+    // Strip any markdown formatting Claude may have added
+    let cleaned = raw.replace(/```json|```/g, '').trim();
+    // Find the JSON array — handle cases where Claude adds text before/after
+    const jsonMatch = cleaned.match(/\[[\s\S]*\]/);
     if (!jsonMatch) throw new Error('No JSON array found');
-    posts = JSON.parse(jsonMatch[0]);
+    // Fix common JSON issues: unescaped quotes in captions, newlines
+    let jsonStr = jsonMatch[0]
+      .replace(/\n/g, ' ')
+      .replace(/[\u0000-\u001F]/g, ' ');
+    posts = JSON.parse(jsonStr);
   } catch(e) {
-    status.textContent = 'Could not parse JSON — make sure you copied the full output from Claude.';
-    status.style.color = 'var(--red-text)';
-    return;
+    // Try line-by-line parsing as fallback
+    try {
+      const lines = raw.split('\n').filter(l => l.trim().startsWith('{'));
+      if (lines.length) {
+        posts = lines.map(l => { try { return JSON.parse(l.replace(/,$/, '')); } catch(e) { return null; } }).filter(Boolean);
+        if (!posts.length) throw new Error('empty');
+      } else throw new Error('no lines');
+    } catch(e2) {
+      status.textContent = 'Could not parse JSON — try copying just the JSON array from Claude (starting with [ and ending with ]).';
+      status.style.color = 'var(--red-text)';
+      return;
+    }
   }
 
   let matched = 0;
@@ -1318,22 +1334,32 @@ async function runPrep(mode) {
 
   let prompt = '';
   if (mode === 'strategy') {
-    prompt = `You are an expert sales coach. A closer needs pre-call prep.
+    prompt = `You are an expert sales coach. Write a pre-call brief that fits on one screen — scannable in 60 seconds.
 
 ${ctx}
 ${goal ? '\nCall goal: ' + goal : ''}
 
-Write a focused pre-call brief:
+Format exactly like this, no extra explanation:
 
-1. DEEPER MOTIVES — What is this person REALLY buying? What identity shift, fear, or desire sits underneath their stated pain? Be specific to their role, industry, and the influencer content they've been consuming.
+🎯 REAL MOTIVE
+One sentence: what they actually want underneath the stated pain.
 
-2. OPENING + KEY QUESTIONS — How to open the call, and 3-4 specific questions to surface their real motives.
+🔑 KEY QUESTIONS (pick 2-3)
+• [question]
+• [question]
+• [question]
 
-3. LIKELY OBJECTIONS + RESPONSES — The 2-3 objections most likely from this person, and how to handle each given what they know from the influencer's content.
+⚡ OPENING ANGLE
+One sentence on how to open — what frame or hook to lead with.
 
-4. CLOSING ANGLE — The frame that will land best given their personality and what they've been exposed to.
+🚧 WATCH OUT FOR
+• [likely objection + one-line response]
+• [likely objection + one-line response]
 
-Be direct and specific. Use what you know about the influencer's worldview and the prospect's psychology.`;
+📱 SOCIAL CONTENT ANGLES
+1-2 bullet points on themes from their influencer's recent content that are relevant to this call.
+
+Keep every section tight. Max 2-3 lines each. No padding.`;
   } else {
     const bank = buildContentBank(p);
     prompt = `You are an expert sales coach. A closer needs to know what content to send this prospect.
