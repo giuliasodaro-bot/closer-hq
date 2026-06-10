@@ -458,31 +458,32 @@ async function callAI(prompt, maxTokens = 1200) {
 }
 
 // ─── PROXY FETCH ──────────────────────────────────────────────────────────────
-const PROXY = 'https://api.allorigins.win/get?url=';
-
 async function proxyFetch(url) {
-  const r = await fetch(PROXY + encodeURIComponent(url));
-  const d = await r.json();
-  return d.contents || '';
+  return proxyFetchMulti(url);
 }
 
 // ─── YOUTUBE FETCH ────────────────────────────────────────────────────────────
 async function proxyFetchMulti(url) {
-  // Try multiple proxies in order
+  const encoded = encodeURIComponent(url);
   const proxies = [
-    `https://api.allorigins.win/get?url=${encodeURIComponent(url)}`,
-    `https://corsproxy.io/?url=${encodeURIComponent(url)}`,
-    `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(url)}`
+    { url: `https://corsproxy.io/?url=${encoded}`, extract: r => r.text() },
+    { url: `https://api.allorigins.win/get?url=${encoded}`, extract: async r => { const d = await r.json(); return d.contents || ''; } },
+    { url: `https://api.codetabs.com/v1/proxy?quest=${encoded}`, extract: r => r.text() },
+    { url: `https://thingproxy.freeboard.io/fetch/${url}`, extract: r => r.text() }
   ];
+  let lastErr = '';
   for (const proxy of proxies) {
     try {
-      const r = await fetch(proxy, { signal: AbortSignal.timeout(8000) });
-      const d = await r.json();
-      const content = d.contents || d.body || d;
-      if (typeof content === 'string' && content.length > 100) return content;
-    } catch(e) {}
+      const r = await fetch(proxy.url, { signal: AbortSignal.timeout(10000) });
+      if (!r.ok) continue;
+      const content = await proxy.extract(r);
+      if (typeof content === 'string' && content.length > 200 && !content.startsWith('Oops') && !content.startsWith('Error')) {
+        return content;
+      }
+    } catch(e) { lastErr = e.message; }
+    await new Promise(res => setTimeout(res, 500));
   }
-  throw new Error('All proxies failed for: ' + url);
+  throw new Error('All proxies failed. Last error: ' + lastErr);
 }
 
 async function parseYouTubeFeed(xml) {
