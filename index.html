@@ -1302,13 +1302,24 @@ function buildProspectCard(p) {
   </div>`;
 }
 
-function loadPrepProspect() {
+async function loadPrepProspect() {
   const id = document.getElementById('prep-sel').value;
   const el = document.getElementById('prep-prospect-card');
   if (!id) { el.style.display = 'none'; return; }
   const p = DB.prospects.find(x => String(x.id) === id);
+  if (!p) { el.style.display = 'none'; return; }
   el.innerHTML = buildProspectCard(p);
-  el.style.display = p ? 'block' : 'none';
+  el.style.display = 'block';
+  // Run AI sensitivity analysis in background
+  const sensitivity = await analyzeSensitivity(p);
+  if (sensitivity && (sensitivity.hasMedical || sensitivity.hasDemographic)) {
+    const flagHTML = `<div style="margin-top:8px;padding:8px 12px;background:#FFF8E6;border:1px solid #F0C040;border-radius:var(--radius);font-size:12px;color:#7A5000;line-height:1.5">
+      <strong>⚠️ ${sensitivity.warningLabel || 'Sensitive profile'}</strong><br>
+      ${[sensitivity.medicalSummary, sensitivity.demographicSummary].filter(Boolean).join(' · ')}<br>
+      <span style="color:#9A6500">Content suggestions and messages will be filtered accordingly.</span>
+    </div>`;
+    el.innerHTML = buildProspectCard(p) + flagHTML;
+  }
 }
 
 function loadFollowupProspect() {
@@ -1321,6 +1332,61 @@ function loadFollowupProspect() {
 }
 
 // ─── CONTEXT BUILDERS ─────────────────────────────────────────────────────────
+// AI-powered sensitive profile analysis — runs once per prospect and caches result
+const sensitivityCache = {};
+
+async function analyzeSensitivity(p) {
+  if (sensitivityCache[p.id]) return sensitivityCache[p.id];
+  if (!getApiKey()) return null;
+
+  const profileText = [p.pain, p.notes, p.style, p.offer, p.role, p.company].filter(Boolean).join(' | ');
+
+  const prompt = `You are reviewing a sales prospect profile to identify any sensitivity flags before a closer recommends content or sends messages.
+
+Profile:
+${profileText}
+
+Analyze this profile and return a JSON object:
+{
+  "hasMedical": true/false,
+  "medicalSummary": "brief description of medical/health context if present, empty string if none",
+  "hasDemographic": true/false,
+  "demographicSummary": "brief description of demographic-specific context (age group, life stage, etc.) if present, empty string if none",
+  "contentInstructions": "specific instructions for what to avoid when recommending content and writing messages — be precise about what topics, language, and content types to avoid for THIS specific person. Empty string if no flags.",
+  "warningLabel": "short label for the UI warning badge, e.g. 'Medical condition + over 40' — empty string if no flags"
+}
+
+Be thorough. Medical context includes: injuries, chronic conditions, diagnosed conditions, medications, doctor involvement, recovery, surgery, mental health, eating disorders, hormonal issues. Demographic context includes: age groups, menopause, postpartum, pregnancy, specific life stages.
+Return ONLY valid JSON, no markdown.`;
+
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': getApiKey(),
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true'
+      },
+      body: JSON.stringify({ model: 'claude-sonnet-4-6', max_tokens: 400, messages: [{ role: 'user', content: prompt }] })
+    });
+    const d = await res.json();
+    const text = (d.content || []).map(b => b.text || '').join('').replace(/```json|```/g, '').trim();
+    const result = JSON.parse(text);
+    sensitivityCache[p.id] = result;
+    return result;
+  } catch(e) {
+    return null;
+  }
+}
+
+function buildSafetyInstructions(sensitivityResult) {
+  if (!sensitivityResult) return '';
+  if (!sensitivityResult.hasMedical && !sensitivityResult.hasDemographic) return '';
+  if (!sensitivityResult.contentInstructions) return '';
+  return `\n\n⚠️ CONTENT SAFETY RULES FOR THIS PROSPECT:\n${sensitivityResult.contentInstructions}\n- When in doubt about a piece of content, skip it and explain why.\n- Flag any skipped content as "⚠️ SKIPPED — [reason]"`;
+}
+
 function buildProspectContext(p) {
   const inf = DB.influencers.find(i => String(i.id) === String(p.infId));
   let ctx = `Prospect: ${p.name}`;
@@ -1429,11 +1495,13 @@ Bulking: Intentionally eating more calories than you burn to gain muscle mass. [
 Keep every section tight. Max 2-3 lines each. No padding.`;
   } else {
     const bank = buildContentBank(p);
+    const sensitivityResult = await analyzeSensitivity(p);
+    const safetyInstructions = buildSafetyInstructions(sensitivityResult);
     prompt = `You are an expert sales coach. A closer needs to know what content to send this prospect.
 
 ${ctx}
 ${bank}
-${goal ? '\nCall goal: ' + goal : ''}
+${goal ? '\nCall goal: ' + goal : ''}${safetyInstructions}
 
 Recommend the best content to send before this call. For each piece (up to 3):
 
@@ -1538,6 +1606,8 @@ async function runFollowup(mode) {
   let prompt = '';
 
   if (mode === 'sequence') {
+    const sensitivityResult = await analyzeSensitivity(p);
+    const safetyInstructions = buildSafetyInstructions(sensitivityResult);
     prompt = `You are an expert sales closer. Build a complete post-call follow-up sequence for this prospect.
 
 ${ctx}
@@ -1546,7 +1616,7 @@ ${goal ? '\nCall goal: ' + goal : ''}
 CALL TRANSCRIPT:
 ${transcript.slice(0, 3000)}
 
-${bank}
+${bank}${safetyInstructions}
 
 Build a 7-day follow-up sequence. For each touchpoint output exactly this structure:
 
