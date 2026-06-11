@@ -170,7 +170,7 @@
     History
   </a>
   <div class="divider" style="margin: .75rem 1.25rem;"></div>
-  <a class="nav-item" onclick="openDailyDigest()" style="color:var(--green-text)">
+  <a class="nav-item" onclick="event.stopPropagation();openDailyDigest()" style="color:var(--green-text);cursor:pointer">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
     Email today's digest
   </a>
@@ -1635,8 +1635,21 @@ function openDailyDigest() {
   const digest = buildDailyDigest();
   const today = new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
   const subject = encodeURIComponent(`Closer's daily digest — ${today}`);
-  const body = encodeURIComponent(digest);
-  window.location.href = `mailto:?subject=${subject}&body=${body}`;
+  // mailto has a ~2000 char URL limit in most browsers — truncate body if needed
+  const fullBody = encodeURIComponent(digest);
+  if (fullBody.length < 1800) {
+    window.open(`mailto:?subject=${subject}&body=${fullBody}`, '_blank');
+  } else {
+    // Body too long — copy to clipboard and open empty email
+    navigator.clipboard.writeText(digest).then(() => {
+      alert('Digest copied to clipboard!\n\nYour email client will open — paste the digest into the body.');
+      window.open(`mailto:?subject=${subject}`, '_blank');
+    }).catch(() => {
+      // Fallback: show in a textarea for manual copy
+      const win = window.open('', '_blank');
+      win.document.write('<pre style="font-family:monospace;padding:20px;white-space:pre-wrap">' + digest.replace(/</g,'&lt;') + '</pre>');
+    });
+  }
 }
 
 function refreshHistoryFilters() {
