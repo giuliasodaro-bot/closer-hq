@@ -1,1989 +1,1309 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Closer's Command Center</title>
+<meta charset="UTF-8"/>
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"/>
+  <meta http-equiv="Pragma" content="no-cache"/>
+  <meta http-equiv="Expires" content="0"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Sales Call Analyzer</title>
 <style>
-  :root {
-    --bg: #fafaf9;
-    --bg2: #f4f3f0;
-    --bg3: #eceae5;
-    --text: #1a1a18;
-    --text2: #6b6b67;
-    --text3: #9b9b96;
-    --border: rgba(0,0,0,0.1);
-    --border2: rgba(0,0,0,0.18);
-    --accent: #1a1a18;
-    --green-bg: #e8f5ee; --green-text: #1a5c36;
-    --blue-bg: #e8f0fb; --blue-text: #1a3a6b;
-    --amber-bg: #fdf3e3; --amber-text: #7a4a0a;
-    --red-bg: #fde8e8; --red-text: #7a1a1a;
-    --purple-bg: #f0eafe; --purple-text: #4a2a8a;
-    --teal-bg: #e5f7f5; --teal-text: #0f5a52;
-    --radius: 8px; --radius-lg: 12px;
-    --shadow: 0 1px 3px rgba(0,0,0,0.06);
-  }
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); font-size: 14px; line-height: 1.5; }
-
-  /* Layout */
-  .app { display: grid; grid-template-columns: 220px 1fr; min-height: 100vh; }
-  .sidebar { background: var(--bg2); border-right: 1px solid var(--border); padding: 1.25rem 0; position: sticky; top: 0; height: 100vh; overflow-y: auto; }
-  .main { overflow-y: auto; padding: 2rem; max-width: 900px; }
-  .logo { padding: 0 1.25rem 1.25rem; border-bottom: 1px solid var(--border); margin-bottom: .75rem; }
-  .logo-title { font-size: 13px; font-weight: 600; letter-spacing: .02em; color: var(--text); }
-  .logo-sub { font-size: 11px; color: var(--text3); margin-top: 2px; }
-  .nav-section { padding: .5rem 1.25rem .25rem; font-size: 10px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--text3); }
-  .nav-item { display: flex; align-items: center; gap: 8px; padding: .5rem 1.25rem; font-size: 13px; color: var(--text2); cursor: pointer; border-left: 2px solid transparent; transition: all .15s; text-decoration: none; }
-  .nav-item:hover { color: var(--text); background: var(--bg3); }
-  .nav-item.active { color: var(--text); border-left-color: var(--accent); background: var(--bg3); font-weight: 500; }
-  .nav-item svg { width: 15px; height: 15px; flex-shrink: 0; }
-
-  /* Panels */
-  .panel { display: none; } .panel.active { display: block; }
-  .panel-header { margin-bottom: 1.5rem; }
-  .panel-title { font-size: 20px; font-weight: 600; }
-  .panel-desc { font-size: 13px; color: var(--text2); margin-top: 4px; }
-
-  /* Cards */
-  .card { background: #fff; border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 1rem 1.25rem; margin-bottom: .75rem; box-shadow: var(--shadow); }
-  .card-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; }
-
-  /* Forms */
-  label { font-size: 12px; color: var(--text2); display: block; margin-bottom: 3px; font-weight: 500; }
-  input[type=text], input[type=url], select, textarea { width: 100%; padding: 7px 10px; border: 1px solid var(--border2); border-radius: var(--radius); font-size: 13px; font-family: inherit; background: #fff; color: var(--text); transition: border-color .15s; }
-  input[type=text]:focus, input[type=url]:focus, select:focus, textarea:focus { outline: none; border-color: var(--accent); }
-  textarea { resize: vertical; min-height: 70px; line-height: 1.5; }
-  .field { display: flex; flex-direction: column; margin-bottom: 10px; }
-  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-  .grid3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
-
-  /* Buttons */
-  .btn { display: inline-flex; align-items: center; gap: 5px; padding: 7px 14px; font-size: 12px; font-weight: 500; border-radius: var(--radius); cursor: pointer; font-family: inherit; transition: all .15s; border: 1px solid transparent; white-space: nowrap; }
-  .btn-primary { background: var(--accent); color: #fff; border-color: var(--accent); }
-  .btn-primary:hover { opacity: .85; }
-  .btn-secondary { background: #fff; color: var(--text); border-color: var(--border2); }
-  .btn-secondary:hover { background: var(--bg2); }
-  .btn-ghost { background: transparent; color: var(--text2); border-color: transparent; }
-  .btn-ghost:hover { background: var(--bg2); color: var(--text); }
-  .btn-danger { background: transparent; color: #991b1b; border-color: #fca5a5; }
-  .btn-danger:hover { background: var(--red-bg); }
-  .btn-sm { padding: 4px 9px; font-size: 11px; }
-  .btn-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
-
-  /* Badges / Tags */
-  .badge { display: inline-flex; align-items: center; gap: 3px; font-size: 10px; padding: 2px 7px; border-radius: 99px; font-weight: 500; }
-  .badge-green { background: var(--green-bg); color: var(--green-text); }
-  .badge-blue { background: var(--blue-bg); color: var(--blue-text); }
-  .badge-amber { background: var(--amber-bg); color: var(--amber-text); }
-  .badge-red { background: var(--red-bg); color: var(--red-text); }
-  .badge-purple { background: var(--purple-bg); color: var(--purple-text); }
-  .badge-teal { background: var(--teal-bg); color: var(--teal-text); }
-  .badge-gray { background: var(--bg3); color: var(--text2); }
-
-  /* Misc UI */
-  .divider { border: none; border-top: 1px solid var(--border); margin: 1.25rem 0; }
-  .empty { text-align: center; padding: 2rem 1rem; color: var(--text3); font-size: 13px; }
-  .scroll-list { max-height: 400px; overflow-y: auto; padding-right: 2px; }
-  .sec-label { font-size: 11px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--text3); margin-bottom: 8px; }
-  .split { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
-  .info-box { background: var(--blue-bg); border: 1px solid #bfcfe8; border-radius: var(--radius); padding: 8px 12px; font-size: 12px; color: var(--blue-text); margin-bottom: 10px; }
-  .warn-box { background: var(--amber-bg); border: 1px solid #e8c87a; border-radius: var(--radius); padding: 8px 12px; font-size: 12px; color: var(--amber-text); margin-bottom: 10px; }
-  .source-row { display: grid; grid-template-columns: 110px 1fr auto; gap: 8px; align-items: end; margin-bottom: 8px; }
-  .topic-pill { font-size: 11px; padding: 2px 8px; border-radius: 99px; background: var(--bg3); color: var(--text2); border: 1px solid var(--border); display: inline-block; margin: 2px; }
-  .progress-bar { height: 3px; background: var(--bg3); border-radius: 2px; margin: 6px 0; overflow: hidden; }
-  .progress-fill { height: 100%; background: var(--accent); transition: width .3s; }
-  .item-row { display: flex; align-items: flex-start; gap: 8px; padding: 6px 0; border-bottom: 1px solid var(--border); font-size: 12px; }
-  .item-row:last-child { border-bottom: none; }
-  .item-title { flex: 1; color: var(--text); line-height: 1.4; }
-  .item-title a { color: var(--blue-text); text-decoration: none; }
-  .item-title a:hover { text-decoration: underline; }
-  .item-meta { font-size: 11px; color: var(--text3); margin-top: 1px; }
-  .ai-out { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 1rem 1.25rem; font-size: 13px; line-height: 1.8; white-space: pre-wrap; color: var(--text); min-height: 80px; }
-  .ai-out.loading { color: var(--text3); font-style: italic; }
-  .copy-btn { font-size: 11px; padding: 3px 8px; background: #fff; border: 1px solid var(--border2); border-radius: var(--radius); cursor: pointer; color: var(--text2); font-family: inherit; }
-  .copy-btn:hover { background: var(--bg2); }
-  .history-item { border: 1px solid var(--border); border-radius: var(--radius-lg); padding: .875rem 1rem; margin-bottom: .5rem; background: #fff; }
-  .history-meta { font-size: 11px; color: var(--text3); margin-bottom: 6px; display: flex; gap: 10px; flex-wrap: wrap; }
-  .history-preview { font-size: 12px; color: var(--text2); line-height: 1.5; }
-  .avatar { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 13px; flex-shrink: 0; background: var(--blue-bg); color: var(--blue-text); }
-  .inf-handle { font-size: 11px; color: var(--text3); }
-  .tabs-inline { display: flex; gap: 2px; border-bottom: 1px solid var(--border); margin-bottom: 1rem; }
-  .tab-inline { padding: 7px 12px; font-size: 12px; border: none; background: none; cursor: pointer; color: var(--text2); border-bottom: 2px solid transparent; margin-bottom: -1px; font-family: inherit; font-weight: 500; }
-  .tab-inline.active { color: var(--text); border-bottom-color: var(--accent); }
-  .slack-badge { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; padding: 2px 8px; border-radius: 99px; background: #4a154b1a; color: #4a154b; font-weight: 500; }
-  .content-count-row { display: flex; gap: 8px; flex-wrap: wrap; margin: 6px 0; }
-
-  /* Prospect card */
-  .prospect-card { background: #fff; border: 1px solid var(--border); border-radius: var(--radius-lg); padding: .875rem 1rem; margin-bottom: .5rem; cursor: default; }
-  .prospect-name { font-size: 14px; font-weight: 600; }
-
-  /* Responsive */
-  @media (max-width: 700px) {
-    .app { grid-template-columns: 1fr; }
-    .sidebar { position: static; height: auto; }
-    .split { grid-template-columns: 1fr; }
-    .grid2, .grid3 { grid-template-columns: 1fr; }
-    .source-row { grid-template-columns: 1fr; }
-  }
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --bg:#f9f8f6;--surface:#fff;--surface2:#f3f2ef;
+  --border:rgba(0,0,0,0.09);--border-md:rgba(0,0,0,0.16);
+  --text:#1a1a18;--muted:#6b6b66;
+  --accent:#185FA5;--accent-light:#E6F1FB;--accent-mid:#378ADD;
+  --success:#3B6D11;--success-light:#EAF3DE;
+  --warn:#BA7517;--warn-light:#FAEEDA;
+  --danger:#A32D2D;--danger-light:#FCEBEB;
+  --purple:#5B3FA6;--purple-light:#EDE8FB;
+  --radius:8px;--radius-lg:12px;
+}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
+.nav{background:var(--surface);border-bottom:0.5px solid var(--border-md);padding:0 2rem;display:flex;position:sticky;top:0;z-index:10;}
+.nav-btn{padding:14px 20px;font-size:14px;font-weight:500;border:none;background:none;cursor:pointer;color:var(--muted);border-bottom:2px solid transparent;transition:all 0.15s;}
+.nav-btn:hover{color:var(--text);}
+.nav-btn.active{color:var(--accent);border-bottom-color:var(--accent);}
+.page{display:none;max-width:820px;margin:0 auto;padding:2rem 1rem;}
+.page.active{display:block;}
+.card{background:var(--surface);border:0.5px solid var(--border);border-radius:var(--radius-lg);padding:1.25rem 1.5rem;margin-bottom:1rem;}
+.card-title{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.07em;color:var(--muted);margin-bottom:12px;}
+.account-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
+.account-btn{border:0.5px solid var(--border-md);border-radius:var(--radius);padding:12px;cursor:pointer;background:var(--surface);text-align:left;transition:all 0.15s;}
+.account-btn:hover{background:var(--surface2);}
+.account-btn.active{border:2px solid var(--accent-mid);background:var(--accent-light);}
+.account-btn .name{font-size:14px;font-weight:500;}
+.account-btn .comm{font-size:12px;color:var(--muted);margin-top:2px;}
+.account-btn.active .name{color:var(--accent);}
+.account-btn.active .comm{color:var(--accent-mid);}
+.type-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;}
+.type-btn{border:0.5px solid var(--border-md);border-radius:var(--radius);padding:10px 14px;cursor:pointer;background:var(--surface);text-align:left;transition:all 0.15s;}
+.type-btn:hover{background:var(--surface2);}
+.type-btn.active{border:2px solid var(--accent-mid);background:var(--accent-light);}
+.type-btn .tname{font-size:14px;font-weight:500;}
+.type-btn .tdesc{font-size:12px;color:var(--muted);margin-top:2px;}
+.type-btn.active .tname{color:var(--accent);}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;}
+.field label{font-size:12px;font-weight:500;color:var(--muted);display:block;margin-bottom:6px;text-transform:uppercase;letter-spacing:0.05em;}
+.field input,.field textarea,.field select{width:100%;border:0.5px solid var(--border-md);border-radius:var(--radius);padding:9px 12px;font-size:14px;font-family:inherit;color:var(--text);background:var(--surface);transition:border-color 0.15s;}
+.field input:focus,.field textarea:focus,.field select:focus{outline:none;border-color:var(--accent-mid);}
+.field textarea{min-height:200px;resize:vertical;line-height:1.6;}
+.prefix-wrap{position:relative;}
+.prefix{position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:14px;pointer-events:none;}
+.prefix-wrap input{padding-left:22px;}
+.field-note{font-size:11px;color:var(--muted);margin-top:5px;line-height:1.5;}
+.field-note a{color:var(--accent);}
+.fathom-row{display:flex;gap:8px;align-items:flex-end;}
+.fathom-row .field{flex:1;}
+.btn-fetch{padding:9px 16px;background:var(--accent-light);color:var(--accent);border:1px solid var(--accent-mid);border-radius:var(--radius);font-size:13px;font-weight:500;cursor:pointer;white-space:nowrap;}
+.btn-fetch:disabled{opacity:0.45;cursor:not-allowed;}
+.fathom-meta{display:none;background:var(--accent-light);border:0.5px solid var(--accent-mid);border-radius:var(--radius);padding:10px 14px;margin-top:10px;font-size:13px;}
+.fathom-link{font-size:11px;color:var(--accent-mid);margin-top:6px;word-break:break-all;}
+.fathom-link a{color:var(--accent-mid);}
+.btn-primary{width:100%;padding:13px;background:var(--accent);color:#fff;border:none;border-radius:var(--radius-lg);font-size:15px;font-weight:500;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:opacity 0.15s;margin-bottom:0.5rem;}
+.btn-primary:hover:not(:disabled){opacity:0.85;}
+.btn-primary:disabled{opacity:0.45;cursor:not-allowed;}
+.btn-save{width:100%;padding:12px;background:var(--surface);color:var(--success);border:1px solid #639922;border-radius:var(--radius-lg);font-size:14px;font-weight:500;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:background 0.15s;}
+.btn-save:hover:not(:disabled){background:var(--success-light);}
+.btn-sm{font-size:12px;padding:5px 12px;border-radius:var(--radius);border:0.5px solid var(--border-md);background:var(--surface);cursor:pointer;color:var(--muted);transition:all 0.15s;}
+.btn-sm:hover{border-color:var(--accent-mid);color:var(--accent);}
+.btn-danger{color:var(--danger);border-color:var(--danger);opacity:0.7;}
+.btn-danger:hover{opacity:1;background:var(--danger-light)!important;color:var(--danger)!important;border-color:var(--danger)!important;}
+.status{font-size:13px;color:var(--muted);text-align:center;padding:8px 0;min-height:36px;}
+.status.error{color:var(--danger);}
+.status.success{color:var(--success);}
+.divider{height:0.5px;background:var(--border);margin:1.5rem 0;}
+.stat{background:var(--surface);border:0.5px solid var(--border);border-radius:var(--radius-lg);padding:14px 16px;text-align:center;}
+.stat-label{font-size:11px;color:var(--muted);margin-bottom:4px;}
+.stat-val{font-size:26px;font-weight:600;}
+.score-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:1rem;}
+.score-card{background:var(--surface2);border-radius:var(--radius);padding:10px 12px;}
+.score-lbl{font-size:11px;color:var(--muted);margin-bottom:4px;}
+.score-num{font-size:20px;font-weight:600;}
+.score-num.hi{color:var(--success);}.score-num.md{color:var(--warn);}.score-num.lo{color:var(--danger);}
+.bar{height:4px;background:var(--border-md);border-radius:2px;margin-top:5px;}
+.bar-inner{height:4px;border-radius:2px;}
+.bar-inner.hi{background:#639922;}.bar-inner.md{background:#EF9F27;}.bar-inner.lo{background:#E24B4A;}
+.phase-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:6px;margin-bottom:1rem;}
+.phase-card{background:var(--surface2);border-radius:var(--radius);padding:8px;text-align:center;}
+.phase-lbl{font-size:10px;color:var(--muted);margin-bottom:3px;}
+.phase-val{font-size:18px;font-weight:600;}
+.phase-unit{font-size:10px;color:var(--muted);}
+.feedback-box{background:var(--surface);border:0.5px solid var(--border);border-radius:var(--radius-lg);padding:14px 16px;font-size:14px;line-height:1.75;margin-bottom:1rem;}
+.section-title{font-size:14px;font-weight:500;margin-bottom:10px;}
+.dash-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem;}
+.dash-header h2{font-size:20px;font-weight:600;}
+.kpi-grid{display:grid;gap:10px;margin-bottom:1rem;}
+.kpi{background:var(--surface);border:0.5px solid var(--border);border-radius:var(--radius-lg);padding:14px;display:flex;flex-direction:column;}
+.kpi-label{font-size:11px;color:var(--muted);margin-bottom:4px;text-transform:uppercase;letter-spacing:0.05em;min-height:28px;display:flex;align-items:flex-end;}
+.kpi-val{font-size:22px;font-weight:600;color:var(--accent);}
+.kpi-sub{font-size:11px;color:var(--muted);margin-top:2px;}
+.revenue-section{background:var(--surface);border:0.5px solid var(--border);border-radius:var(--radius-lg);padding:1.25rem 1.5rem;margin-bottom:1rem;}
+.revenue-title{font-size:13px;font-weight:600;color:var(--text);margin-bottom:12px;}
+.installment-row{display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:0.5px solid var(--border);font-size:13px;}
+.installment-row:last-child{border-bottom:none;}
+.inst-month{color:var(--muted);min-width:80px;}
+.inst-amount{font-weight:500;}
+.inst-badge{font-size:11px;padding:2px 8px;border-radius:20px;}
+.inst-collected{background:var(--success-light);color:var(--success);}
+.inst-projected{background:var(--purple-light);color:var(--purple);}
+.filters-card{background:var(--surface);border:0.5px solid var(--border);border-radius:var(--radius-lg);padding:1rem 1.25rem;margin-bottom:1rem;}
+.filters-row{display:grid;grid-template-columns:1fr 1fr 1fr 1fr 1fr auto;gap:8px;align-items:flex-end;}
+.filter-field label{font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:0.05em;display:block;margin-bottom:5px;}
+.filter-field input,.filter-field select{width:100%;border:0.5px solid var(--border-md);border-radius:var(--radius);padding:7px 10px;font-size:13px;font-family:inherit;color:var(--text);background:var(--surface);}
+.btn-reset{padding:7px 14px;font-size:13px;border-radius:var(--radius);border:0.5px solid var(--border-md);background:var(--surface2);cursor:pointer;color:var(--muted);}
+.calls-table{width:100%;border-collapse:collapse;font-size:13px;}
+.calls-table th{text-align:left;font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:0.05em;padding:8px 12px;border-bottom:0.5px solid var(--border-md);white-space:nowrap;}
+.calls-table td{padding:10px 12px;border-bottom:0.5px solid var(--border);vertical-align:middle;}
+.calls-table tr:last-child td{border-bottom:none;}
+.calls-table tbody tr{cursor:pointer;transition:background 0.1s;}
+.calls-table tbody tr:hover td{background:var(--surface2);}
+.badge{display:inline-block;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:500;}
+.badge-closed{background:var(--success-light);color:var(--success);}
+.badge-no{background:var(--danger-light);color:var(--danger);}
+.badge-follow{background:var(--warn-light);color:var(--warn);}
+.badge-unknown{background:var(--surface2);color:var(--muted);}
+.badge-pitched{background:var(--accent-light);color:var(--accent);}
+.badge-fdq{background:var(--surface2);color:var(--muted);}
+.empty-state{text-align:center;padding:3rem 1rem;color:var(--muted);font-size:14px;}
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.4);z-index:100;align-items:flex-start;justify-content:center;padding:2rem 1rem;overflow-y:auto;}
+.modal-overlay.open{display:flex;}
+.modal{background:var(--surface);border-radius:var(--radius-lg);max-width:700px;width:100%;padding:1.5rem;position:relative;margin:auto;}
+.modal-close{position:absolute;top:1rem;right:1rem;background:none;border:none;font-size:20px;cursor:pointer;color:var(--muted);}
+.modal-section{font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;color:var(--muted);margin:1rem 0 8px;}
+.spinner{display:inline-block;width:16px;height:16px;border:2px solid rgba(255,255,255,0.3);border-top-color:#fff;border-radius:50%;animation:spin 0.7s linear infinite;}
+.spinner-sm{border-color:rgba(24,95,165,0.25);border-top-color:var(--accent);}
+@keyframes spin{to{transform:rotate(360deg);}}
+#results{display:none;}
 </style>
 </head>
 <body>
-<div class="app">
+<div class="nav">
+  <button class="nav-btn active" onclick="showPage('analyzer',this)">Analyze</button>
+  <button class="nav-btn" onclick="showPage('dashboard',this)">Dashboard</button>
+</div>
 
-<!-- SIDEBAR -->
-<nav class="sidebar">
-  <div class="logo">
-    <div class="logo-title">Closer's HQ</div>
-    <div class="logo-sub">Content bank + call prep</div>
-  </div>
-  <div class="nav-section">Content</div>
-  <a class="nav-item active" onclick="showPanel('bank',this)">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 10h16M4 14h8M4 18h8"/></svg>
-    Content bank
-  </a>
-  <a class="nav-item" onclick="showPanel('slack',this)">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 9h6M9 12h6M9 15h4"/></svg>
-    Sync social
-  </a>
-  <a class="nav-item" onclick="showPanel('feed',this)">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 11a9 9 0 0 1 9 9"/><path d="M4 4a16 16 0 0 1 16 16"/><circle cx="5" cy="19" r="1"/></svg>
-    Social feed
-  </a>
-  <div class="nav-section">Prospects</div>
-  <a class="nav-item" onclick="showPanel('prospects',this)">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="7" r="4"/><path d="M3 21v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/><path d="M21 21v-2a4 4 0 0 0-3-3.85"/></svg>
-    Prospects
-  </a>
-  <div class="nav-section">Call tools</div>
-  <a class="nav-item" onclick="showPanel('prep',this)">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01z"/></svg>
-    Pre-call prep
-  </a>
-  <a class="nav-item" onclick="showPanel('followup',this)">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-    Post-call follow-up
-  </a>
-  <a class="nav-item" onclick="showPanel('history',this)">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-    History
-  </a>
-  <div class="divider" style="margin: .75rem 1.25rem;"></div>
-  <a class="nav-item" onclick="event.stopPropagation();openDailyDigest()" style="color:var(--green-text);cursor:pointer">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
-    Email today's digest
-  </a>
-  <a class="nav-item" onclick="showPanel('settings',this)">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg>
-    Settings
-  </a>
-</nav>
-
-<!-- MAIN -->
-<main class="main">
-
-  <!-- ═══ CONTENT BANK ═══ -->
-  <div id="panel-bank" class="panel active">
-    <div class="panel-header">
-      <div class="panel-title">Content bank</div>
-      <div class="panel-desc">Add influencers and their content sources. All sources are analyzed by AI and used for prospect matching.</div>
-    </div>
-    <div class="split">
-      <div>
-        <div class="sec-label">Add influencer</div>
-        <div class="field"><label>Name</label><input type="text" id="inf-name" placeholder="e.g. ScottyK Fitness"></div>
-        <div class="field"><label>Handle / username</label><input type="text" id="inf-handle" placeholder="e.g. @scottykfitness"></div>
-        <div class="field"><label>Niche / topic</label><input type="text" id="inf-niche" placeholder="e.g. fitness coaching, weight loss"></div>
-
-        <div class="sec-label" style="margin-top:1rem">Content sources</div>
-        <div class="info-box">Add any combination of sources. YouTube and podcast feeds are fetched automatically. Website/blog URLs are crawled for content.</div>
-
-        <div id="source-rows">
-          <div class="source-row" id="src-0">
-            <select id="stype-0">
-              <option value="youtube">YouTube channel</option>
-              <option value="podcast">Podcast RSS</option>
-              <option value="blog-index">Blog index URL</option>
-              <option value="article">Article / page URL</option>
-            </select>
-            <input type="url" id="surl-0" placeholder="Paste URL...">
-            <button class="btn btn-sm btn-secondary" onclick="addSourceRow()">+</button>
-          </div>
-        </div>
-
-        <div class="field" style="margin-top:8px"><label>Extra notes for AI (optional)</label><textarea id="inf-notes" placeholder="Key themes, target audience, signature frameworks, selling style..."></textarea></div>
-        <button class="btn btn-primary" onclick="addInfluencer()">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="8 17 12 21 16 17"/><line x1="12" y1="3" x2="12" y2="21"/></svg>
-          Fetch &amp; analyze
-        </button>
-      </div>
-      <div>
-        <div class="sec-label">Influencers <span id="inf-count" style="font-weight:400;color:var(--text3)"></span></div>
-        <div class="scroll-list" id="inf-list"><div class="empty">No influencers yet.</div></div>
-      </div>
+<!-- ANALYZER -->
+<div class="page active" id="page-analyzer">
+  <div class="card">
+    <div class="card-title">Account</div>
+    <div class="account-grid">
+      <button class="account-btn active" onclick="selectAccount(this,'AlwaysCoach',10)"><div class="name">AlwaysCoach</div><div class="comm">10% commission</div></button>
+      <button class="account-btn" onclick="selectAccount(this,'Incontrera',14)"><div class="name">Incontrera</div><div class="comm">14% commission</div></button>
+      <button class="account-btn" onclick="selectAccount(this,'Moves Method',8)"><div class="name">Moves Method</div><div class="comm">8% commission</div></button>
     </div>
   </div>
-
-  <!-- ═══ SYNC SOCIAL ═══ -->
-  <div id="panel-slack" class="panel">
-    <div class="panel-header">
-      <div class="panel-title">Sync social content</div>
-      <div class="panel-desc">Pull Instagram posts from <strong>#creator-socials</strong> and import them into the content bank.</div>
+  <div class="card">
+    <div class="card-title">Call type</div>
+    <div class="type-grid">
+      <button class="type-btn active" onclick="selectType(this,'pitched')"><div class="tname">Pitched</div><div class="tdesc">Discovery + pitch + close attempt</div></button>
+      <button class="type-btn" onclick="selectType(this,'not_pitched')"><div class="tname">Not Pitched</div><div class="tdesc">Call happened, no pitch made</div></button>
+      <button class="type-btn" onclick="selectType(this,'fdq')"><div class="tname">FDQ</div><div class="tdesc">Pitched but prospect not qualified</div></button>
+      <button class="type-btn" onclick="selectType(this,'no_show')"><div class="tname">No Show</div><div class="tdesc">Prospect didn't show up</div></button>
     </div>
-
-    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:1px;background:var(--border);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;margin-bottom:1.5rem">
-      <div style="background:var(--bg);padding:.875rem 1rem">
-        <div style="font-size:11px;font-weight:600;color:var(--text3);margin-bottom:4px">STEP 1</div>
-        <div style="font-size:13px;font-weight:500;margin-bottom:3px">Open Claude.ai</div>
-        <div style="font-size:12px;color:var(--text2)">Click the button below — it opens Claude with the exact prompt pre-filled.</div>
-      </div>
-      <div style="background:var(--bg);padding:.875rem 1rem">
-        <div style="font-size:11px;font-weight:600;color:var(--text3);margin-bottom:4px">STEP 2</div>
-        <div style="font-size:13px;font-weight:500;margin-bottom:3px">Run &amp; copy JSON</div>
-        <div style="font-size:12px;color:var(--text2)">Claude reads Slack and outputs a JSON block. Copy it.</div>
-      </div>
-      <div style="background:var(--bg);padding:.875rem 1rem">
-        <div style="font-size:11px;font-weight:600;color:var(--text3);margin-bottom:4px">STEP 3</div>
-        <div style="font-size:13px;font-weight:500;margin-bottom:3px">Paste &amp; import</div>
-        <div style="font-size:12px;color:var(--text2)">Paste the JSON below and click Import. Done.</div>
-      </div>
+  </div>
+  <div class="card">
+    <div class="card-title">Fathom recording (optional)</div>
+    <div class="fathom-row">
+      <div class="field"><input type="url" id="fathom-url" placeholder="https://fathom.video/share/..." oninput="onFathomInput()"/></div>
+      <button class="btn-fetch" id="btn-fetch" onclick="fetchFathom()" disabled>Fetch metadata</button>
     </div>
+    <div id="fathom-meta" class="fathom-meta"></div>
+  </div>
+  <div class="card">
+    <div class="card-title">Call details</div>
+    <div class="row3" style="margin-bottom:10px">
+      <div class="field"><label>Closer name</label><input type="text" id="closer" placeholder="Auto-detected"/></div>
+      <div class="field"><label>Client / prospect</label><input type="text" id="client" placeholder="Auto-detected"/></div>
+      <div class="field"><label>Call date</label><input type="date" id="call-date"/></div>
+    </div>
+    <div class="row2">
+      <div class="field"><label>Refund amount</label><div class="prefix-wrap"><span class="prefix">$</span><input type="number" id="refund" placeholder="0" min="0"/></div></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-title">Anthropic API key</div>
+    <div class="field"><input type="password" id="api-key" placeholder="sk-ant-..."/></div>
+    <p class="field-note">Stored only in this browser tab. Get one at <a href="https://console.anthropic.com" target="_blank">console.anthropic.com</a></p>
+  </div>
+  <div class="card">
+    <div class="card-title">Call transcript</div>
+    <div class="field"><textarea id="transcript" placeholder="Paste the full call transcript here..."></textarea></div>
+  </div>
+  <button class="btn-primary" id="btn-analyze" onclick="runAnalysis()">▶ Analyze transcript</button>
+  <div class="status" id="status"></div>
+  <div id="results">
+    <div class="divider"></div>
+    <div class="section-title">Overall performance</div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:1rem" id="r-overall-grid"></div>
+    <div class="section-title">Score breakdown</div>
+    <div class="score-grid" id="score-grid"></div>
+    <div class="section-title">Phase durations</div>
+    <div class="phase-grid" id="phase-grid"></div>
+    <div class="section-title">Coaching feedback</div>
+    <div class="feedback-box" id="feedback"></div>
+    <button class="btn-save" onclick="saveCall()">✓ Save to dashboard</button>
+    <div class="status" id="save-status"></div>
+  </div>
+</div>
 
-    <div style="display:flex;gap:10px;align-items:center;margin-bottom:1.25rem;flex-wrap:wrap">
-      <div class="field" style="margin:0;min-width:160px">
-        <label>Posts to fetch</label>
-        <select id="slack-limit" style="width:160px">
-          <option value="50">50 most recent</option>
-          <option value="100" selected>100 most recent</option>
-          <option value="200">200 most recent</option>
+<!-- DASHBOARD -->
+<div class="page" id="page-dashboard">
+  <div class="dash-header">
+    <h2>Dashboard</h2>
+    <div style="display:flex;gap:6px">
+      <button class="btn-sm" onclick="rescoreAll()">Re-score all</button>
+      <button class="btn-sm" id="btn-rescore-selected" onclick="rescoreSelected()">Re-score selected (0)</button>
+      <button class="btn-sm" onclick="cleanDuplicates()">Remove duplicates</button>
+      <button class="btn-sm" onclick="exportData()">↓ Export</button>
+      <label class="btn-sm" style="cursor:pointer;margin:0">↑ Import<input type="file" accept=".json" id="import-input" onchange="importData(event)" style="display:none"/></label>
+      <button class="btn-sm btn-danger" onclick="clearAll()">Clear all</button>
+    </div>
+  </div>
+  <!-- Filters -->
+  <div class="filters-card">
+    <div class="filters-row">
+      <div class="filter-field"><label>Account</label>
+        <select id="f-account" onchange="renderDashboard()">
+          <option value="">All accounts</option>
+          <option>AlwaysCoach</option><option>Incontrera</option><option>Moves Method</option>
         </select>
       </div>
-      <div style="padding-top:18px">
-        <button class="btn btn-primary" onclick="openClaudePrompt()">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
-          Open Claude.ai with prompt
-        </button>
-      </div>
-    </div>
-
-    <div class="field" style="margin-bottom:10px">
-      <label>Paste JSON from Claude here</label>
-      <textarea id="slack-json-paste" style="min-height:100px;font-family:monospace;font-size:12px" placeholder='[{"account":"ScottyK Fitness","creator":"@scottykfitness","type":"Reel","caption":"...","posted":"2026-06-10"},...]'></textarea>
-    </div>
-    <button class="btn btn-primary" onclick="importSlackJSON()">
-      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="8 17 12 21 16 17"/><line x1="12" y1="3" x2="12" y2="21"/></svg>
-      Import posts
-    </button>
-    <div id="slack-status" style="margin-top:10px;font-size:13px"></div>
-
-    <hr class="divider">
-    <div class="sec-label">Current social content</div>
-    <div id="slack-inf-list"><div class="empty" style="padding:.5rem">No influencers added yet.</div></div>
-  </div>
-
-  <!-- ═══ PROSPECTS ═══ -->
-  <div id="panel-prospects" class="panel">
-    <div class="panel-header">
-      <div class="panel-title">Prospects</div>
-      <div class="panel-desc">Paste any info or drop a screenshot — AI extracts and fills the profile automatically.</div>
-    </div>
-    <div class="split">
-      <div>
-        <!-- INPUT MODE TABS -->
-        <div class="tabs-inline" style="margin-bottom:1rem">
-          <button class="tab-inline active" onclick="switchProspectTab('smart',this)">Smart extract</button>
-          <button class="tab-inline" onclick="switchProspectTab('manual',this)">Manual</button>
-        </div>
-
-        <!-- SMART EXTRACT -->
-        <div id="prospect-smart">
-          <div class="info-box" style="margin-bottom:10px">Paste anything — DM thread, notes, form submission, email — or drop a screenshot. AI will extract name, role, pain points, personality and fill all fields.</div>
-
-          <!-- Screenshot drop zone -->
-          <div id="screenshot-drop" onclick="document.getElementById('screenshot-input').click()" style="border:2px dashed var(--border2);border-radius:var(--radius-lg);padding:1rem;text-align:center;cursor:pointer;margin-bottom:10px;transition:background .15s;background:#fff">
-            <div id="screenshot-preview" style="display:none"><img id="screenshot-img" style="max-height:120px;border-radius:var(--radius);margin-bottom:6px"><div style="font-size:11px;color:var(--text3)">Screenshot loaded — will be analyzed with text</div></div>
-            <div id="screenshot-placeholder">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--text3)" stroke-width="1.5" style="margin-bottom:4px"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-              <div style="font-size:12px;color:var(--text3)">Drop screenshot here or click to upload</div>
-              <div style="font-size:11px;color:var(--text3);margin-top:2px">Intake form, CRM, chat, anything visual</div>
-            </div>
-            <input type="file" id="screenshot-input" accept="image/*" style="display:none" onchange="handleScreenshot(event)">
-          </div>
-
-          <div class="field" style="margin-bottom:10px">
-            <label>Paste text (optional — combine with screenshot or use alone)</label>
-            <textarea id="smart-text" style="min-height:90px" placeholder="Paste DM conversation, intake form notes, email thread, anything..."></textarea>
-          </div>
-
-          <div class="field" style="margin-bottom:12px">
-            <label>Influencer they came through</label>
-            <select id="smart-inf"><option value="">— select influencer —</option></select>
-          </div>
-
-          <div style="display:flex;gap:8px;align-items:center">
-            <button class="btn btn-primary" onclick="smartExtract()">
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01z"/></svg>
-              Extract &amp; fill fields
-            </button>
-            <button class="btn btn-ghost btn-sm" onclick="clearScreenshot()">Clear screenshot</button>
-          </div>
-          <div id="smart-status" style="font-size:12px;margin-top:8px"></div>
-        </div>
-
-        <!-- MANUAL FORM -->
-        <div id="prospect-manual" style="display:none">
-          <div class="grid2">
-            <div class="field"><label>Full name</label><input type="text" id="m-name" placeholder="Name"></div>
-            <div class="field"><label>Role / title</label><input type="text" id="m-role" placeholder="e.g. CEO, gym owner"></div>
-          </div>
-          <div class="grid2">
-            <div class="field"><label>Company / industry</label><input type="text" id="m-company" placeholder="Company or industry"></div>
-            <div class="field"><label>Offer they're considering</label><input type="text" id="m-offer" placeholder="e.g. 12-week coaching program"></div>
-          </div>
-          <div class="field"><label>Stated pain points</label><textarea id="m-pain" placeholder="What have they said they struggle with?"></textarea></div>
-          <div class="field"><label>Personality / buyer type</label><input type="text" id="m-style" placeholder="e.g. analytical, emotional, fast decision maker..."></div>
-          <div class="field"><label>Influencer they follow / came through</label><select id="m-inf"><option value="">— select influencer —</option></select></div>
-          <div class="field"><label>Notes</label><textarea id="m-notes" placeholder="Objections raised, content they've seen, funnel stage..."></textarea></div>
-        </div>
-
-        <!-- EXTRACTED PREVIEW — shown after smart extract -->
-        <div id="extracted-preview" style="display:none;margin-top:1rem">
-          <hr class="divider" style="margin:.75rem 0">
-          <div class="sec-label">Extracted profile — review &amp; edit</div>
-          <div class="grid2">
-            <div class="field"><label>Full name</label><input type="text" id="p-name" placeholder="Name"></div>
-            <div class="field"><label>Role / title</label><input type="text" id="p-role" placeholder="e.g. CEO, gym owner"></div>
-          </div>
-          <div class="grid2">
-            <div class="field"><label>Company / industry</label><input type="text" id="p-company" placeholder="Company or industry"></div>
-            <div class="field"><label>Offer they're considering</label><input type="text" id="p-offer" placeholder="e.g. 12-week coaching program"></div>
-          </div>
-          <div class="field"><label>Stated pain points</label><textarea id="p-pain" placeholder="Pain points"></textarea></div>
-          <div class="field"><label>Personality / buyer type</label><input type="text" id="p-style" placeholder="Personality type"></div>
-          <div class="field"><label>Influencer they follow / came through</label><select id="p-inf"><option value="">— select influencer —</option></select></div>
-          <div class="field"><label>Notes</label><textarea id="p-notes" placeholder="Any extra context..."></textarea></div>
-          <button class="btn btn-primary" onclick="saveProspect()">Save prospect</button>
-        </div>
-
-        <!-- Manual save button (shown in manual tab) -->
-        <div id="manual-save-btn" style="display:none;margin-top:10px">
-          <button class="btn btn-primary" onclick="saveProspect()">Save prospect</button>
-        </div>
-      </div>
-
-      <div>
-        <div class="sec-label">Saved prospects <span id="p-count" style="font-weight:400;color:var(--text3)"></span></div>
-        <div class="scroll-list" id="prospect-list"><div class="empty">No prospects yet.</div></div>
-      </div>
-    </div>
-  </div>
-
-  <!-- ═══ PRE-CALL PREP ═══ -->
-  <div id="panel-prep" class="panel">
-    <div class="panel-header">
-      <div class="panel-title">Pre-call prep</div>
-      <div class="panel-desc">AI-generated strategy and content recommendations for your next call.</div>
-    </div>
-    <div class="grid2" style="margin-bottom:10px">
-      <div class="field"><label>Select prospect</label><select id="prep-sel" onchange="loadPrepProspect()"><option value="">— choose prospect —</option></select></div>
-      <div class="field"><label>Call goal (optional)</label><input type="text" id="prep-goal" placeholder="e.g. close on program, handle price objection"></div>
-    </div>
-    <div id="prep-prospect-card" style="display:none;margin-bottom:12px"></div>
-    <div class="btn-row">
-      <button class="btn btn-primary" onclick="runPrep('strategy')">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01z"/></svg>
-        Generate strategy
-      </button>
-      <button class="btn btn-secondary" onclick="runPrep('content')">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
-        Match content to send
-      </button>
-      <button class="btn btn-secondary" onclick="runPrep('briefing')">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
-        Field briefing
-      </button>
-    </div>
-    <div id="prep-outputs" style="margin-top:1.25rem"></div>
-  </div>
-
-  <!-- ═══ POST-CALL FOLLOW-UP ═══ -->
-  <div id="panel-followup" class="panel">
-    <div class="panel-header">
-      <div class="panel-title">Post-call follow-up</div>
-      <div class="panel-desc">Paste the Fathom transcript — get a full 7-day follow-up sequence with messages, content, and send timing.</div>
-    </div>
-    <div class="grid2" style="margin-bottom:10px">
-      <div class="field"><label>Select prospect</label><select id="fu-sel" onchange="loadFollowupProspect()"><option value="">— choose prospect —</option></select></div>
-      <div class="field"><label>Call goal / what you were trying to close</label><input type="text" id="fu-goal" placeholder="e.g. close on $2k program"></div>
-    </div>
-    <div id="fu-prospect-card" style="display:none;margin-bottom:12px"></div>
-    <div class="field">
-      <label>Fathom transcript</label>
-      <textarea id="fu-transcript" style="min-height:140px" placeholder="Paste the Fathom call transcript here..."></textarea>
-    </div>
-    <div class="btn-row">
-      <button class="btn btn-primary" onclick="runFollowup('sequence')">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
-        Build follow-up sequence
-      </button>
-      <button class="btn btn-secondary" onclick="runFollowup('analysis')">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-        Analyze call
-      </button>
-    </div>
-    <div id="followup-outputs" style="margin-top:1.25rem"></div>
-  </div>
-
-  <!-- ═══ HISTORY ═══ -->
-  <!-- ═══ SOCIAL FEED ═══ -->
-  <div id="panel-feed" class="panel">
-    <div class="panel-header">
-      <div class="panel-title">Social feed</div>
-      <div class="panel-desc">Recent posts from the last 2 weeks, broken down by topic — focus, problem, key learning.</div>
-    </div>
-    <div style="display:flex;gap:10px;align-items:flex-end;margin-bottom:1.25rem;flex-wrap:wrap">
-      <div class="field" style="margin:0;min-width:180px">
-        <label>Influencer</label>
-        <select id="feed-inf-sel" style="width:200px" onchange="renderFeedRaw()"><option value="">— all influencers —</option></select>
-      </div>
-      <div class="field" style="margin:0;min-width:120px">
-        <label>Time window</label>
-        <select id="feed-window" style="width:140px" onchange="renderFeedRaw()">
-          <option value="14">Last 2 weeks</option>
-          <option value="7">Last week</option>
-          <option value="30">Last month</option>
-          <option value="0">All time</option>
+      <div class="filter-field"><label>Call type</label>
+        <select id="f-type" onchange="renderDashboard()">
+          <option value="">All types</option>
+          <option value="pitched">Pitched</option>
+          <option value="not_pitched">Not Pitched</option>
+          <option value="fdq">FDQ</option>
+          <option value="no_show">No Show</option>
         </select>
       </div>
-      <button class="btn btn-primary" onclick="generateFeedRecap()">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01z"/></svg>
-        Generate recap
-      </button>
-    </div>
-    <div id="feed-raw" style="margin-bottom:1rem"></div>
-    <div id="feed-recap-section" style="display:none">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
-        <div class="sec-label" style="margin:0">Content recap</div>
-        <button class="copy-btn" onclick="copyEl('feed-recap-out')">Copy</button>
-      </div>
-      <div id="feed-recap-out" class="ai-out loading">Generating...</div>
+      <div class="filter-field"><label>Client</label><input type="text" id="f-client" placeholder="Search..." oninput="renderDashboard()"/></div>
+      <div class="filter-field"><label>From</label><input type="date" id="f-date-from" onchange="renderDashboard()"/></div>
+      <div class="filter-field"><label>To</label><input type="date" id="f-date-to" onchange="renderDashboard()"/></div>
+      <button class="btn-reset" onclick="resetFilters()">Reset</button>
     </div>
   </div>
-
-  <div id="panel-history" class="panel">
-    <div class="panel-header">
-      <div class="panel-title">History</div>
-      <div class="panel-desc">All saved AI suggestions, timestamped per prospect.</div>
-    </div>
-    <div style="display:flex;gap:10px;margin-bottom:1rem;flex-wrap:wrap;align-items:center">
-      <select id="hist-filter-prospect" onchange="renderHistory()" style="width:180px">
-        <option value="">All prospects</option>
-      </select>
-      <select id="hist-filter-type" onchange="renderHistory()" style="width:160px">
-        <option value="">All types</option>
-        <option value="strategy">Pre-call strategy</option>
-        <option value="content">Content recs</option>
-        <option value="sequence">Follow-up sequence</option>
-        <option value="analysis">Call analysis</option>
-      </select>
-      <button class="btn btn-secondary btn-sm" onclick="openDailyDigest()" style="margin-left:auto">
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
-        Email today's digest
-      </button>
-      <button class="btn btn-danger btn-sm" onclick="clearHistory()">Clear all</button>
-    </div>
-    <div id="history-list"><div class="empty">No history yet. Run pre-call prep or post-call follow-up to save suggestions.</div></div>
+  <!-- Row 1: Revenue -->
+  <div class="kpi-grid" style="grid-template-columns:repeat(4,1fr)">
+    <div class="kpi"><div class="kpi-label">Cash collected (period)</div><div class="kpi-val" id="kpi-cash-period" style="color:var(--success)">$0</div></div>
+    <div class="kpi"><div class="kpi-label">Cash collected (prev months)</div><div class="kpi-val" id="kpi-cash-passive" style="color:var(--purple)">$0</div></div>
+    <div class="kpi"><div class="kpi-label">Commission (period)</div><div class="kpi-val" id="kpi-comm-period" style="color:var(--success)">$0</div></div>
+    <div class="kpi"><div class="kpi-label">Revenue generated</div><div class="kpi-val" id="kpi-generated">$0</div><div class="kpi-sub">total contract value</div></div>
   </div>
-
-  <!-- ═══ SETTINGS ═══ -->
-  <div id="panel-settings" class="panel">
-    <div class="panel-header">
-      <div class="panel-title">Settings</div>
-      <div class="panel-desc">Configure your API keys and preferences.</div>
-    </div>
-    <div class="card" style="max-width:520px">
-      <div style="font-weight:600;margin-bottom:.75rem">Anthropic API key</div>
-      <div class="info-box" style="margin-bottom:10px">Required for AI features. Get your key at <a href="https://console.anthropic.com" target="_blank" style="color:var(--blue-text)">console.anthropic.com</a>. Stored locally in your browser only.</div>
-      <div class="field"><label>API key</label><input type="text" id="api-key-input" placeholder="sk-ant-..."></div>
-      <div class="field">
-        <label>Slack MCP URL (optional — for syncing #creator-socials)</label>
-        <input type="url" id="slack-mcp-url" placeholder="https://mcp.slack.com/mcp">
-        <div style="font-size:11px;color:var(--text3);margin-top:3px">Only needed if running outside Claude.ai. Leave blank when using Claude.ai directly.</div>
-      </div>
-      <button class="btn btn-primary" onclick="saveSettings()">Save settings</button>
-      <div id="settings-msg" style="font-size:12px;color:var(--green-text);margin-top:8px;display:none">Saved.</div>
-    </div>
-    <div class="card" style="max-width:520px;margin-top:.75rem">
-      <div style="font-weight:600;margin-bottom:.75rem">Data</div>
-      <div style="font-size:13px;color:var(--text2);margin-bottom:10px">All data is stored locally in your browser. Export to back it up.</div>
-      <div class="btn-row" style="margin-top:0">
-        <button class="btn btn-secondary" onclick="exportData()">Export JSON backup</button>
-        <button class="btn btn-secondary" onclick="document.getElementById('import-file').click()">Import backup</button>
-        <input type="file" id="import-file" accept=".json" style="display:none" onchange="importData(event)">
-        <button class="btn btn-danger" onclick="if(confirm('Delete all data?')){localStorage.clear();location.reload()}">Reset all data</button>
-      </div>
-    </div>
+  <!-- Row 2: Call counts -->
+  <div class="kpi-grid" style="grid-template-columns:repeat(6,1fr)">
+    <div class="kpi"><div class="kpi-label">Calls booked</div><div class="kpi-val" id="kpi-booked">0</div></div>
+    <div class="kpi"><div class="kpi-label">Calls taken</div><div class="kpi-val" id="kpi-taken">0</div></div>
+    <div class="kpi"><div class="kpi-label">Calls pitched</div><div class="kpi-val" id="kpi-pitched-count">0</div></div>
+    <div class="kpi"><div class="kpi-label">Calls closed</div><div class="kpi-val" id="kpi-closed-count" style="color:var(--success)">0</div></div>
+    <div class="kpi"><div class="kpi-label">Calls FDQ</div><div class="kpi-val" id="kpi-fdq-count">0</div></div>
+    <div class="kpi"><div class="kpi-label">Avg calls / day</div><div class="kpi-val" id="kpi-avg-day">—</div><div class="kpi-sub" id="kpi-avg-day-sub"></div></div>
   </div>
+  <!-- Row 3: Close rates -->
+  <div class="kpi-grid" style="grid-template-columns:repeat(4,1fr)">
+    <div class="kpi"><div class="kpi-label">Close rate (all booked)</div><div class="kpi-val" id="kpi-cr-booked">—</div><div class="kpi-sub" id="kpi-cr-booked-sub"></div></div>
+    <div class="kpi"><div class="kpi-label">Close rate (showed)</div><div class="kpi-val" id="kpi-cr-showed">—</div><div class="kpi-sub" id="kpi-cr-showed-sub"></div></div>
+    <div class="kpi"><div class="kpi-label">Close rate (pitched incl. FDQ)</div><div class="kpi-val" id="kpi-cr-pitched-all">—</div><div class="kpi-sub" id="kpi-cr-pitched-all-sub"></div></div>
+    <div class="kpi"><div class="kpi-label">Close rate (pitched excl. FDQ)</div><div class="kpi-val" id="kpi-cr-pitched-excl">—</div><div class="kpi-sub" id="kpi-cr-pitched-excl-sub"></div></div>
+  </div>
+  <!-- Coaching synthesis -->
+  <div class="card" id="synth-section" style="display:none">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+      <div class="card-title" style="margin:0">Coaching synthesis</div>
+      <button class="btn-fetch" id="btn-synth" onclick="synthesizeFeedback()">Generate insights</button>
+    </div>
+    <div id="synth-content" style="font-size:13px;color:var(--muted);padding:8px 0">Click "Generate insights" to synthesize top strengths and improvements across the filtered calls.</div>
+  </div>
+  <!-- Avg scores -->
+  <div class="card" id="agg-section" style="display:none">
+    <div class="card-title">Avg score breakdown</div>
+    <div class="score-grid" id="agg-scores"></div>
+    <div class="card-title" style="margin-top:1rem">Avg phase durations</div>
+    <div class="phase-grid" id="agg-phases"></div>
+  </div>
+  <!-- Calls table -->
+  <div class="card" style="padding:0;overflow:hidden"><div id="calls-list"></div></div>
+  <!-- Objections ranking -->
+  <div class="card" id="objections-section" style="margin-top:1rem">
+    <div style="font-size:12px;font-weight:700;letter-spacing:.07em;color:var(--muted);margin-bottom:1rem">OBJECTION RANKING</div>
+    <div id="objections-list"></div>
+  </div>
+  <!-- Recurring payments table -->
+  <div class="card" id="recurring-section" style="display:none;margin-top:1rem">
+    <div style="font-size:12px;font-weight:700;letter-spacing:.07em;color:var(--muted);margin-bottom:1rem">RECURRING PAYMENTS</div>
+    <div id="recurring-list"></div>
+  </div>
+</div>
 
-</main>
+<!-- MODAL -->
+<div class="modal-overlay" id="modal" onclick="closeModalOverlay(event)">
+  <div class="modal">
+    <button class="modal-close" onclick="document.getElementById('modal').classList.remove('open')">✕</button>
+    <div style="font-size:17px;font-weight:600;margin-bottom:4px" id="m-title"></div>
+    <div style="font-size:13px;color:var(--muted);margin-bottom:6px" id="m-meta"></div>
+    <div style="font-size:12px;margin-bottom:1rem" id="m-fathom"></div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:1rem" id="m-overall"></div>
+    <div class="modal-section">Score breakdown</div>
+    <div class="score-grid" id="m-scores"></div>
+    <div style="margin-top:8px"><button class="btn-sm" onclick="reanalyzeCall()">Re-analyze with current rubric</button> <span id="m-reanalyze-status" style="font-size:12px;color:var(--muted);margin-left:8px"></span></div>
+    <div class="modal-section">Phase durations</div>
+    <div class="phase-grid" id="m-phases"></div>
+    <div class="modal-section">Coaching feedback</div>
+    <div class="feedback-box" id="m-feedback"></div>
+    <div class="modal-section">Update call</div>
+    <div class="row3" style="margin-bottom:8px">
+      <div class="field"><label>Outcome</label>
+        <select id="m-outcome">
+          <option value="closed">Closed</option>
+          <option value="no_close">No close</option>
+          <option value="follow_up">Follow up</option>
+          <option value="unknown">Unknown</option>
+        </select>
+      </div>
+      <div class="field"><label>Call date</label><input type="date" id="m-call-date"/></div>
+      <div class="field"><label>Date closed</label><input type="date" id="m-date-closed"/></div>
+    </div>
+    <div class="row3" style="margin-bottom:8px">
+      <div class="field"><label>Cash collected</label><div class="prefix-wrap"><span class="prefix">$</span><input type="number" id="m-cash" placeholder="0" min="0"/></div></div>
+      <div class="field"><label>Revenue generated</label><div class="prefix-wrap"><span class="prefix">$</span><input type="number" id="m-revenue" placeholder="0" min="0"/></div></div>
+      <div class="field"><label>Installments</label><input type="number" id="m-installments" placeholder="1" min="1"/></div>
+    </div>
+    <div class="row2" style="margin-bottom:8px">
+      <div class="field"><label>Refund</label><div class="prefix-wrap"><span class="prefix">$</span><input type="number" id="m-refund" placeholder="0" min="0"/></div></div>
+    </div>
+    <button class="btn-save" style="margin-bottom:8px" onclick="updateCall()">Save updates</button>
+    <div class="status" id="m-status"></div>
+    <button class="btn-sm btn-danger" onclick="deleteCall()">Delete this call</button>
+  </div>
 </div>
 
 <script>
-// ─── STATE ────────────────────────────────────────────────────────────────────
-let DB = { influencers: [], prospects: [], history: [], settings: {} };
-let srcCount = 1;
-
-function loadDB() {
-  try {
-    const s = localStorage.getItem('ccc_v3');
-    if (s) DB = { ...DB, ...JSON.parse(s) };
-    const sk = localStorage.getItem('ccc_settings');
-    if (sk) DB.settings = JSON.parse(sk);
-  } catch(e) {}
-}
-
-function saveDB() {
-  try {
-    localStorage.setItem('ccc_v3', JSON.stringify({ influencers: DB.influencers, prospects: DB.prospects, history: DB.history }));
-    localStorage.setItem('ccc_settings', JSON.stringify(DB.settings));
-  } catch(e) {}
-}
-
-loadDB();
-
-// ─── NAVIGATION ───────────────────────────────────────────────────────────────
-function showPanel(name, el) {
-  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-  document.getElementById('panel-' + name).classList.add('active');
-  if (el) el.classList.add('active');
-  if (name === 'slack') renderSlackPanel();
-  if (name === 'feed') renderFeedPanel();
-  if (name === 'history') { refreshHistoryFilters(); renderHistory(); }
-  if (name === 'settings') loadSettings();
-}
-
-// ─── SETTINGS ─────────────────────────────────────────────────────────────────
-function loadSettings() {
-  document.getElementById('api-key-input').value = DB.settings.apiKey || '';
-  document.getElementById('slack-mcp-url').value = DB.settings.slackMcpUrl || '';
-}
-
-function saveSettings() {
-  DB.settings.apiKey = document.getElementById('api-key-input').value.trim();
-  DB.settings.slackMcpUrl = document.getElementById('slack-mcp-url').value.trim();
-  saveDB();
-  const msg = document.getElementById('settings-msg');
-  msg.style.display = 'block';
-  setTimeout(() => msg.style.display = 'none', 2000);
-}
-
-function getApiKey() {
-  return DB.settings.apiKey || '';
-}
-
-// ─── AI CALL ──────────────────────────────────────────────────────────────────
-async function callAI(prompt, maxTokens = 1200) {
-  const key = getApiKey();
-  if (!key) throw new Error('No API key set. Go to Settings and add your Anthropic API key.');
-  const res = await fetch('https://api.anthropic.com/v1/messages', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', 'x-api-key': key, 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true' },
-    body: JSON.stringify({ model: 'claude-sonnet-4-6', max_tokens: maxTokens, messages: [{ role: 'user', content: prompt }] })
-  });
-  const d = await res.json();
-  if (d.error) throw new Error(d.error.message);
-  return (d.content || []).map(b => b.text || '').join('');
-}
-
-// ─── PROXY FETCH ──────────────────────────────────────────────────────────────
-async function proxyFetch(url) {
-  return proxyFetchMulti(url);
-}
-
-// ─── YOUTUBE FETCH ────────────────────────────────────────────────────────────
-async function proxyFetchMulti(url) {
-  const encoded = encodeURIComponent(url);
-  const proxies = [
-    { url: `https://corsproxy.io/?url=${encoded}`, extract: r => r.text() },
-    { url: `https://api.allorigins.win/get?url=${encoded}`, extract: async r => { const d = await r.json(); return d.contents || ''; } },
-    { url: `https://api.codetabs.com/v1/proxy?quest=${encoded}`, extract: r => r.text() },
-    { url: `https://thingproxy.freeboard.io/fetch/${url}`, extract: r => r.text() }
-  ];
-  let lastErr = '';
-  for (const proxy of proxies) {
-    try {
-      const r = await fetch(proxy.url, { signal: AbortSignal.timeout(10000) });
-      if (!r.ok) continue;
-      const content = await proxy.extract(r);
-      if (typeof content === 'string' && content.length > 200 && !content.startsWith('Oops') && !content.startsWith('Error')) {
-        return content;
+const STORAGE_KEY = 'sales_calls';
+// Migrate from old versioned keys
+(function(){
+  try{
+    // Migrate from old versioned keys
+    var current=JSON.parse(localStorage.getItem(STORAGE_KEY)||'[]');
+    if(!current.length){
+      for(var k of['sales_calls_v1','sales_calls_v2','sales_calls_v3']){
+        var d=JSON.parse(localStorage.getItem(k)||'[]');
+        if(d.length){localStorage.setItem(STORAGE_KEY,JSON.stringify(d));current=d;break;}
       }
-    } catch(e) { lastErr = e.message; }
-    await new Promise(res => setTimeout(res, 500));
-  }
-  throw new Error('All proxies failed. Last error: ' + lastErr);
-}
-
-async function parseYouTubeFeed(xml) {
-  const doc = new DOMParser().parseFromString(xml, 'text/xml');
-  const entries = Array.from(doc.querySelectorAll('entry'));
-  if (!entries.length) throw new Error('No entries in feed');
-  return entries.slice(0, 30).map(e => ({
-    type: 'youtube',
-    title: e.querySelector('title')?.textContent || '',
-    url: e.querySelector('link')?.getAttribute('href') || '',
-    desc: (e.querySelector('media\:description,description')?.textContent || '').slice(0, 300),
-    date: e.querySelector('published')?.textContent?.slice(0, 10) || ''
-  })).filter(i => i.title && i.url);
-}
-
-async function fetchYouTubeDirect(channelId) {
-  const feedUrl = `https://www.youtube.com/feeds/videos.xml?channel_id=${channelId}`;
-
-  // Method 1: rss2json.com — reliable, designed for this, no CORS issues
-  try {
-    const r = await fetch(`https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(feedUrl)}`, { signal: AbortSignal.timeout(12000) });
-    const d = await r.json();
-    if (d.status === 'ok' && d.items?.length) {
-      return d.items.slice(0, 30).map(i => ({
-        type: 'youtube',
-        title: i.title || '',
-        url: i.link || '',
-        desc: (i.description || '').replace(/<[^>]+>/g, '').slice(0, 300),
-        date: (i.pubDate || '').slice(0, 10)
-      })).filter(i => i.title);
     }
-  } catch(e) {}
+    // Always migrate old score keys to new ones
+    var scoreMap={discovery_spin:'discovery_depth',discovery_nepq:'discovery_depth',closing:'closing_strength',eq:'eq_in_closing',ifs_awareness:null};
+    var calls=JSON.parse(localStorage.getItem(STORAGE_KEY)||'[]');
+    var changed=false;
+    calls.forEach(function(c){
+      if(!c.scores) return;
+      Object.keys(scoreMap).forEach(function(oldKey){
+        if(c.scores[oldKey]!==undefined){
+          var newKey=scoreMap[oldKey];
+          if(newKey&&!c.scores[newKey]) c.scores[newKey]=c.scores[oldKey];
+          delete c.scores[oldKey];
+          changed=true;
+        }
+      });
+    });
+    if(changed) localStorage.setItem(STORAGE_KEY,JSON.stringify(calls));
+    // Migrate 0-100 scores to 0-10
+    var calls2=JSON.parse(localStorage.getItem(STORAGE_KEY)||'[]');
+    var changed2=false;
+    calls2.forEach(function(c){
+      if(!c.scores) return;
+      Object.values(c.scores).forEach(function(v,i){
+        var k=Object.keys(c.scores)[i];
+        if(c.scores[k]>10){c.scores[k]=Math.round(c.scores[k]/10);changed2=true;}
+      });
+    });
+    if(changed2) localStorage.setItem(STORAGE_KEY,JSON.stringify(calls2));
+  }catch(e){}
+})();
 
-  // Method 2: direct fetch (works in some environments)
-  try {
-    const r = await fetch(feedUrl, { signal: AbortSignal.timeout(10000) });
-    if (r.ok) {
-      const xml = await r.text();
-      const items = await parseYouTubeFeed(xml);
-      if (items.length) return items;
-    }
-  } catch(e) {}
-
-  // Method 3: proxy chain
-  try {
-    const xml = await proxyFetchMulti(feedUrl);
-    return parseYouTubeFeed(xml);
-  } catch(e) {}
-
-  throw new Error(`All methods failed for channel ${channelId}. YouTube may be temporarily blocking requests — try again in a few minutes.`);
+var SCORE_KEYS=['call_control','discovery_depth','belief_shifting','objection_handling','pitch_effectiveness','closing_strength'];
+var EQ_KEY='eq_in_closing';
+var SCORE_LABELS={call_control:'Call control',discovery_depth:'Discovery depth',belief_shifting:'Belief shifting',objection_handling:'Objection handling',pitch_effectiveness:'Pitch effectiveness',closing_strength:'Closing strength'};
+var PHASE_KEYS=['opener','discovery','pitch','objection_handling','close'];
+var PHASE_LABELS={opener:'Opener',discovery:'Discovery',pitch:'Pitch',objection_handling:'Objections',close:'Close'};
+var account='AlwaysCoach', comm=10, callType='pitched', currentResult=null, openCallId=null, fathomData=null;
+var selectedCallIds=new Set();
+function toggleCallSelect(id,checked){
+  if(checked) selectedCallIds.add(id); else selectedCallIds.delete(id);
+  var btn=document.getElementById('btn-rescore-selected');
+  if(btn) btn.textContent='Re-score selected ('+selectedCallIds.size+')';
 }
 
-async function resolveChannelId(handle) {
-  const channelUrl = `https://www.youtube.com/@${handle}`;
-  const proxies = [
-    { url: `https://corsproxy.io/?url=${encodeURIComponent(channelUrl)}`, isJson: false },
-    { url: `https://api.allorigins.win/get?url=${encodeURIComponent(channelUrl)}`, isJson: true },
-  ];
-  for (const p of proxies) {
-    try {
-      const r = await fetch(p.url, { signal: AbortSignal.timeout(12000) });
-      const html = p.isJson ? (await r.json()).contents || '' : await r.text();
-      const patterns = [/"channelId":"(UC[A-Za-z0-9_-]{22})"/, /"externalId":"(UC[A-Za-z0-9_-]{22})"/, /channel\/(UC[A-Za-z0-9_-]{22})/];
-      for (const pat of patterns) {
-        const m = html.match(pat);
-        if (m) return m[1];
-      }
-    } catch(e) {}
-    await new Promise(res => setTimeout(res, 800));
-  }
-  return null;
-}
-
-async function fetchYouTube(rawUrl) {
-  // UC channel ID in URL — most reliable
-  const ucm = rawUrl.match(/(UC[A-Za-z0-9_-]{22})/);
-  if (ucm) return fetchYouTubeDirect(ucm[1]);
-
-  // @handle URL
-  const hm = rawUrl.match(/youtube\.com\/@([A-Za-z0-9_.\-]+)/i);
-  const handle = hm ? hm[1] : null;
-  if (handle) {
-    // Try legacy username RSS via rss2json first
-    try {
-      const userFeed = `https://www.youtube.com/feeds/videos.xml?user=${handle}`;
-      const r = await fetch(`https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(userFeed)}`, { signal: AbortSignal.timeout(10000) });
-      const d = await r.json();
-      if (d.status === 'ok' && d.items?.length) {
-        return d.items.slice(0, 30).map(i => ({ type: 'youtube', title: i.title || '', url: i.link || '', desc: (i.description || '').replace(/<[^>]+>/g, '').slice(0, 300), date: (i.pubDate || '').slice(0, 10) })).filter(i => i.title);
-      }
-    } catch(e) {}
-
-    // Resolve handle to channel ID
-    const channelId = await resolveChannelId(handle);
-    if (channelId) return fetchYouTubeDirect(channelId);
-    throw new Error(`Could not resolve @${handle}. Go to their YouTube channel → right-click → View Page Source → search "channelId" → paste the UC... URL directly.`);
-  }
-
-  throw new Error('Unrecognized YouTube URL. Use youtube.com/@handle or a UC... channel URL.');
-}
-// ─── PODCAST FETCH ────────────────────────────────────────────────────────────
-async function fetchPodcast(rssUrl) {
-  const xml = await proxyFetch(rssUrl);
-  const doc = new DOMParser().parseFromString(xml, 'text/xml');
-  return Array.from(doc.querySelectorAll('item')).slice(0, 100).map(i => {
-    // Prefer <link> (web page URL) over <enclosure> (raw audio file)
-    const enclosureUrl = i.querySelector('enclosure')?.getAttribute('url') || '';
-    const rawLink = i.querySelector('link')?.textContent?.trim() || i.querySelector('link')?.nextSibling?.textContent?.trim() || '';
-    const isAudio = u => /\.(mp3|m4a|ogg|wav|aac)/i.test(u);
-    // Pick best URL: web link > Spotify episode page > enclosure
-    let url = (!isAudio(rawLink) && rawLink) ? rawLink : enclosureUrl;
-    // For Anchor/Spotify RSS, build a proper shareable episode URL
-    if (isAudio(url) && enclosureUrl.includes('anchor.fm')) {
-      const m = enclosureUrl.match(/\/episodes\/([^/?]+)/);
-      if (m) url = 'https://anchor.fm/episode/' + m[1];
-    }
-    return {
-      type: 'podcast',
-      title: i.querySelector('title')?.textContent || '',
-      url,
-      desc: (i.querySelector('description,summary')?.textContent || '').replace(/<[^>]+>/g, '').slice(0, 300),
-      date: i.querySelector('pubDate')?.textContent?.slice(0, 16) || ''
-    };
-  }).filter(i => i.title);
-}
-
-// ─── BLOG / ARTICLE FETCH ─────────────────────────────────────────────────────
-async function fetchBlogIndex(indexUrl) {
-  const html = await proxyFetch(indexUrl);
-  // Extract all internal links that look like article URLs
-  const base = new URL(indexUrl);
-  const links = new Set();
-  const regex = /href="([^"]+)"/g;
-  let m;
-  while ((m = regex.exec(html)) !== null) {
-    try {
-      const u = new URL(m[1], base.origin);
-      if (u.hostname === base.hostname && u.pathname !== '/' && u.pathname !== base.pathname && !u.pathname.match(/\.(jpg|jpeg|png|gif|svg|css|js|xml|json|pdf)$/i)) {
-        links.add(u.href);
-      }
-    } catch(e) {}
-  }
-  const urls = Array.from(links).slice(0, 15);
-  const items = [];
-  for (const url of urls.slice(0, 8)) {
-    try {
-      const art = await fetchArticle(url);
-      if (art) items.push(art);
-    } catch(e) {}
-  }
-  return items;
-}
-
-async function fetchArticle(url) {
-  const html = await proxyFetch(url);
-  const doc = new DOMParser().parseFromString(html, 'text/html');
-  // Remove nav/footer/script/style noise
-  ['nav','footer','header','script','style','aside'].forEach(t => doc.querySelectorAll(t).forEach(el => el.remove()));
-  const title = doc.querySelector('h1')?.textContent?.trim() || doc.querySelector('title')?.textContent?.trim() || '';
-  const body = (doc.querySelector('article,main,.post,.entry-content,.content') || doc.body)?.textContent?.replace(/\s+/g, ' ').trim().slice(0, 500) || '';
-  if (!title && !body) return null;
-  return { type: 'blog', title: title.slice(0, 120), url, desc: body, date: '' };
-}
-
-// ─── ADD INFLUENCER ───────────────────────────────────────────────────────────
-function addSourceRow() {
-  const n = srcCount++;
-  const div = document.createElement('div');
-  div.className = 'source-row'; div.id = 'src-' + n;
-  div.innerHTML = `<select id="stype-${n}"><option value="youtube">YouTube channel</option><option value="podcast">Podcast RSS</option><option value="blog-index">Blog index URL</option><option value="article">Article / page URL</option></select><input type="url" id="surl-${n}" placeholder="Paste URL..."><button class="btn btn-sm btn-danger" onclick="document.getElementById('src-${n}').remove()">×</button>`;
-  document.getElementById('source-rows').appendChild(div);
-}
-
-function collectSources() {
-  const sources = [];
-  for (let i = 0; i < srcCount; i++) {
-    const t = document.getElementById('stype-' + i);
-    const u = document.getElementById('surl-' + i);
-    if (t && u && u.value.trim()) sources.push({ type: t.value, url: u.value.trim() });
-  }
-  return sources;
-}
-
-async function addInfluencer() {
-  const name = document.getElementById('inf-name').value.trim();
-  const handle = document.getElementById('inf-handle').value.trim();
-  const niche = document.getElementById('inf-niche').value.trim();
-  const notes = document.getElementById('inf-notes').value.trim();
-  const sources = collectSources();
-  if (!name) { alert('Enter influencer name.'); return; }
-  if (!sources.length) { alert('Add at least one source URL.'); return; }
-
-  const inf = { id: Date.now(), name, handle, niche, notes, sources, items: [], socialItems: [], analysis: null, status: 'fetching', syncedAt: null };
-  DB.influencers.push(inf);
-  saveDB();
-  renderInfluencers(); updateAllSelects();
-
-  // Reset form
-  document.getElementById('inf-name').value = '';
-  document.getElementById('inf-handle').value = '';
-  document.getElementById('inf-niche').value = '';
-  document.getElementById('inf-notes').value = '';
-  document.getElementById('source-rows').innerHTML = `<div class="source-row" id="src-0"><select id="stype-0"><option value="youtube">YouTube channel</option><option value="podcast">Podcast RSS</option><option value="blog-index">Blog index URL</option><option value="article">Article / page URL</option></select><input type="url" id="surl-0" placeholder="Paste URL..."><button class="btn btn-sm btn-secondary" onclick="addSourceRow()">+</button></div>`;
-  srcCount = 1;
-
-  await fetchAndAnalyzeInfluencer(inf.id);
-}
-
-async function fetchAndAnalyzeInfluencer(infId) {
-  const inf = DB.influencers.find(x => x.id === infId);
-  if (!inf) return;
-  updateInfStatus(infId, 'Fetching content sources...', 10);
-
-  let allItems = [];
-  let srcDone = 0;
-  let lastError = '';
-  for (const src of inf.sources) {
-    try {
-      let items = [];
-      if (src.type === 'youtube') items = await fetchYouTube(src.url);
-      else if (src.type === 'podcast') items = await fetchPodcast(src.url);
-      else if (src.type === 'blog-index') items = await fetchBlogIndex(src.url);
-      else if (src.type === 'article') { const a = await fetchArticle(src.url); if (a) items = [a]; }
-      allItems = [...allItems, ...items];
-    } catch(e) {
-      lastError = e.message;
-      console.warn('Source fetch failed:', src.url, e.message);
-      updateInfStatus(infId, `⚠ Error on source ${srcDone+1}: ${e.message.slice(0,120)}`, Math.round(10 + (srcDone / inf.sources.length) * 50));
-      await new Promise(r => setTimeout(r, 2000));
-    }
-    srcDone++;
-    if (allItems.length) updateInfStatus(infId, `Fetched ${srcDone}/${inf.sources.length} sources (${allItems.length} items)...`, Math.round(10 + (srcDone / inf.sources.length) * 50));
-  }
-
-  inf.items = allItems;
-  if (!allItems.length) {
-    inf.status = 'error';
-    inf.errorMsg = lastError || 'Could not fetch content. Check the URL.';
-    saveDB(); renderInfluencers(); return;
-  }
-
-  updateInfStatus(infId, `Analyzing ${allItems.length} pieces of content with AI...`, 65);
-
-  const summary = allItems.slice(0, 25).map(i => `[${i.type.toUpperCase()}] ${i.title}${i.desc ? ' — ' + i.desc.slice(0, 120) : ''}`).join('\n');
-  const prompt = `Analyze content from influencer "${inf.name}" (handle: ${inf.handle || 'N/A'}, niche: ${inf.niche || 'N/A'}).
-
-Recent content:
-${summary}
-
-${inf.notes ? 'Extra context: ' + inf.notes : ''}
-
-Return a JSON object (no markdown, no backticks):
-{
-  "themes": ["theme1","theme2","theme3","theme4","theme5"],
-  "frameworks": ["framework or method 1","framework 2"],
-  "audience": "one sentence: who their content targets and what they want",
-  "tone": "one sentence: their communication style and energy",
-  "salesAngles": ["pain point / angle 1 a closer can use","angle 2","angle 3"],
-  "contentSummary": "2-3 sentence summary of what this influencer's content is about"
-}`;
-
-  try {
-    const text = await callAI(prompt, 600);
-    inf.analysis = JSON.parse(text.replace(/```json|```/g, '').trim());
-    inf.status = 'ready';
-  } catch(e) {
-    inf.status = 'ready';
-    inf.analysis = { themes: [], frameworks: [], audience: '', tone: '', salesAngles: [], contentSummary: '' };
-  }
-  inf.syncedAt = new Date().toISOString().slice(0, 10);
-  saveDB();
-  renderInfluencers();
-}
-
-function updateInfStatus(infId, msg, pct) {
-  const el = document.getElementById('inf-status-' + infId);
-  if (!el) return;
-  el.innerHTML = `<div style="font-size:11px;color:var(--text3);margin:4px 0">${msg}</div><div class="progress-bar"><div class="progress-fill" style="width:${pct}%"></div></div>`;
-}
-
-function deleteInfluencer(id) {
-  if (!confirm('Delete this influencer and all their content?')) return;
-  DB.influencers = DB.influencers.filter(i => i.id !== id);
-  saveDB(); renderInfluencers(); updateAllSelects();
-}
-
-async function reanalyze(id) {
-  const inf = DB.influencers.find(x => x.id === id);
-  if (!inf) return;
-  inf.status = 'fetching'; inf.items = []; saveDB(); renderInfluencers();
-  await fetchAndAnalyzeInfluencer(id);
-}
-
-function renderInfluencers() {
-  const el = document.getElementById('inf-list');
-  const cnt = document.getElementById('inf-count');
-  if (!DB.influencers.length) { el.innerHTML = '<div class="empty">No influencers yet.</div>'; cnt.textContent = ''; return; }
-  cnt.textContent = `(${DB.influencers.length})`;
-
-  el.innerHTML = DB.influencers.map(inf => {
-    const yt = inf.items.filter(i => i.type === 'youtube').length;
-    const pod = inf.items.filter(i => i.type === 'podcast').length;
-    const blog = inf.items.filter(i => i.type === 'blog').length;
-    const social = (inf.socialItems || []).length;
-    const statusBadge = inf.status === 'ready'
-      ? `<span class="badge badge-green">✓ Ready</span>`
-      : inf.status === 'error'
-      ? `<span class="badge badge-red">Error</span>`
-      : `<span class="badge badge-amber">Processing…</span>`;
-    const errorBlock = (inf.status === 'error' && inf.errorMsg)
-      ? `<div style="font-size:11px;color:var(--red-text);background:var(--red-bg);padding:6px 8px;border-radius:var(--radius);margin-top:6px;line-height:1.5">${inf.errorMsg}</div>` : '';
-    const topics = (inf.analysis?.themes || []).slice(0, 5).map(t => `<span class="topic-pill">${t}</span>`).join('');
-    const recent = inf.items.slice(0, 3).map(i => `<div class="item-row"><span class="badge ${i.type==='youtube'?'badge-red':i.type==='podcast'?'badge-green':'badge-blue'}" style="flex-shrink:0;font-size:9px">${i.type.slice(0,3).toUpperCase()}</span><div class="item-title"><span>${i.title}</span><div class="item-meta">${i.date || ''}</div></div></div>`).join('');
-    return `<div class="card">
-      <div class="card-header">
-        <div>
-          <div style="font-weight:600;font-size:14px">${inf.name} ${inf.handle ? `<span class="inf-handle">${inf.handle}</span>` : ''}</div>
-          ${inf.niche ? `<div style="font-size:12px;color:var(--text2)">${inf.niche}</div>` : ''}
-        </div>
-        <div style="display:flex;gap:6px;align-items:center">
-          ${statusBadge}
-          <button class="btn btn-sm btn-danger" onclick="deleteInfluencer(${inf.id})">✕</button>
-        </div>
-      </div>
-      <div id="inf-status-${inf.id}"></div>
-      ${errorBlock}
-      <div class="content-count-row">
-        ${yt ? `<span class="badge badge-red">${yt} videos</span>` : ''}
-        ${pod ? `<span class="badge badge-green">${pod} episodes</span>` : ''}
-        ${blog ? `<span class="badge badge-blue">${blog} articles</span>` : ''}
-        ${social ? `<span class="slack-badge">${social} posts</span>` : ''}
-        ${inf.syncedAt ? `<span class="badge badge-gray">Analyzed ${inf.syncedAt}</span>` : ''}
-      </div>
-      ${topics ? `<div style="margin-top:6px">${topics}</div>` : ''}
-      ${inf.analysis?.contentSummary ? `<div style="font-size:12px;color:var(--text2);margin-top:6px;line-height:1.5">${inf.analysis.contentSummary}</div>` : ''}
-      ${recent ? `<div style="margin-top:8px;border-top:1px solid var(--border);padding-top:6px">${recent}</div>` : ''}
-      ${(inf.status === 'ready' || inf.status === 'error') ? `<button class="btn btn-sm btn-secondary" style="margin-top:8px" onclick="reanalyze(${inf.id})">↺ Refresh</button>` : ''}
-    </div>`;
-  }).join('');
-}
-
-// ─── SLACK SYNC ───────────────────────────────────────────────────────────────
-function renderSlackPanel() {
-  const el = document.getElementById('slack-inf-list');
-  if (!el) return;
-  if (!DB.influencers.length) { el.innerHTML = '<div class="empty" style="padding:.5rem">Add influencers first.</div>'; return; }
-  el.innerHTML = DB.influencers.map(inf => {
-    const social = (inf.socialItems || []).length;
-    const lastSync = inf.lastSocialSync ? `<span class="badge badge-gray">Last synced ${inf.lastSocialSync}</span>` : '';
-    return `<div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--border)">
-      <div style="flex:1;font-size:13px;font-weight:500">${inf.name} <span style="font-size:11px;color:var(--text3);font-weight:400">${inf.handle || ''}</span></div>
-      <div style="display:flex;gap:6px;align-items:center">
-        ${social ? `<span class="slack-badge">${social} posts</span>` : '<span class="badge badge-gray">No posts yet</span>'}
-        ${lastSync}
-      </div>
-    </div>`;
-  }).join('');
-}
-
-function openClaudePrompt() {
-  const limit = document.getElementById('slack-limit').value;
-  const infNames = DB.influencers.map(i => `"${i.name}"`).join(', ');
-  const prompt = `Read the last ${limit} messages from the Slack channel #creator-socials (channel ID: C0B1TNT12CW).
-
-For each message that contains "New Instagram Post", extract:
-- account: text after "Account:"
-- creator: text after "Creator:"
-- type: text after "Type:" (Reel, Story, Image, Video)
-- caption: text after "Caption:" (if present, first 150 chars only)
-- posted: date after "Posted:" (YYYY-MM-DD format only)
-
-The influencers in the system are: ${infNames}
-
-Return ONLY a raw JSON array, no markdown, no backticks, no explanation:
-[{"account":"ScottyK Fitness","creator":"@scottykfitness","type":"Reel","caption":"...","posted":"2026-06-10"},...]
-
-Important: return ONLY the JSON array, nothing else.`;
-
-  const encodedPrompt = encodeURIComponent(prompt);
-  const url = `https://claude.ai/new?q=${encodedPrompt}`;
-  window.open(url, '_blank');
-}
-
-function importSlackJSON() {
-  const status = document.getElementById('slack-status');
-  const raw = document.getElementById('slack-json-paste').value.trim();
-  if (!raw) { status.textContent = 'Paste the JSON from Claude first.'; status.style.color = 'var(--red-text)'; return; }
-
-  let posts;
-  try {
-    // Strip any markdown formatting Claude may have added
-    let cleaned = raw.replace(/```json|```/g, '').trim();
-    // Find the JSON array — handle cases where Claude adds text before/after
-    const jsonMatch = cleaned.match(/\[[\s\S]*\]/);
-    if (!jsonMatch) throw new Error('No JSON array found');
-    // Fix common JSON issues: unescaped quotes in captions, newlines
-    let jsonStr = jsonMatch[0]
-      .replace(/\n/g, ' ')
-      .replace(/[\u0000-\u001F]/g, ' ');
-    posts = JSON.parse(jsonStr);
-  } catch(e) {
-    // Try line-by-line parsing as fallback
-    try {
-      const lines = raw.split('\n').filter(l => l.trim().startsWith('{'));
-      if (lines.length) {
-        posts = lines.map(l => { try { return JSON.parse(l.replace(/,$/, '')); } catch(e) { return null; } }).filter(Boolean);
-        if (!posts.length) throw new Error('empty');
-      } else throw new Error('no lines');
-    } catch(e2) {
-      status.textContent = 'Could not parse JSON — try copying just the JSON array from Claude (starting with [ and ending with ]).';
-      status.style.color = 'var(--red-text)';
-      return;
-    }
-  }
-
-  let matched = 0;
-  const today = new Date().toISOString().slice(0, 10);
-  for (const inf of DB.influencers) {
-    const infPosts = posts.filter(p => {
-      const acc = (p.account || '').toLowerCase();
-      const infName = inf.name.toLowerCase();
-      const handle = (inf.handle || '').toLowerCase().replace('@', '');
-      return acc.includes(infName) || infName.includes(acc) || acc.includes(handle) || (p.creator || '').toLowerCase().includes(handle);
-    }).map(p => ({
-      type: 'social',
-      platform: 'instagram',
-      postType: p.type || '',
-      title: p.caption ? p.caption.slice(0, 100) : `${p.type || 'Post'} — ${p.posted || ''}`,
-      url: '',
-      desc: p.caption || '',
-      date: p.posted || ''
-    }));
-    if (infPosts.length) {
-      inf.socialItems = infPosts;
-      inf.lastSocialSync = today;
-      matched += infPosts.length;
-    }
-  }
-
-  saveDB();
-  renderSlackPanel();
-  renderInfluencers();
-  document.getElementById('slack-json-paste').value = '';
-
-  if (matched) {
-    status.textContent = `Imported ${posts.length} posts — matched ${matched} to influencers.`;
-    status.style.color = 'var(--green-text)';
-  } else {
-    status.textContent = `Parsed ${posts.length} posts but none matched your influencer names. Check that names match exactly (e.g. "ScottyK Fitness" not "Scotty K").`;
-    status.style.color = 'var(--amber-text)';
-  }
-}
-// ─── PROSPECTS ────────────────────────────────────────────────────────────────
-// ─── PROSPECT SMART EXTRACT ──────────────────────────────────────────────────
-let screenshotBase64 = null;
-let screenshotType = null;
-
-function switchProspectTab(tab, btn) {
-  document.querySelectorAll('.tabs-inline .tab-inline').forEach(t => t.classList.remove('active'));
-  btn.classList.add('active');
-  document.getElementById('prospect-smart').style.display = tab === 'smart' ? 'block' : 'none';
-  document.getElementById('prospect-manual').style.display = tab === 'manual' ? 'block' : 'none';
-  document.getElementById('extracted-preview').style.display = 'none';
-  document.getElementById('manual-save-btn').style.display = tab === 'manual' ? 'block' : 'none';
-}
-
-function handleScreenshot(event) {
-  const file = event.target.files[0];
-  if (!file) return;
-  const reader = new FileReader();
-  reader.onload = e => {
-    screenshotBase64 = e.target.result.split(',')[1];
-    screenshotType = file.type;
-    document.getElementById('screenshot-img').src = e.target.result;
-    document.getElementById('screenshot-preview').style.display = 'block';
-    document.getElementById('screenshot-placeholder').style.display = 'none';
-  };
-  reader.readAsDataURL(file);
-}
-
-function clearScreenshot() {
-  screenshotBase64 = null; screenshotType = null;
-  document.getElementById('screenshot-img').src = '';
-  document.getElementById('screenshot-preview').style.display = 'none';
-  document.getElementById('screenshot-placeholder').style.display = 'block';
-  document.getElementById('screenshot-input').value = '';
-}
-
-// drag and drop
-document.addEventListener('DOMContentLoaded', () => {
-  const zone = document.getElementById('screenshot-drop');
-  if (!zone) return;
-  zone.addEventListener('dragover', e => { e.preventDefault(); zone.style.background = 'var(--blue-bg)'; });
-  zone.addEventListener('dragleave', () => { zone.style.background = '#fff'; });
-  zone.addEventListener('drop', e => {
-    e.preventDefault(); zone.style.background = '#fff';
-    const file = e.dataTransfer.files[0];
-    if (file && file.type.startsWith('image/')) {
-      const reader = new FileReader();
-      reader.onload = ev => {
-        screenshotBase64 = ev.target.result.split(',')[1];
-        screenshotType = file.type;
-        document.getElementById('screenshot-img').src = ev.target.result;
-        document.getElementById('screenshot-preview').style.display = 'block';
-        document.getElementById('screenshot-placeholder').style.display = 'none';
-      };
-      reader.readAsDataURL(file);
-    }
-  });
+document.addEventListener('DOMContentLoaded',function(){
+  var d=document.getElementById('call-date');
+  if(d) d.value=new Date().toISOString().substring(0,10);
 });
 
-async function smartExtract() {
-  const text = document.getElementById('smart-text').value.trim();
-  const infId = document.getElementById('smart-inf').value;
-  const status = document.getElementById('smart-status');
+function showPage(id,btn){
+  document.querySelectorAll('.page').forEach(function(p){p.classList.remove('active');});
+  document.querySelectorAll('.nav-btn').forEach(function(b){b.classList.remove('active');});
+  document.getElementById('page-'+id).classList.add('active');
+  btn.classList.add('active');
+  if(id==='dashboard') renderDashboard();
+}
+function selectAccount(el,name,c){
+  document.querySelectorAll('.account-btn').forEach(function(b){b.classList.remove('active');});
+  el.classList.add('active'); account=name; comm=c;
+}
+function selectType(el,type){
+  document.querySelectorAll('.type-btn').forEach(function(b){b.classList.remove('active');});
+  el.classList.add('active'); callType=type;
+}
 
-  if (!text && !screenshotBase64) { status.textContent = 'Add some text or a screenshot first.'; status.style.color = 'var(--red-text)'; return; }
-  if (!getApiKey()) { status.textContent = 'Add your API key in Settings first.'; status.style.color = 'var(--red-text)'; return; }
-
-  status.textContent = 'Extracting prospect info…'; status.style.color = 'var(--text2)';
-
-  const infNames = DB.influencers.map(i => i.name).join(', ') || 'none';
-  const systemPrompt = `Extract prospect information from the provided content (text, screenshot, or both).
-Return ONLY a JSON object with these exact fields (use empty string if unknown):
-{"name":"","role":"","company":"","offer":"","pain":"","style":"","notes":""}
-
-- name: full name of the prospect
-- role: job title or role
-- company: company name or industry  
-- offer: what product/service/program they are considering
-- pain: their stated struggles, problems, goals — be specific and thorough
-- style: inferred personality/buyer type (analytical, emotional, skeptical, fast decision maker, price-sensitive, etc.)
-- notes: anything else relevant — objections mentioned, urgency, timeline, social proof they've seen, funnel context
-
-Be thorough on pain and notes — extract everything useful for a sales closer.
-Return ONLY valid JSON, no markdown, no explanation.`;
-
-  try {
-    const messages = [];
-    const userContent = [];
-
-    if (screenshotBase64) {
-      userContent.push({ type: 'image', source: { type: 'base64', media_type: screenshotType, data: screenshotBase64 } });
-    }
-    if (text) {
-      userContent.push({ type: 'text', text: `Extract prospect info from this:
-
-${text}` });
-    } else {
-      userContent.push({ type: 'text', text: 'Extract prospect info from this screenshot.' });
-    }
-    messages.push({ role: 'user', content: userContent });
-
-    const key = getApiKey();
-    const res = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'x-api-key': key, 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true' },
-      body: JSON.stringify({ model: 'claude-sonnet-4-6', max_tokens: 800, system: systemPrompt, messages })
-    });
-    const d = await res.json();
-    if (d.error) throw new Error(d.error.message);
-    const raw = (d.content || []).map(b => b.text || '').join('').replace(/```json|```/g,'').trim();
-    const extracted = JSON.parse(raw);
-
-    // Fill the extracted preview fields
-    document.getElementById('p-name').value = extracted.name || '';
-    document.getElementById('p-role').value = extracted.role || '';
-    document.getElementById('p-company').value = extracted.company || '';
-    document.getElementById('p-offer').value = extracted.offer || '';
-    document.getElementById('p-pain').value = extracted.pain || '';
-    document.getElementById('p-style').value = extracted.style || '';
-    document.getElementById('p-notes').value = extracted.notes || '';
-    document.getElementById('p-inf').value = infId;
-
-    document.getElementById('extracted-preview').style.display = 'block';
-    document.getElementById('extracted-preview').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-    status.textContent = 'Extracted! Review the fields below and save.';
-    status.style.color = 'var(--green-text)';
-  } catch(e) {
-    status.textContent = 'Error: ' + e.message;
-    status.style.color = 'var(--red-text)';
+// FATHOM
+function onFathomInput(){
+  var val=document.getElementById('fathom-url').value.trim();
+  document.getElementById('btn-fetch').disabled=!val.includes('fathom.video');
+  if(!val){document.getElementById('fathom-meta').style.display='none';fathomData=null;}
+}
+async function fetchFathom(){
+  var url=document.getElementById('fathom-url').value.trim();
+  if(!url) return;
+  var btn=document.getElementById('btn-fetch');
+  btn.disabled=true; btn.innerHTML='...';
+  try{
+    var resp=await fetch('https://api.allorigins.win/get?url='+encodeURIComponent(url));
+    var data=await resp.json();
+    var html=data.contents||'';
+    var ogTitle=html.match(/<meta[^>]*property=["']og:title["'][^>]*content=["']([^"']+)["']/i);
+    var titleMatch=html.match(/<title[^>]*>([^<]+)<\/title>/i);
+    var ogDate=html.match(/\b(\d{4}-\d{2}-\d{2})\b/);
+    var attendeeMatch=html.match(/attendee[s]?[^:]*:\s*([^\n<]{5,80})/i);
+    fathomData={url:url,title:((ogTitle&&ogTitle[1])||(titleMatch&&titleMatch[1])||'').replace(' | Fathom','').trim(),date:ogDate?ogDate[1]:'',attendees:attendeeMatch?attendeeMatch[1].trim():''};
+    if(fathomData.attendees&&!document.getElementById('client').value.trim()) document.getElementById('client').value=fathomData.attendees;
+    if(fathomData.date) document.getElementById('call-date').value=fathomData.date;
+    var m=document.getElementById('fathom-meta');
+    m.style.display='block';
+    m.innerHTML=(fathomData.title?'<div><b>Meeting:</b> '+fathomData.title+'</div>':'')+(fathomData.date?'<div><b>Date:</b> '+fathomData.date+'</div>':'')+(fathomData.attendees?'<div><b>Attendees:</b> '+fathomData.attendees+'</div>':'')+'<div class="fathom-link"><a href="'+url+'" target="_blank">'+url+'</a></div>';
+  }catch(e){
+    fathomData={url:url,title:'',date:'',attendees:''};
+    var m=document.getElementById('fathom-meta');
+    m.style.display='block';
+    m.innerHTML='<span style="color:var(--warn)">Link saved (fetch blocked)</span><div class="fathom-link"><a href="'+url+'" target="_blank">'+url+'</a></div>';
   }
+  btn.disabled=false; btn.innerHTML='Fetch metadata';
 }
 
-function saveProspect() {
-  // Read from whichever set of fields is visible
-  const isManual = document.getElementById('prospect-manual').style.display !== 'none';
-  const prefix = isManual ? 'm' : 'p';
-  const name = document.getElementById(prefix+'-name').value.trim();
-  if (!name) { alert('Enter a name.'); return; }
-  const p = {
-    id: Date.now(), name,
-    role: document.getElementById(prefix+'-role').value.trim(),
-    company: document.getElementById(prefix+'-company').value.trim(),
-    offer: document.getElementById(prefix+'-offer').value.trim(),
-    pain: document.getElementById(prefix+'-pain').value.trim(),
-    style: document.getElementById(prefix+'-style').value.trim(),
-    infId: document.getElementById(prefix+'-inf').value,
-    notes: document.getElementById(prefix+'-notes').value.trim()
-  };
-  DB.prospects.push(p); saveDB(); renderProspects(); updateAllSelects();
-  // Clear
-  ['name','role','company','offer','pain','style','notes'].forEach(f => {
-    const el = document.getElementById(prefix+'-'+f);
-    if (el) el.value = '';
-  });
-  const infEl = document.getElementById(prefix+'-inf');
-  if (infEl) infEl.value = '';
-  document.getElementById('extracted-preview').style.display = 'none';
-  document.getElementById('smart-text').value = '';
-  document.getElementById('smart-status').textContent = '';
-  clearScreenshot();
+// STORAGE
+function loadCalls(){try{return JSON.parse(localStorage.getItem(STORAGE_KEY)||'[]');}catch(e){return[];}}
+function saveCalls(c){localStorage.setItem(STORAGE_KEY,JSON.stringify(c));}
+
+// HELPERS
+function cls(v){return v>=7.5?'hi':v>=5?'md':'lo';}
+function setStatus(id,msg,type){var el=document.getElementById(id);if(!el)return;el.textContent=msg;el.className='status'+(type?' '+type:'');}
+function totalScore(s){if(!s)return 0;return Math.round(SCORE_KEYS.reduce(function(a,k){return a+(s[k]||0);},0)*10)/10;}
+function avgScore(s){return totalScore(s);}
+function fmtMoney(n){return n?'$'+Math.round(n).toLocaleString():'—';}
+function monthKey(d){return d.toISOString().substring(0,7);}
+function nowMonthKey(){return monthKey(new Date());}
+
+// ANALYZE
+async function runAnalysis(){
+  var transcript=document.getElementById('transcript').value.trim();
+  var apiKey=document.getElementById('api-key').value.trim();
+  if(!transcript){setStatus('status','Paste a transcript first.','error');return;}
+  if(!apiKey){setStatus('status','Enter your Anthropic API key.','error');return;}
+  var btn=document.getElementById('btn-analyze');
+  btn.disabled=true; btn.innerHTML='<span class="spinner"></span> Analyzing...';
+  setStatus('status','Analyzing...','');
+  document.getElementById('results').style.display='none';
+  var refundAmt=parseFloat(document.getElementById('refund').value)||0;
+  var isNoPitch=callType==='not_pitched'||callType==='no_show';
+  var system='You are an expert sales coach. Return ONLY valid JSON, no markdown.\n\nExtract from transcript:\n- closer_name: salesperson name (empty if unclear)\n- client_name: prospect name (empty if unclear)\n- generated_revenue: total contract value USD (0 if not closed)\n- cash_collected: amount paid today USD (0 if not mentioned)\n- installments: number of monthly installments (1 if single, 0 if not closed)\n\n{\n  "closer_name":"","client_name":"","generated_revenue":0,"cash_collected":0,"installments":0,\n  "scores":{"call_control":<0-10>,"discovery_depth":<0-10>,"belief_shifting":<0-10>,"objection_handling":<0-10>,"pitch_effectiveness":<0-10>,"closing_strength":<0-10>,"eq_in_closing":<0-10>} Score all 7 categories 0-10. The 6 main categories (call_control through closing_strength) total out of 60; eq_in_closing is displayed separately out of 10.,\n  "phases":{"opener":<min>,"discovery":<min>,"pitch":<min>,"objection_handling":<min>,"close":<min>},\n  "strengths":["<strength1>","<strength2>","<strength3>"],\n  "improvements":["<improvement1>","<improvement2>","<improvement3>"],\n  "outcome":"<closed|no_close|follow_up|unknown>"\n}\n\n'+(isNoPitch?'No pitch was made. Score accordingly. Outcome = follow_up unless stated otherwise.\n\n':'')+'Score each category 0-10 based on actual execution in the transcript. Be specific and consistent — base every score on concrete moments in the call, not overall impression.\n\ncall_control (0-10): Did the closer set and hold the frame, agenda, and pace throughout? 0=no control, prospect drove the call entirely. 10=confident control maintained start to finish with no drift.\ndiscovery_depth (0-10): Did discovery surface real emotional drivers, consequences, and identity-level motivation (SPIN/NEPQ), or stay on surface facts? 0=almost no discovery. 10=deep emotional drivers fully surfaced and connected to the goal.\nbelief_shifting (0-10): Did the closer identify a limiting belief and actually shift it, with the prospect visibly acknowledging a new perspective? 0=no belief work attempted. 10=a clear limiting belief was named and the prospect\'s perspective visibly changed.\nobjection_handling (0-10): Was the real objection identified and fully resolved (not just discussed)? 0=objection ignored or avoided. 10=objection fully resolved, prospect no longer holds it.\npitch_effectiveness (0-10): Was the pitch specifically tied to what was discovered in this call, or a generic walkthrough? 0=no pitch or completely generic. 10=pitch built entirely around this prospect\'s specific stated pain and goals.\nclosing_strength (0-10): Was there a clear, confident ask with a concrete next step (date/action), or a passive ending? 0=no ask, no next step. 10=assumptive close, clear commitment and timeline secured.\neq_in_closing (0-10): Was there genuine warmth and emotional connection throughout, or a transactional/awkward tone? 0=cold or disconnected. 10=consistently warm, attuned, made the prospect feel safe and understood.\n\nA call that did not close due to a genuine objection (e.g. budget) can still score well on discovery_depth, belief_shifting, and eq_in_closing if those were executed well — closing_strength and objection_handling should reflect whether the specific objection was resolved, separate from whether a sale happened.';
+  try{
+    var resp=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','x-api-key':apiKey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+      body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:1200,system:system,messages:[{role:'user',content:'Account:'+account+'\nType:'+callType+'\n\nTRANSCRIPT:\n'+transcript}]})
+    });
+    var data=await resp.json();
+    if(data.error) throw new Error(data.error.message);
+    var text=data.content.map(function(b){return b.text||'';}).join('');
+    var clean=text.replace(/```json|```/g,'').trim();
+    var s=clean.indexOf('{'), e=clean.lastIndexOf('}');
+    if(s<0||e<0) throw new Error('No JSON in response');
+    var parsed=JSON.parse(clean.substring(s,e+1));
+    if(parsed.closer_name&&!document.getElementById('closer').value.trim()) document.getElementById('closer').value=parsed.closer_name;
+    if(parsed.client_name&&!document.getElementById('client').value.trim()) document.getElementById('client').value=parsed.client_name;
+    var finalCloser=document.getElementById('closer').value.trim()||parsed.closer_name||'Unknown';
+    var finalClient=document.getElementById('client').value.trim()||parsed.client_name||'';
+    var genRev=parsed.generated_revenue||0;
+    var cashCol=parsed.cash_collected||0;
+    var installments=parsed.installments||0;
+    var effectiveRefund=Math.min(refundAmt,genRev);
+    var effectiveGenRev=genRev-effectiveRefund;
+    var effectiveCash=effectiveRefund>=genRev?0:cashCol;
+    var cd=document.getElementById('call-date').value;
+    var fd=fathomData?fathomData.date:'';
+    var ts=(fd||cd)?((fd||cd)+'T12:00:00.000Z'):new Date().toISOString();
+    currentResult={
+      scores:parsed.scores,phases:parsed.phases,strengths:parsed.strengths||[],improvements:parsed.improvements||[],outcome:parsed.outcome||'unknown',
+      account:account,comm:comm,callType:callType,
+      closer:finalCloser,client:finalClient,
+      generatedRevenue:effectiveGenRev,cashCollected:effectiveCash,installments:installments,refund:effectiveRefund,
+      fathom:fathomData||null,transcript:transcript,timestamp:ts,id:Date.now()
+    };
+    renderResults(currentResult);
+    setStatus('status','Analysis complete ✓','success');
+    document.getElementById('save-status').textContent='';
+  }catch(e){
+    setStatus('status','Error: '+e.message,'error');
+  }
+  btn.disabled=false; btn.innerHTML='▶ Analyze transcript';
 }
 
-function deleteProspect(id) {
-  if (!confirm('Delete this prospect?')) return;
-  DB.prospects = DB.prospects.filter(p => p.id !== id);
-  saveDB(); renderProspects(); updateAllSelects();
-}
 
-function renderProspects() {
-  const el = document.getElementById('prospect-list');
-  const cnt = document.getElementById('p-count');
-  if (!DB.prospects.length) { el.innerHTML = '<div class="empty">No prospects yet.</div>'; cnt.textContent = ''; return; }
-  cnt.textContent = `(${DB.prospects.length})`;
-  el.innerHTML = DB.prospects.map(p => {
-    const inf = DB.influencers.find(i => String(i.id) === String(p.infId));
-    return `<div class="prospect-card">
-      <div class="card-header">
-        <div style="display:flex;align-items:center;gap:8px">
-          <div class="avatar">${p.name.split(' ').map(w => w[0]).slice(0,2).join('')}</div>
-          <div>
-            <div class="prospect-name">${p.name}</div>
-            <div style="font-size:11px;color:var(--text3)">${[p.role, p.company].filter(Boolean).join(' · ')}</div>
-          </div>
-        </div>
-        <div style="display:flex;gap:6px;align-items:center">
-          ${inf ? `<span class="badge badge-blue">${inf.name}</span>` : ''}
-          <button class="btn btn-sm btn-danger" onclick="deleteProspect(${p.id})">✕</button>
-        </div>
-      </div>
-      ${p.offer ? `<div style="font-size:12px;color:var(--text2);margin-top:6px">Offer: ${p.offer}</div>` : ''}
-      ${p.pain ? `<div style="font-size:12px;color:var(--text3);margin-top:3px">${p.pain.slice(0,100)}${p.pain.length>100?'...':''}</div>` : ''}
-    </div>`;
+
+function renderScoreGrid(elId,scores){
+  var el=document.getElementById(elId); if(!el) return;
+  var html=SCORE_KEYS.map(function(k){
+    var v=scores[k]||0, c=cls(v);
+    return '<div class="score-card"><div class="score-lbl">'+SCORE_LABELS[k]+'</div><div class="score-num '+c+'">'+v+'</div><div class="bar"><div class="bar-inner '+c+'" style="width:'+(v*10)+'%"></div></div></div>';
   }).join('');
+  // EQ separately
+  var eq=scores[EQ_KEY]||0, eqc=cls(eq);
+  html+='<div class="score-card" style="border:1px solid var(--border-md)"><div class="score-lbl">EQ in closing</div><div class="score-num '+eqc+'">'+eq+' / 10</div><div class="bar"><div class="bar-inner '+eqc+'" style="width:'+(eq*10)+'%"></div></div></div>';
+  el.innerHTML=html;
 }
 
-// ─── SELECTS ──────────────────────────────────────────────────────────────────
-function updateAllSelects() {
-  const infOpts = '<option value="">— select influencer —</option>' + DB.influencers.map(i => `<option value="${i.id}">${i.name}</option>`).join('');
-  ['p-inf','m-inf','smart-inf','feed-inf-sel'].forEach(id => { const el = document.getElementById(id); if (el) el.innerHTML = infOpts; });
-
-  const pOpts = '<option value="">— choose prospect —</option>' + DB.prospects.map(p => `<option value="${p.id}">${p.name}${p.company ? ' · ' + p.company : ''}</option>`).join('');
-  document.getElementById('prep-sel').innerHTML = pOpts;
-  document.getElementById('fu-sel').innerHTML = pOpts;
-
-  refreshHistoryFilters();
+function renderPhaseGrid(elId,phases,suffix){
+  var el=document.getElementById(elId); if(!el) return;
+  var total=PHASE_KEYS.reduce(function(s,k){return s+(phases[k]||0);},0);
+  el.innerHTML=PHASE_KEYS.map(function(k){
+    return '<div class="phase-card"><div class="phase-lbl">'+PHASE_LABELS[k]+'</div><div class="phase-val">'+(phases[k]||0)+'</div><div class="phase-unit">'+(suffix||'min')+'</div></div>';
+  }).join('')+'<div class="phase-card" style="border:1px solid var(--border-md)"><div class="phase-lbl">Total</div><div class="phase-val">'+total+'</div><div class="phase-unit">'+(suffix||'min')+'</div></div>';
 }
 
-// ─── PROSPECT CARDS ───────────────────────────────────────────────────────────
-function buildProspectCard(p) {
-  if (!p) return '';
-  const inf = DB.influencers.find(i => String(i.id) === String(p.infId));
-  return `<div class="card" style="margin:0">
-    <div style="display:flex;align-items:center;gap:10px">
-      <div class="avatar">${p.name.split(' ').map(w=>w[0]).slice(0,2).join('')}</div>
-      <div style="flex:1">
-        <div style="font-weight:600">${p.name}</div>
-        <div style="font-size:12px;color:var(--text2)">${[p.role,p.company,p.offer].filter(Boolean).join(' · ')}</div>
-      </div>
-      ${inf ? `<span class="badge badge-blue">${inf.name}</span>` : ''}
-    </div>
-    ${p.pain ? `<div style="font-size:12px;margin-top:8px;border-top:1px solid var(--border);padding-top:6px"><strong>Pain:</strong> ${p.pain}</div>` : ''}
-    ${p.style ? `<div style="font-size:12px;margin-top:3px"><strong>Style:</strong> ${p.style}</div>` : ''}
-    ${p.notes ? `<div style="font-size:12px;margin-top:3px;color:var(--text2)">${p.notes}</div>` : ''}
-  </div>`;
+function renderFeedbackBox(elId,strengths,improvements){
+  var el=document.getElementById(elId); if(!el) return;
+  var s=strengths||[], im=improvements||[];
+  el.innerHTML='<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">'
+    +'<div><div style="font-size:12px;font-weight:600;color:var(--success);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:8px">✓ Strengths</div>'
+    +s.map(function(x){return '<div style="font-size:13px;margin-bottom:6px;padding-left:8px;border-left:2px solid var(--success)">'+x+'</div>';}).join('')
+    +'</div><div><div style="font-size:12px;font-weight:600;color:var(--danger);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:8px">↑ Improve</div>'
+    +im.map(function(x){return '<div style="font-size:13px;margin-bottom:6px;padding-left:8px;border-left:2px solid var(--danger)">'+x+'</div>';}).join('')
+    +'</div></div>';
 }
 
-async function loadPrepProspect() {
-  const id = document.getElementById('prep-sel').value;
-  const el = document.getElementById('prep-prospect-card');
-  if (!id) { el.style.display = 'none'; return; }
-  const p = DB.prospects.find(x => String(x.id) === id);
-  if (!p) { el.style.display = 'none'; return; }
-  el.innerHTML = buildProspectCard(p);
-  el.style.display = 'block';
-  // Run AI sensitivity analysis in background
-  const sensitivity = await analyzeSensitivity(p);
-  if (sensitivity && (sensitivity.hasMedical || sensitivity.hasDemographic)) {
-    const flagHTML = `<div style="margin-top:8px;padding:8px 12px;background:#FFF8E6;border:1px solid #F0C040;border-radius:var(--radius);font-size:12px;color:#7A5000;line-height:1.5">
-      <strong>⚠️ ${sensitivity.warningLabel || 'Sensitive profile'}</strong><br>
-      ${[sensitivity.medicalSummary, sensitivity.demographicSummary].filter(Boolean).join(' · ')}<br>
-      <span style="color:#9A6500">Content suggestions and messages will be filtered accordingly.</span>
-    </div>`;
-    el.innerHTML = buildProspectCard(p) + flagHTML;
+function renderResults(r){
+  var s=r.scores, a=avgScore(s);
+  var remaining=r.generatedRevenue&&r.installments>1?r.generatedRevenue-r.cashCollected:0;
+  var instCommAmt=r.cashCollected?Math.round(r.cashCollected*r.comm/100):0;
+  document.getElementById('r-overall-grid').innerHTML=
+    '<div class="stat"><div class="stat-label">Total score</div><div class="stat-val" style="color:var(--accent)">'+a+' / 60</div></div>'
+    +'<div class="stat"><div class="stat-label">Cash collected</div><div class="stat-val" style="color:var(--success)">'+fmtMoney(r.cashCollected)+'</div></div>'
+    +'<div class="stat"><div class="stat-label">Revenue generated</div><div class="stat-val">'+fmtMoney(r.generatedRevenue)+'</div></div>'
+    +'<div class="stat"><div class="stat-label">Remaining</div><div class="stat-val" style="color:var(--purple)">'+fmtMoney(remaining)+'</div></div>'
+    +'<div class="stat"><div class="stat-label">Installments</div><div class="stat-val">'+(r.installments||'—')+'</div></div>'
+    +'<div class="stat"><div class="stat-label">Commission today</div><div class="stat-val" style="color:var(--success)">'+fmtMoney(instCommAmt)+'</div></div>';
+  renderScoreGrid('score-grid',s);
+  renderPhaseGrid('phase-grid',r.phases||{});
+  renderFeedbackBox('feedback',r.strengths,r.improvements);
+  document.getElementById('results').style.display='block';
+}
+
+function saveCall(){
+  if(!currentResult) return;
+  var calls=loadCalls();
+  if(calls.find(function(c){return c.id===currentResult.id;})){setStatus('save-status','Already saved.','');return;}
+  calls.unshift(currentResult);
+  saveCalls(calls);
+  setStatus('save-status','Saved to dashboard ✓','success');
+}
+
+// INSTALLMENT PROJECTION
+function projectInstallments(call){
+  // No installments to project if not closed, no revenue, or paid in full (cash == revenue)
+  if(!call.generatedRevenue||!call.installments||call.installments<=0) return [];
+  if(call.cashCollected>=call.generatedRevenue) return [];
+  if(call.installments===1) return [];
+  var instAmt=Math.round(call.generatedRevenue/call.installments);
+  var commAmt=Math.round(instAmt*(call.comm||0)/100);
+  var callDate=new Date(call.timestamp);
+  var rows=[];
+  for(var i=0;i<call.installments;i++){
+    var d=new Date(callDate);
+    d.setMonth(d.getMonth()+i);
+    rows.push({month:monthKey(d),amount:instAmt,commission:commAmt,first:i===0});
   }
+  return rows;
 }
 
-function loadFollowupProspect() {
-  const id = document.getElementById('fu-sel').value;
-  const el = document.getElementById('fu-prospect-card');
-  if (!id) { el.style.display = 'none'; return; }
-  const p = DB.prospects.find(x => String(x.id) === id);
-  el.innerHTML = buildProspectCard(p);
-  el.style.display = p ? 'block' : 'none';
+// DASHBOARD
+function getFiltered(){
+  var calls=loadCalls();
+  var fa=document.getElementById('f-account')?document.getElementById('f-account').value:'';
+  var ft=document.getElementById('f-type')?document.getElementById('f-type').value:'';
+  var fc=document.getElementById('f-client')?document.getElementById('f-client').value.toLowerCase().trim():'';
+  var fd1=document.getElementById('f-date-from')?document.getElementById('f-date-from').value:'';
+  var fd2=document.getElementById('f-date-to')?document.getElementById('f-date-to').value:'';
+  if(fa) calls=calls.filter(function(c){return c.account===fa;});
+  if(ft) calls=calls.filter(function(c){return c.callType===ft;});
+  if(fc) calls=calls.filter(function(c){return (c.client||'').toLowerCase().includes(fc);});
+  if(fd1) calls=calls.filter(function(c){return c.timestamp>=fd1;});
+  if(fd2) calls=calls.filter(function(c){return c.timestamp<=fd2+'T23:59:59';});
+  return calls;
 }
 
-// ─── CONTEXT BUILDERS ─────────────────────────────────────────────────────────
-// AI-powered sensitive profile analysis — runs once per prospect and caches result
-const sensitivityCache = {};
-
-async function analyzeSensitivity(p) {
-  if (sensitivityCache[p.id]) return sensitivityCache[p.id];
-  if (!getApiKey()) return null;
-
-  const profileText = [p.pain, p.notes, p.style, p.offer, p.role, p.company].filter(Boolean).join(' | ');
-
-  const prompt = `You are reviewing a sales prospect profile to identify any sensitivity flags before a closer recommends content or sends messages.
-
-Profile:
-${profileText}
-
-Analyze this profile and return a JSON object:
-{
-  "hasMedical": true/false,
-  "medicalSummary": "brief description of medical/health context if present, empty string if none",
-  "hasDemographic": true/false,
-  "demographicSummary": "brief description of demographic-specific context (age group, life stage, etc.) if present, empty string if none",
-  "contentInstructions": "specific instructions for what to avoid when recommending content and writing messages — be precise about what topics, language, and content types to avoid for THIS specific person. Empty string if no flags.",
-  "warningLabel": "short label for the UI warning badge, e.g. 'Medical condition + over 40' — empty string if no flags"
-}
-
-Be thorough. Medical context includes: injuries, chronic conditions, diagnosed conditions, medications, doctor involvement, recovery, surgery, mental health, eating disorders, hormonal issues. Demographic context includes: age groups, menopause, postpartum, pregnancy, specific life stages.
-Return ONLY valid JSON, no markdown.`;
-
-  try {
-    const res = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': getApiKey(),
-        'anthropic-version': '2023-06-01',
-        'anthropic-dangerous-direct-browser-access': 'true'
-      },
-      body: JSON.stringify({ model: 'claude-sonnet-4-6', max_tokens: 400, messages: [{ role: 'user', content: prompt }] })
-    });
-    const d = await res.json();
-    const text = (d.content || []).map(b => b.text || '').join('').replace(/```json|```/g, '').trim();
-    const result = JSON.parse(text);
-    sensitivityCache[p.id] = result;
-    return result;
-  } catch(e) {
-    return null;
-  }
-}
-
-function buildSafetyInstructions(sensitivityResult) {
-  if (!sensitivityResult) return '';
-  if (!sensitivityResult.hasMedical && !sensitivityResult.hasDemographic) return '';
-  if (!sensitivityResult.contentInstructions) return '';
-  return `\n\n⚠️ CONTENT SAFETY RULES FOR THIS PROSPECT:\n${sensitivityResult.contentInstructions}\n- When in doubt about a piece of content, skip it and explain why.\n- Flag any skipped content as "⚠️ SKIPPED — [reason]"`;
-}
-
-function buildProspectContext(p) {
-  const inf = DB.influencers.find(i => String(i.id) === String(p.infId));
-  let ctx = `Prospect: ${p.name}`;
-  if (p.role) ctx += `\nRole: ${p.role}`;
-  if (p.company) ctx += `\nCompany/Industry: ${p.company}`;
-  if (p.offer) ctx += `\nOffer considering: ${p.offer}`;
-  if (p.pain) ctx += `\nStated pain points: ${p.pain}`;
-  if (p.style) ctx += `\nPersonality/buyer type: ${p.style}`;
-  if (p.notes) ctx += `\nNotes: ${p.notes}`;
-  if (inf) {
-    ctx += `\n\nInfluencer they follow: ${inf.name}`;
-    if (inf.handle) ctx += ` (${inf.handle})`;
-    if (inf.niche) ctx += ` — ${inf.niche}`;
-    if (inf.analysis?.themes?.length) ctx += `\nInfluencer themes: ${inf.analysis.themes.join(', ')}`;
-    if (inf.analysis?.frameworks?.length) ctx += `\nInfluencer frameworks: ${inf.analysis.frameworks.join(', ')}`;
-    if (inf.analysis?.audience) ctx += `\nInfluencer audience: ${inf.analysis.audience}`;
-    if (inf.analysis?.salesAngles?.length) ctx += `\nSales angles from this content: ${inf.analysis.salesAngles.join('; ')}`;
-    if (inf.analysis?.tone) ctx += `\nInfluencer tone: ${inf.analysis.tone}`;
-    // Include recent social posts so AI can reference actual captions
-    const socialItems = (inf.socialItems || []).slice(0, 8);
-    if (socialItems.length) {
-      ctx += `\n\nRecent Instagram posts from ${inf.name}:\n`;
-      ctx += socialItems.map(s => `- [${s.postType || 'Post'}] "${s.desc || s.title}"`).join('\n');
-    }
-    // Include recent YouTube/podcast titles for freshness
-    const recentContent = (inf.items || []).slice(0, 6);
-    if (recentContent.length) {
-      ctx += `\n\nRecent content titles from ${inf.name}:\n`;
-      ctx += recentContent.map(i => `- [${i.type.toUpperCase()}] ${i.title}`).join('\n');
-    }
-  }
-  return ctx;
-}
-
-function buildContentBank(p) {
-  const inf = DB.influencers.find(i => String(i.id) === String(p.infId));
-  if (!inf) return '\n\nNo influencer linked to this prospect.';
-  const allItems = [...(inf.items || []), ...(inf.socialItems || [])];
-  if (!allItems.length) return '\n\nNo content fetched yet for this influencer.';
-  const lines = allItems.slice(0, 40).map(i => {
-    const prefix = i.type === 'youtube' ? '[YT]' : i.type === 'podcast' ? '[POD]' : i.type === 'blog' ? '[BLOG]' : '[IG]';
-    const link = i.url ? ` | ${i.url}` : '';
-    const desc = i.desc ? ` | ${i.desc.slice(0, 100)}` : '';
-    return `${prefix} ${i.title}${link}${desc}`;
-  }).join('\n');
-  return `\n\nContent bank for ${inf.name} (${allItems.length} items):\n${lines}`;
-}
-
-// ─── PRE-CALL PREP ────────────────────────────────────────────────────────────
-async function runPrep(mode) {
-  const id = document.getElementById('prep-sel').value;
-  if (!id) { alert('Select a prospect first.'); return; }
-  const p = DB.prospects.find(x => String(x.id) === id);
-  if (!p) return;
-  const goal = document.getElementById('prep-goal').value.trim();
-  const ctx = buildProspectContext(p);
-
-  const outId = 'prep-out-' + mode;
-  const label = mode === 'strategy' ? 'Pre-call strategy' : 'Content to send';
-  const container = document.getElementById('prep-outputs');
-
-  let block = document.getElementById(outId);
-  if (!block) {
-    block = document.createElement('div');
-    block.style.marginBottom = '1rem';
-    block.id = outId;
-    container.appendChild(block);
-  }
-  block.innerHTML = `<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px"><div class="sec-label" style="margin:0">${label}</div><button class="copy-btn" onclick="copyEl('${outId}-text')">Copy</button></div><div id="${outId}-text" class="ai-out loading">Generating…</div>`;
-
-  let prompt = '';
-  if (mode === 'strategy') {
-    prompt = `You are an expert sales coach. Write a pre-call brief that fits on one screen — scannable in 60 seconds.
-
-${ctx}
-${goal ? '\nCall goal: ' + goal : ''}
-
-Format exactly like this, no extra explanation:
-
-🎯 REAL MOTIVE
-One sentence: what they actually want underneath the stated pain.
-
-🔑 KEY QUESTIONS (pick 2-3, NEPQ + SPIN only)
-Use NEPQ-style questions (problem-aware, consequence-focused, identity-based) and SPIN questions (Situation, Problem, Implication, Need-payoff). No surface-level questions.
-• [question — label it: Situation / Problem / Implication / Need-payoff / Identity]
-• [question — label it]
-• [question — label it]
-
-⚡ OPENING ANGLE
-One sentence on how to open — what frame or hook to lead with given their influencer background.
-
-🚧 WATCH OUT FOR
-• [likely objection + one-line NEPQ response that redirects to their deeper motive]
-• [likely objection + one-line NEPQ response]
-
-📱 SOCIAL CONTENT ANGLES
-1-2 specific references from their influencer's recent posts or content that you can drop naturally in the call.
-
-🎓 FIELD BRIEFING — CLOSER'S CHEAT SHEET
-Based on the prospect's pain points and the influencer's niche, list 3-5 concepts or terms this prospect is likely to mention or care about. For each:
-[Term]: Plain-English explanation (1 sentence) + how this specific influencer thinks about or frames it, based on their content (1 sentence)
-
-Example format:
-Bulking: Intentionally eating more calories than you burn to gain muscle mass. [Influencer] frames this as a "building phase" and focuses on doing it without unnecessary fat gain.
-
-Keep every section tight. Max 2-3 lines each. No padding.`;
-  } else {
-    const bank = buildContentBank(p);
-    const sensitivityResult = await analyzeSensitivity(p);
-    const safetyInstructions = buildSafetyInstructions(sensitivityResult);
-    prompt = `You are an expert sales coach. A closer needs to know what content to send this prospect.
-
-${ctx}
-${bank}
-${goal ? '\nCall goal: ' + goal : ''}${safetyInstructions}
-
-Recommend the best content to send before this call. For each piece (up to 3):
-
-1. CONTENT — title and full URL
-2. WHY THIS PERSON — connect it specifically to their pain point or motive, not generic reasons
-3. WHEN TO SEND — how many days/hours before the call
-
-4. MESSAGE — write a complete ready-to-send text/DM message (not email) to accompany this link.
-   - 2-4 sentences max
-   - Warm and curious tone, not salesy
-   - Reference something specific about them or their situation
-   - End with a soft hook that makes them want to consume it before the call
-   - Sound like a real person texting someone they genuinely want to help — not a marketer, not a coach doing outreach. Casual grammar is fine. A sentence fragment is fine. No perfect three-part structure.
-   - No "I thought of you when I saw this", no "I truly believe this could help", no "just wanted to share". If it sounds like it came from a sequence, rewrite it.
-   - Each message must be meaningfully different in wording, opening and angle from the others
-
-Prioritize YouTube videos and podcast episodes. Be tactical and specific.`;
-  }
-
-  if (mode === 'briefing') {
-    const inf = DB.influencers.find(i => String(i.id) === String(p.infId));
-    const infName = inf ? inf.name : 'the influencer';
-    const infNiche = inf ? (inf.niche || '') : '';
-    const recentTitles = inf ? (inf.items || []).slice(0, 10).map(i => i.title).join(', ') : '';
-    const socialSample = inf ? (inf.socialItems || []).slice(0, 5).map(s => s.desc || s.title).join(' | ') : '';
-    const themes = inf?.analysis?.themes?.join(', ') || '';
-    prompt = `You are briefing a sales closer who is NOT an expert in this field. Your job is to explain every piece of jargon and every specific concept this prospect actually used in their own words — plus anything closely related that will likely come up on the call.
-
-STEP 1 — SCAN for all field-specific terms, jargon, goals, and concepts mentioned anywhere in the prospect profile below. Do not guess or add generic terms — only extract what is explicitly present or directly implied.
-
-PROSPECT PROFILE:
-Name: ${p.name}
-Pain: ${p.pain || ''}
-Goal/offer: ${p.offer || ''}
-Notes: ${p.notes || ''}
-Style: ${p.style || ''}
-
-STEP 2 — For every term you found, plus any closely related concepts they will almost certainly bring up given their stated goals, write a briefing entry.
-
-INFLUENCER CONTEXT:
-${infName} (${infNiche})
-Themes: ${themes}
-Recent content: ${recentTitles}
-
-Format exactly like this — one entry per term, no skipping:
-
-🎓 FIELD BRIEFING — ${infName}
-
-[Exact term from prospect's profile]
-What it means: [1 sentence, plain English, written for someone who knows nothing about this field]
-How ${infName} sees it: [Their specific angle or philosophy on this based on their content and niche — not generic, tied to their approach]
-What to say on the call: [A natural, conversational line the closer can use if this comes up — not salesy, sounds like a real person]
-
----
-
-Be exhaustive — if Ryan says "cut/fat loss phase leading into a long bulk" and "competition prep" and "shredded", ALL of those need entries. Do not group them together. Each term gets its own full entry.`;
-  }
-
-  try {
-    const text = await callAI(prompt, 1200);
-    document.getElementById(outId + '-text').className = 'ai-out';
-    document.getElementById(outId + '-text').textContent = text;
-    saveToHistory({ type: mode, prospectId: p.id, prospectName: p.name, content: text, goal, callDate: new Date().toISOString().slice(0,10) });
-  } catch(e) {
-    document.getElementById(outId + '-text').className = 'ai-out';
-    document.getElementById(outId + '-text').textContent = 'Error: ' + e.message;
-  }
-}
-
-// ─── POST-CALL FOLLOW-UP ──────────────────────────────────────────────────────
-async function runFollowup(mode) {
-  const id = document.getElementById('fu-sel').value;
-  if (!id) { alert('Select a prospect first.'); return; }
-  const transcript = document.getElementById('fu-transcript').value.trim();
-  if (!transcript) { alert('Paste the Fathom transcript first.'); return; }
-
-  const p = DB.prospects.find(x => String(x.id) === id);
-  if (!p) return;
-  const goal = document.getElementById('fu-goal').value.trim();
-  const ctx = buildProspectContext(p);
-  const bank = buildContentBank(p);
-
-  const outId = 'fu-out-' + mode;
-  const labels = { sequence: '7-day follow-up sequence', analysis: 'Call analysis' };
-  const container = document.getElementById('followup-outputs');
-
-  let block = document.getElementById(outId);
-  if (!block) {
-    block = document.createElement('div');
-    block.style.marginBottom = '1rem';
-    block.id = outId;
-    container.appendChild(block);
-  }
-
-  const copyBtn = mode === 'sequence'
-    ? `<button class="copy-btn" onclick="copyEl('${outId}-text')">Copy</button>
-       <button class="copy-btn" onclick="emailSequence('${outId}-text', '${p.name}')">📧 Email to me</button>`
-    : `<button class="copy-btn" onclick="copyEl('${outId}-text')">Copy</button>`;
-
-  block.innerHTML = `<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;flex-wrap:wrap;gap:6px"><div class="sec-label" style="margin:0">${labels[mode]}</div><div style="display:flex;gap:6px">${copyBtn}</div></div><div id="${outId}-text" class="ai-out loading">Generating…</div>`;
-
-  let prompt = '';
-
-  if (mode === 'sequence') {
-    const sensitivityResult = await analyzeSensitivity(p);
-    const safetyInstructions = buildSafetyInstructions(sensitivityResult);
-    prompt = `You are an expert sales closer. Build a complete post-call follow-up sequence for this prospect.
-
-${ctx}
-${goal ? '\nCall goal: ' + goal : ''}
-
-CALL TRANSCRIPT:
-${transcript.slice(0, 3000)}
-
-${bank}${safetyInstructions}
-
-Build a 7-day follow-up sequence. For each touchpoint output exactly this structure:
-
----
-📅 DAY [X] — [timing label e.g. "Same day", "Next morning", "Day 3"]
-📱 FORMAT: [Text/DM] or [Email]
-🎯 GOAL: [one sentence — what this message is trying to do]
-
-MESSAGE:
-[Full ready-to-send message. For texts: 2-4 sentences, written like you're texting a real person — incomplete thoughts fine, casual punctuation fine. For emails: subject line first (short and non-salesy), then 4-6 sentences — conversational, not formal. NO placeholders — use the prospect's actual name and real specifics from the call. If it reads like a template, rewrite it. No "I hope this message finds you well", no "I wanted to reach out", no "I truly believe". Think: how would you write this to a friend you just got off a call with?]
-
-📎 ATTACH: [If relevant, one piece of content from the bank to attach — title + URL. Otherwise write "None"]
-WHY: [One sentence on why this content fits this specific moment in the sequence]
----
-
-Sequence must cover: Day 0 (same day), Day 1, Day 3, Day 5, Day 7, Day 10, Day 14.
-
-Rules:
-- Use texts/DMs for Days 0, 1, 3 — short, casual, like you're texting a friend
-- Use email for Days 5, 7, 10, 14 — a bit more structured but still conversational, not formal
-- Each message must reference something SPECIFIC from the call — no generic follow-ups
-- Use NEPQ language: questions that surface consequences and identity, not feature pushes
-- Never use the word "just" — it kills authority
-- TONE — this is the most important rule: write like a real person, not a marketer. Incomplete thoughts are fine. Short punchy sentences. No "I hope this finds you well", no "I wanted to reach out", no "I truly believe". No three-part structures. If it reads like a sales email, rewrite it. Think: what would you actually text someone you genuinely care about helping?
-- Vary the angle and opening every single time — no repeated hooks`;
-
-  } else if (mode === 'analysis') {
-    prompt = `Analyze this sales call transcript and give a closer honest feedback.
-
-${ctx}
-${goal ? '\nCall goal: ' + goal : ''}
-
-CALL TRANSCRIPT:
-${transcript.slice(0, 3000)}
-
-Cover:
-1. WHAT WORKED — moments of rapport, good questions, effective frames
-2. WHERE YOU LOST THEM — moments of resistance, missed signals, weak responses
-3. THE REAL OBJECTION — what was the actual blocker (not just what they said)?
-4. WHAT TO DO NEXT — specific next action to move this forward, including an NEPQ or SPIN question to open with on the next touch
-5. COACHING NOTE — one specific NEPQ or SPIN technique to sharpen based on what happened on this call
-
-Be direct and honest. This closer wants to improve.`;
-  }
-
-  try {
-    const text = await callAI(prompt, 1400);
-    document.getElementById(outId + '-text').className = 'ai-out';
-    document.getElementById(outId + '-text').textContent = text;
-    saveToHistory({ type: mode, prospectId: p.id, prospectName: p.name, content: text, goal, callDate: new Date().toISOString().slice(0,10) });
-  } catch(e) {
-    document.getElementById(outId + '-text').className = 'ai-out';
-    document.getElementById(outId + '-text').textContent = 'Error: ' + e.message;
-  }
-}
-
-// ─── HISTORY ──────────────────────────────────────────────────────────────────
-function saveToHistory(entry) {
-  entry.id = Date.now();
-  entry.timestamp = new Date().toISOString();
-  // Store call date for digest grouping (date of the call, not when saved)
-  if (!entry.callDate) entry.callDate = new Date().toISOString().slice(0, 10);
-  DB.history.unshift(entry);
-  if (DB.history.length > 200) DB.history = DB.history.slice(0, 200);
-  saveDB();
-}
-
-// ─── EMAIL SEQUENCE ───────────────────────────────────────────────────────────
-function emailSequence(elId, prospectName) {
-  const text = document.getElementById(elId)?.textContent || '';
-  if (!text || text === 'Generating…') { alert('Wait for the sequence to finish generating.'); return; }
-  const subject = encodeURIComponent(`Follow-up sequence — ${prospectName}`);
-  const body = encodeURIComponent(text);
-  window.location.href = `mailto:?subject=${subject}&body=${body}`;
-}
-
-// ─── DAILY DIGEST ─────────────────────────────────────────────────────────────
-function buildDailyDigest() {
-  const today = new Date().toISOString().slice(0, 10);
-  const todayLabel = new Date().toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
-
-  // Gather today's pre-call preps
-  const preps = DB.history.filter(h => h.type === 'strategy' && h.timestamp?.slice(0, 10) === today);
-  // Gather sequences due today (Day 0 items from sequences saved today, or sequences from recent days)
-  const sequences = DB.history.filter(h => h.type === 'sequence' && h.timestamp?.slice(0, 10) === today);
-  // Also grab sequences from last 14 days that have steps due today
-  const recentSeqs = DB.history.filter(h => {
-    if (h.type !== 'sequence') return false;
-    const saved = new Date(h.timestamp);
-    const daysSince = Math.floor((Date.now() - saved) / 86400000);
-    return daysSince >= 0 && daysSince <= 14;
-  });
-
-  let digest = `CLOSER'S DAILY DIGEST — ${todayLabel}\n`;
-  digest += '='.repeat(50) + '\n\n';
-
-  if (preps.length) {
-    digest += '📋 PRE-CALL PREP\n' + '-'.repeat(30) + '\n\n';
-    for (const p of preps) {
-      digest += `👤 ${p.prospectName}\n`;
-      if (p.goal) digest += `Goal: ${p.goal}\n`;
-      digest += p.content + '\n\n';
-      digest += '-'.repeat(20) + '\n\n';
-    }
-  }
-
-  if (recentSeqs.length) {
-    digest += '\n📨 FOLLOW-UP SEQUENCES — MESSAGES DUE TODAY\n' + '-'.repeat(30) + '\n\n';
-    for (const seq of recentSeqs) {
-      const saved = new Date(seq.timestamp);
-      const daysSince = Math.floor((Date.now() - saved) / 86400000);
-      // Extract day blocks that match today
-      const dayBlocks = seq.content.split('---').filter(b => b.trim());
-      const dueDays = [0, 1, 3, 5, 7, 10, 14];
-      const dueToday = dueDays.includes(daysSince);
-      if (!dueToday) continue;
-      const matchingBlock = dayBlocks.find(b => {
-        const m = b.match(/DAY\s*(\d+)/i);
-        return m && parseInt(m[1]) === daysSince;
-      });
-      if (matchingBlock) {
-        digest += `👤 ${seq.prospectName} — Day ${daysSince}\n`;
-        digest += matchingBlock.trim() + '\n\n';
-        digest += '-'.repeat(20) + '\n\n';
+function renderDashboard(){
+  var calls=getFiltered();
+  var now=nowMonthKey();
+  var fd1=document.getElementById('f-date-from')?document.getElementById('f-date-from').value:'';
+  var fd2=document.getElementById('f-date-to')?document.getElementById('f-date-to').value:'';
+  var rangeStart=fd1?fd1.substring(0,7):'0000-00';
+  var rangeEnd=fd2?fd2.substring(0,7):'9999-99';
+
+  var closed=calls.filter(function(c){return (c.outcome||'').toLowerCase()==='closed';});
+  var taken=calls.filter(function(c){return c.callType!=='no_show';});
+  var pitchedAll=calls.filter(function(c){return c.callType==='pitched'||c.callType==='fdq';});
+  var pitchedOnly=calls.filter(function(c){return c.callType==='pitched';});
+  var fdqCalls=calls.filter(function(c){return c.callType==='fdq';});
+
+  var allClosed=loadCalls().filter(function(c){return (c.outcome||'').toLowerCase()==='closed';});
+  var fa=document.getElementById('f-account')?document.getElementById('f-account').value:'';
+  var noDateFilter=!fd1&&!fd2;
+  var todayMonth=now;
+  var cashPeriod=0,cashPassive=0,commPeriod=0,totalGenerated=0;
+
+  // Build passive installment schedule from ALL closed calls (for prev months calc)
+  // passiveMap[month] = {amount, commission} — only months AFTER the call date
+  var passiveMap={};
+  allClosed.forEach(function(c){
+    if(fa&&c.account!==fa) return;
+    projectInstallments(c).forEach(function(r){
+      if(!r.first){ // only passive (months 2+)
+        if(!passiveMap[r.month]) passiveMap[r.month]={amount:0,commission:0};
+        passiveMap[r.month].amount+=r.amount;
+        passiveMap[r.month].commission+=r.commission;
       }
+    });
+  });
+
+  if(noDateFilter){
+    // CASH PERIOD: first payments from all closed calls + passive installments due up to today
+    // CASH PREV MONTHS: always $0
+    // COMMISSION: commission on all cash (active + passive) up to today
+    // REVENUE GENERATED: contracted value of all closed calls
+    allClosed.forEach(function(c){
+      if(fa&&c.account!==fa) return;
+      cashPeriod+=c.cashCollected||0;
+      commPeriod+=Math.round((c.cashCollected||0)*(c.comm||0)/100);
+      totalGenerated+=c.generatedRevenue||0;
+    });
+    Object.keys(passiveMap).forEach(function(m){
+      if(m<=todayMonth){
+        cashPeriod+=passiveMap[m].amount;
+        commPeriod+=passiveMap[m].commission;
+      }
+    });
+  } else {
+    // CASH PERIOD: first payments (cashCollected) from closed calls within date range
+    // CASH PREV MONTHS: passive installments from calls closed BEFORE range but falling within range
+    // COMMISSION: commission on period cash + commission on prev months cash
+    // REVENUE GENERATED: contracted value of closed calls within date range
+    allClosed.forEach(function(c){
+      if(fa&&c.account!==fa) return;
+      var cDate=(c.dateClosed||c.timestamp||'').substring(0,10);
+      var cMon=cDate.substring(0,7);
+      if(cMon>=rangeStart&&cMon<=rangeEnd){
+        // Call closed within selected range — count first payment and revenue
+        cashPeriod+=c.cashCollected||0;
+        commPeriod+=Math.round((c.cashCollected||0)*(c.comm||0)/100);
+        totalGenerated+=c.generatedRevenue||0;
+      }
+    });
+    // Passive installments from older calls falling within selected range
+    Object.keys(passiveMap).forEach(function(m){
+      if(m>=rangeStart&&m<=rangeEnd){
+        cashPassive+=passiveMap[m].amount;
+        commPeriod+=passiveMap[m].commission;
+      }
+    });
+  }
+
+  document.getElementById('kpi-cash-period').textContent='$'+cashPeriod.toLocaleString();
+  document.getElementById('kpi-cash-passive').textContent='$'+cashPassive.toLocaleString();
+  document.getElementById('kpi-comm-period').textContent='$'+commPeriod.toLocaleString();
+  document.getElementById('kpi-generated').textContent='$'+totalGenerated.toLocaleString();
+  document.getElementById('kpi-booked').textContent=calls.length;
+  document.getElementById('kpi-taken').textContent=taken.length;
+  document.getElementById('kpi-pitched-count').textContent=pitchedAll.length;
+  document.getElementById('kpi-closed-count').textContent=closed.length;
+  document.getElementById('kpi-fdq-count').textContent=fdqCalls.length;
+
+  // Avg calls/day
+  if(fd1&&fd2){
+    var days=Math.max(1,Math.round((new Date(fd2)-new Date(fd1))/(86400000))+1);
+    document.getElementById('kpi-avg-day').textContent=(taken.length/days).toFixed(1);
+    document.getElementById('kpi-avg-day-sub').textContent='over '+days+' days';
+  }else if(calls.length>1){
+    var dates=calls.map(function(c){return new Date(c.timestamp);}).sort(function(a,b){return a-b;});
+    var days=Math.max(1,Math.round((dates[dates.length-1]-dates[0])/86400000)+1);
+    document.getElementById('kpi-avg-day').textContent=(taken.length/days).toFixed(1);
+    document.getElementById('kpi-avg-day-sub').textContent='over '+days+' days';
+  }else{
+    document.getElementById('kpi-avg-day').textContent='—';
+    document.getElementById('kpi-avg-day-sub').textContent='';
+  }
+
+  // Close rates
+  function cr(den){return den.length?Math.round(closed.filter(function(c){return den.indexOf(c)>-1;}).length/den.length*100)+'%':'—';}
+  function crSub(den,label){return den.length?(closed.filter(function(c){return den.indexOf(c)>-1;}).length+' of '+den.length+' '+label):'';}
+  document.getElementById('kpi-cr-booked').textContent=cr(calls);
+  document.getElementById('kpi-cr-booked-sub').textContent=crSub(calls,'booked');
+  document.getElementById('kpi-cr-showed').textContent=cr(taken);
+  document.getElementById('kpi-cr-showed-sub').textContent=crSub(taken,'showed');
+  document.getElementById('kpi-cr-pitched-all').textContent=cr(pitchedAll);
+  document.getElementById('kpi-cr-pitched-all-sub').textContent=crSub(pitchedAll,'pitched');
+  document.getElementById('kpi-cr-pitched-excl').textContent=cr(pitchedOnly);
+  document.getElementById('kpi-cr-pitched-excl-sub').textContent=crSub(pitchedOnly,'pitched');
+
+  // Synth section
+  document.getElementById('synth-section').style.display=calls.length?'block':'none';
+  // Load cached synth for current filter combo
+  var synthKey=getSynthKey(calls);
+  var cached=loadSynth(synthKey);
+  var sc=document.getElementById('synth-content');
+  if(sc){
+    if(cached&&cached.strengths&&cached.strengths.length&&cached.strengths[0]!=='...'){
+      renderFeedbackBox('synth-content',cached.strengths,cached.improvements);
+      document.getElementById('btn-synth').textContent='Refresh insights';
+    } else {
+      sc.innerHTML='<span style="font-size:13px;color:var(--muted)">Click \"Generate insights\" to synthesize top strengths and improvements across the filtered calls.</span>';
+      document.getElementById('btn-synth').textContent='Generate insights';
     }
   }
 
-  if (!preps.length && !recentSeqs.length) {
-    digest += 'No calls or follow-ups scheduled for today.\n';
+  // Aggregate scores
+  var aggEl=document.getElementById('agg-section');
+  if(calls.length){
+    aggEl.style.display='block';
+    var avgScores={};
+    SCORE_KEYS.forEach(function(k){avgScores[k]=Math.round(calls.reduce(function(s,c){return s+((c.scores&&c.scores[k])||0);},0)/calls.length*10)/10;});
+    avgScores[EQ_KEY]=Math.round(calls.reduce(function(s,c){return s+((c.scores&&c.scores[EQ_KEY])||0);},0)/calls.length*10)/10;
+    renderScoreGrid('agg-scores',avgScores);
+    var avgPhases={};
+    PHASE_KEYS.forEach(function(k){avgPhases[k]=Math.round(calls.reduce(function(s,c){return s+((c.phases&&c.phases[k])||0);},0)/calls.length);});
+    renderPhaseGrid('agg-phases',avgPhases,'min avg');
+  }else{
+    aggEl.style.display='none';
   }
 
-  return digest;
-}
+  // Table
+  var list=document.getElementById('calls-list');
+  if(!calls.length){list.innerHTML='<div class="empty-state">No calls match your filters.</div>';return;}
+  var typeLbl={pitched:'Pitched',not_pitched:'Not Pitched',fdq:'FDQ',no_show:'No Show'};
+  var typeCls={pitched:'badge-pitched',not_pitched:'badge-fdq',fdq:'badge-fdq',no_show:'badge-no'};
+  var outLbl={closed:'Closed',no_close:'No close',follow_up:'Follow up',unknown:'Unknown'};
+  var outCls={closed:'badge-closed',no_close:'badge-no',follow_up:'badge-follow',unknown:'badge-unknown'};
+  var totalCash=0,totalRev=0,totalComm2=0;
+  var rows=calls.map(function(c){
+      var a=avgScore(c.scores);
+      var sc=a>=45?'var(--success)':a>=30?'var(--warn)':'var(--danger)';
+      var dt=new Date(c.timestamp).toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'2-digit'});
+      var ot=(c.outcome||'unknown').toLowerCase();
+      var ct=c.callType||'pitched';
+      // Commission = commission on first payment (if in range) + passive installments in range
+      var comm2=0;
+      var cDate=(c.dateClosed||c.timestamp||'').substring(0,10);
+      var cMon=cDate.substring(0,7);
+      // First payment commission
+      if(noDateFilter||(cMon>=rangeStart&&cMon<=rangeEnd)){
+        comm2+=Math.round((c.cashCollected||0)*(c.comm||0)/100);
+      }
+      // Passive installments commission in range
+      projectInstallments(c).forEach(function(r){
+        if(r.first) return;
+        var inRange=noDateFilter?(r.month<=todayMonth):(r.month>=rangeStart&&r.month<=rangeEnd);
+        if(inRange) comm2+=r.commission;
+      });
+      totalCash+=c.cashCollected||0;
+      totalRev+=c.generatedRevenue||0;
+      totalComm2+=comm2;
+      var checked=selectedCallIds.has(c.id)?' checked':'';
+      return '<tr onclick="openModal('+c.id+')">'
+        +'<td onclick="event.stopPropagation()"><input type="checkbox" '+checked+' onchange="toggleCallSelect('+c.id+',this.checked)"></td>'
+        +'<td style="color:var(--muted);white-space:nowrap">'+dt+'</td>'
+        +'<td style="font-weight:500">'+c.account+'</td>'
+        +'<td>'+(c.client||'—')+'</td>'
+        +'<td><span class="badge '+(typeCls[ct]||'badge-fdq')+'">'+(typeLbl[ct]||ct)+'</span></td>'
+        +'<td><span style="font-weight:600;color:'+sc+'">'+a+'/60</span></td>'
+        +'<td>'+fmtMoney(c.cashCollected)+'</td>'
+        +'<td>'+fmtMoney(c.generatedRevenue)+'</td>'
+        +'<td style="color:var(--success);font-weight:500">'+(comm2?'$'+comm2.toLocaleString():'—')+'</td>'
+        +'<td><span class="badge '+(outCls[ot]||'badge-unknown')+'">'+(outLbl[ot]||ot)+'</span></td>'
+        +'<td>'+(c.fathom&&c.fathom.url?'<a href="'+c.fathom.url+'" target="_blank" onclick="event.stopPropagation()" style="font-size:11px;color:var(--accent-mid)">▶</a>':'')+'</td>'
+        +'</tr>';
+    }).join('');
+  var tfootRow='<tr style="border-top:2px solid var(--border-md);font-weight:700;background:var(--surface2)">'
+    +'<td colspan="6" style="padding:10px 12px;font-size:12px;letter-spacing:.05em">TOTALS</td>'
+    +'<td style="padding:10px 12px">$'+totalCash.toLocaleString()+'</td>'
+    +'<td style="padding:10px 12px">$'+totalRev.toLocaleString()+'</td>'
+    +'<td style="padding:10px 12px;color:var(--success)">$'+totalComm2.toLocaleString()+'</td>'
+    +'<td colspan="2"></td>'
+    +'</tr>';
+  list.innerHTML='<table class="calls-table"><thead><tr><th style="width:28px"></th><th>Date</th><th>Account</th><th>Client</th><th>Type</th><th>Score</th><th>Cash</th><th>Revenue</th><th>Commission</th><th>Outcome</th><th></th></tr></thead><tbody>'+rows+'</tbody><tfoot>'+tfootRow+'</tfoot></table>';
 
-function openDailyDigest() {
-  const digest = buildDailyDigest();
-  const today = new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
-  const subject = encodeURIComponent(`Closer's daily digest — ${today}`);
-  // mailto has a ~2000 char URL limit in most browsers — truncate body if needed
-  const fullBody = encodeURIComponent(digest);
-  if (fullBody.length < 1800) {
-    window.open(`mailto:?subject=${subject}&body=${fullBody}`, '_blank');
-  } else {
-    // Body too long — copy to clipboard and open empty email
-    navigator.clipboard.writeText(digest).then(() => {
-      alert('Digest copied to clipboard!\n\nYour email client will open — paste the digest into the body.');
-      window.open(`mailto:?subject=${subject}`, '_blank');
-    }).catch(() => {
-      // Fallback: show in a textarea for manual copy
-      const win = window.open('', '_blank');
-      win.document.write('<pre style="font-family:monospace;padding:20px;white-space:pre-wrap">' + digest.replace(/</g,'&lt;') + '</pre>');
+  // Objections ranking
+  var objPatterns=[
+    {label:'Price / too expensive',    keys:['expensive','price','too much','afford','budget','cost','high','money','invest','financial','can\'t pay','£','$','canadian','usd']},
+    {label:'Need to think / not sure', keys:['think about it','not sure','need time','let me think','consider','unsure','hesitant','not ready','maybe','i\'ll get back']},
+    {label:'Spouse / partner approval',keys:['husband','wife','partner','spouse','significant other','together','my husband','my wife','talk to']},
+    {label:'Financial hardship',        keys:['no money','broke','can\'t afford','disability','church','student','debt','loan','tight','no funds','no budget','unemployed']},
+    {label:'Payment / card issues',    keys:['card','klarna','sunbit','split','payment failed','limit','declined','no credit','debit','bank']},
+    {label:'Already tried coaching',   keys:['tried before','previous coach','didn\'t work','had a coach','already done','failed before','worked with']},
+    {label:'Need more info / research',keys:['more information','research','compare','other options','other coaches','shopping around','looking at']},
+    {label:'Time / schedule',          keys:['no time','too busy','schedule','time commitment','vacation','holiday','away','travel','busy']},
+    {label:'Not enough pain / urgency',keys:['not that bad','fine right now','not urgent','don\'t really need','manage on my own','okay without']},
+    {label:'Online / remote concern',  keys:['online','remote','prefer in person','zoom','virtual','screen','not tech']}
+  ];
+  var objCounts={};
+  objPatterns.forEach(function(p){objCounts[p.label]=0;});
+  var filteredCalls=getFiltered();
+  filteredCalls.forEach(function(c){
+    var text=((c.transcript||'')+' '+(c.improvements||[]).join(' ')+' '+(c.strengths||[]).join(' ')).toLowerCase();
+    objPatterns.forEach(function(p){
+      var hit=p.keys.some(function(k){return text.indexOf(k)>=0;});
+      if(hit) objCounts[p.label]++;
     });
+  });
+  var objSorted=Object.keys(objCounts).map(function(k){return {label:k,count:objCounts[k]};})
+    .filter(function(o){return o.count>0;})
+    .sort(function(a,b){return b.count-a.count;});
+  var objEl=document.getElementById('objections-list');
+  if(objSorted.length){
+    var maxCount=objSorted[0].count;
+    objEl.innerHTML=objSorted.map(function(o,i){
+      var pct=Math.round(o.count/filteredCalls.length*100);
+      var barW=Math.round(o.count/maxCount*100);
+      return '<div style="margin-bottom:10px">'
+        +'<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:3px">'
+        +'<span style="font-size:13px;font-weight:500">'+(i+1)+'. '+o.label+'</span>'
+        +'<span style="font-size:12px;color:var(--muted);font-weight:600">'+o.count+'x &nbsp;'+pct+'%</span>'
+        +'</div>'
+        +'<div style="height:7px;background:var(--border-md);border-radius:4px;overflow:hidden">'
+        +'<div style="height:100%;width:'+barW+'%;background:var(--accent);border-radius:4px;transition:width .3s"></div>'
+        +'</div>'
+        +'</div>';
+    }).join('');
+  } else {
+    objEl.innerHTML='<span style="font-size:13px;color:var(--muted)">No objection data found for selected calls.</span>';
+  }
+
+  // Recurring payments table
+  var recurringEl=document.getElementById('recurring-section');
+  var recurringList=document.getElementById('recurring-list');
+  var recurringRows=[];
+  // Show recurring payments for closed calls with installments > 1
+  allClosed.forEach(function(c){
+    if(fa&&c.account!==fa) return;
+    if(!c.installments||c.installments<=1) return;
+    var insts=projectInstallments(c);
+    if(!insts.length) return;
+    var callMon=monthKey(new Date(c.timestamp));
+    insts.forEach(function(r,i){
+      var inRange=noDateFilter?(r.month<=todayMonth):(r.month>=rangeStart&&r.month<=rangeEnd);
+      if(!inRange) return;
+      var instNum=i+1;
+      recurringRows.push({
+        account:c.account,
+        client:c.client||'—',
+        instNum:instNum,
+        instTotal:c.installments,
+        amount:r.amount,
+        commission:r.commission,
+        month:r.month,
+        first:r.first
+      });
+    });
+  });
+  if(recurringRows.length){
+    recurringEl.style.display='block';
+    var totalAmt=recurringRows.reduce(function(s,r){return s+r.amount;},0);
+    var totalComm=recurringRows.reduce(function(s,r){return s+r.commission;},0);
+    // Total commission on all revenue generated (contracted value * comm rate)
+    var totalCommOnRev=0;
+    allClosed.forEach(function(c){
+      if(fa&&c.account!==fa) return;
+      totalCommOnRev+=Math.round((c.generatedRevenue||0)*(c.comm||0)/100);
+    });
+    var thead='<table style="width:100%;border-collapse:collapse;font-size:13px">'
+      +'<thead><tr style="color:var(--muted);font-size:11px;font-weight:700;letter-spacing:.06em;border-bottom:1px solid var(--border-md)">'
+      +'<th style="text-align:left;padding:6px 8px">ACCOUNT</th>'
+      +'<th style="text-align:left;padding:6px 8px">CLIENT</th>'
+      +'<th style="text-align:left;padding:6px 8px">INSTALLMENT</th>'
+      +'<th style="text-align:left;padding:6px 8px">MONTH</th>'
+      +'<th style="text-align:right;padding:6px 8px">AMOUNT</th>'
+      +'<th style="text-align:right;padding:6px 8px">COMMISSION</th>'
+      +'</tr></thead><tbody>';
+    var tbody=recurringRows.map(function(r){
+      var lbl=new Date(r.month+'-15').toLocaleDateString('en-GB',{month:'short',year:'numeric'});
+      var badge=r.first
+        ?'<span style="font-size:10px;background:var(--accent-light);color:var(--accent);padding:2px 6px;border-radius:4px;font-weight:600">Active</span>'
+        :'<span style="font-size:10px;background:#f3f0ff;color:var(--purple);padding:2px 6px;border-radius:4px;font-weight:600">Passive</span>';
+      return '<tr style="border-bottom:1px solid var(--border)">'
+        +'<td style="padding:8px 8px;font-weight:600">'+r.account+'</td>'
+        +'<td style="padding:8px 8px">'+r.client+'</td>'
+        +'<td style="padding:8px 8px">'+badge+' '+r.instNum+'/'+r.instTotal+'</td>'
+        +'<td style="padding:8px 8px;color:var(--muted)">'+lbl+'</td>'
+        +'<td style="padding:8px 8px;text-align:right;font-weight:600">$'+r.amount.toLocaleString()+'</td>'
+        +'<td style="padding:8px 8px;text-align:right;color:var(--success);font-weight:600">$'+r.commission.toLocaleString()+'</td>'
+        +'</tr>';
+    }).join('');
+    var tfoot='<tr style="border-top:2px solid var(--border-md);font-weight:700;background:var(--surface2)">'
+      +'<td colspan="4" style="padding:10px 8px;font-size:12px;font-weight:700;letter-spacing:.05em">TOTALS</td>'
+      +'<td style="padding:10px 8px;text-align:right;font-size:14px">$'+totalAmt.toLocaleString()+'</td>'
+      +'<td style="padding:10px 8px;text-align:right;font-size:14px;color:var(--success)">$'+totalComm.toLocaleString()+'</td>'
+      +'</tr>'
+      +'<tr style="background:var(--surface2)">'
+      +'<td colspan="5" style="padding:6px 8px;font-size:12px;color:var(--muted)">Total commission on contracted revenue</td>'
+      +'<td style="padding:6px 8px;text-align:right;font-size:13px;color:var(--success);font-weight:600">$'+totalCommOnRev.toLocaleString()+'</td>'
+      +'</tr>';
+    recurringList.innerHTML=thead+tbody+'</tbody><tfoot>'+tfoot+'</tfoot></table>';
+  }else{
+    recurringEl.style.display='none';
   }
 }
 
-function refreshHistoryFilters() {
-  const pSel = document.getElementById('hist-filter-prospect');
-  if (!pSel) return;
-  const cur = pSel.value;
-  pSel.innerHTML = '<option value="">All prospects</option>' + DB.prospects.map(p => `<option value="${p.id}">${p.name}</option>`).join('');
-  if (cur) pSel.value = cur;
+function resetFilters(){
+  ['f-account','f-type','f-client','f-date-from','f-date-to'].forEach(function(id){var el=document.getElementById(id);if(el)el.value='';});
+  renderDashboard();
 }
 
-function renderHistory() {
-  const el = document.getElementById('history-list');
-  if (!el) return;
-  const pFilter = document.getElementById('hist-filter-prospect')?.value || '';
-  const tFilter = document.getElementById('hist-filter-type')?.value || '';
-
-  let items = DB.history;
-  if (pFilter) items = items.filter(h => String(h.prospectId) === pFilter);
-  if (tFilter) items = items.filter(h => h.type === tFilter);
-
-  if (!items.length) { el.innerHTML = '<div class="empty">No history yet.</div>'; return; }
-
-  const typeLabels = { strategy: 'Pre-call strategy', content: 'Content recs', 'followup-content': 'Follow-up content', 'followup-email': 'Follow-up message', 'followup-analysis': 'Call analysis' };
-  const typeBadge = { strategy: 'badge-purple', content: 'badge-teal', 'followup-content': 'badge-blue', 'followup-email': 'badge-green', 'followup-analysis': 'badge-amber' };
-
-  el.innerHTML = items.map(h => {
-    const dt = new Date(h.timestamp);
-    const dateStr = dt.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) + ' ' + dt.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
-    return `<div class="history-item">
-      <div class="history-meta">
-        <span class="badge ${typeBadge[h.type] || 'badge-gray'}">${typeLabels[h.type] || h.type}</span>
-        <span style="font-weight:500;color:var(--text2)">${h.prospectName}</span>
-        <span>${dateStr}</span>
-        ${h.goal ? `<span>Goal: ${h.goal}</span>` : ''}
-      </div>
-      <div class="history-preview">${h.content.slice(0, 200)}…</div>
-      <div style="margin-top:6px;display:flex;gap:6px">
-        <button class="copy-btn" onclick="copyText('${h.id}')">Copy full</button>
-        <button class="copy-btn" onclick="expandHistory('${h.id}')">View full</button>
-      </div>
-      <div id="hist-expand-${h.id}" style="display:none;margin-top:8px">
-        <div class="ai-out" style="font-size:12px">${h.content}</div>
-      </div>
-    </div>`;
-  }).join('');
+// MODAL
+function openModal(id){
+  var c=loadCalls().find(function(x){return x.id===id;});
+  if(!c) return;
+  openCallId=id;
+  var dt=new Date(c.timestamp).toLocaleDateString('en-GB',{day:'2-digit',month:'long',year:'numeric'});
+  document.getElementById('m-title').textContent=(c.client||'Unknown')+' — '+c.account;
+  document.getElementById('m-meta').textContent=dt+' · '+c.closer+' · '+({pitched:'Pitched',not_pitched:'Not Pitched',fdq:'FDQ',no_show:'No Show'}[c.callType]||c.callType);
+  var fEl=document.getElementById('m-fathom');
+  if(c.fathom&&c.fathom.url){fEl.innerHTML='<a href="'+c.fathom.url+'" target="_blank">▶ Watch recording</a>'+(c.fathom.attendees?' · '+c.fathom.attendees:'');fEl.style.display='block';}
+  else fEl.style.display='none';
+  var a=avgScore(c.scores);
+  var remaining=c.generatedRevenue&&c.installments>1?c.generatedRevenue-c.cashCollected:0;
+  document.getElementById('m-overall').innerHTML=
+    '<div class="stat"><div class="stat-label">Total score</div><div class="stat-val" style="color:var(--accent)">'+a+' / 60</div></div>'
+    +'<div class="stat"><div class="stat-label">Cash collected</div><div class="stat-val" style="color:var(--success)">'+fmtMoney(c.cashCollected)+'</div></div>'
+    +'<div class="stat"><div class="stat-label">Revenue generated</div><div class="stat-val">'+fmtMoney(c.generatedRevenue)+'</div></div>'
+    +'<div class="stat"><div class="stat-label">Remaining</div><div class="stat-val" style="color:var(--purple)">'+fmtMoney(remaining)+'</div></div>'
+    +'<div class="stat"><div class="stat-label">Installments</div><div class="stat-val">'+(c.installments||'—')+'</div></div>'
+    +'<div class="stat"><div class="stat-label">Commission</div><div class="stat-val" style="color:var(--success)">'+fmtMoney(c.cashCollected?Math.round(c.cashCollected*c.comm/100):0)+'</div></div>';
+  renderScoreGrid('m-scores',c.scores||{});
+  renderPhaseGrid('m-phases',c.phases||{});
+  renderFeedbackBox('m-feedback',c.strengths,c.improvements);
+  // Pre-fill update fields
+  var ot=(c.outcome||'unknown').toLowerCase();
+  var mout=document.getElementById('m-outcome');
+  for(var i=0;i<mout.options.length;i++) mout.options[i].selected=mout.options[i].value===ot;
+  document.getElementById('m-call-date').value=c.timestamp?c.timestamp.substring(0,10):'';
+  document.getElementById('m-date-closed').value=c.dateClosed||'';
+  document.getElementById('m-cash').value=c.cashCollected||'';
+  document.getElementById('m-revenue').value=c.generatedRevenue||'';
+  document.getElementById('m-installments').value=c.installments||'';
+  document.getElementById('m-refund').value=c.refund||'';
+  document.getElementById('m-status').textContent='';
+  document.getElementById('modal').classList.add('open');
 }
 
-function expandHistory(id) {
-  const el = document.getElementById('hist-expand-' + id);
-  if (el) el.style.display = el.style.display === 'none' ? 'block' : 'none';
+function closeModalOverlay(e){if(e.target.id==='modal') document.getElementById('modal').classList.remove('open');}
+
+async function reanalyzeCall(){
+  var apiKey=document.getElementById('api-key').value.trim();
+  if(!apiKey){alert('Enter your API key in the Analyze tab first.');return;}
+  var calls=loadCalls();
+  var c=calls.find(function(x){return x.id===openCallId;});
+  if(!c) return;
+  var statusEl=document.getElementById('m-reanalyze-status');
+  statusEl.textContent='Analyzing...';
+  var isNoPitch=c.callType==='not_pitched'||c.callType==='no_show';
+  var system='You are an expert sales coach. Return ONLY valid JSON, no markdown.\n\n{\n  "scores":{"call_control":<0-10>,"discovery_depth":<0-10>,"belief_shifting":<0-10>,"objection_handling":<0-10>,"pitch_effectiveness":<0-10>,"closing_strength":<0-10>,"eq_in_closing":<0-10>},\n  "strengths":["<strength1>","<strength2>","<strength3>"],\n  "improvements":["<improvement1>","<improvement2>","<improvement3>"]\n}\n\n'+(isNoPitch?'No pitch was made. Score accordingly.\n\n':'')+'Score each category 0-10 based on actual execution in the transcript. Be specific and consistent — base every score on concrete moments in the call, not overall impression.\n\ncall_control (0-10): Did the closer set and hold the frame, agenda, and pace throughout? 0=no control, prospect drove the call entirely. 10=confident control maintained start to finish with no drift.\ndiscovery_depth (0-10): Did discovery surface real emotional drivers, consequences, and identity-level motivation (SPIN/NEPQ), or stay on surface facts? 0=almost no discovery. 10=deep emotional drivers fully surfaced and connected to the goal.\nbelief_shifting (0-10): Did the closer identify a limiting belief and actually shift it, with the prospect visibly acknowledging a new perspective? 0=no belief work attempted. 10=a clear limiting belief was named and the prospect\'s perspective visibly changed.\nobjection_handling (0-10): Was the real objection identified and fully resolved (not just discussed)? 0=objection ignored or avoided. 10=objection fully resolved, prospect no longer holds it.\npitch_effectiveness (0-10): Was the pitch specifically tied to what was discovered in this call, or a generic walkthrough? 0=no pitch or completely generic. 10=pitch built entirely around this prospect\'s specific stated pain and goals.\nclosing_strength (0-10): Was there a clear, confident ask with a concrete next step (date/action), or a passive ending? 0=no ask, no next step. 10=assumptive close, clear commitment and timeline secured.\neq_in_closing (0-10): Was there genuine warmth and emotional connection throughout, or a transactional/awkward tone? 0=cold or disconnected. 10=consistently warm, attuned, made the prospect feel safe and understood.\n\nA call that did not close due to a genuine objection (e.g. budget) can still score well on discovery_depth, belief_shifting, and eq_in_closing if those were executed well — closing_strength and objection_handling should reflect whether the specific objection was resolved, separate from whether a sale happened.';
+  var callContent=c.transcript&&c.transcript.length>50
+    ?'Transcript:\n'+c.transcript.substring(0,8000)
+    :'Call data:\nClient: '+(c.client||'')+'\nOutcome: '+(c.outcome||'')+'\nCall type: '+(c.callType||'')+'\nStrengths: '+(c.strengths||[]).join('; ')+'\nImprovements: '+(c.improvements||[]).join('; ');
+  try{
+    var resp=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','x-api-key':apiKey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+      body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:1000,system:system,
+        messages:[{role:'user',content:callContent}]
+      })
+    });
+    var data=await resp.json();
+    if(data.error) throw new Error(data.error.message);
+    var text=data.content.map(function(b){return b.text||'';}).join('');
+    var s=text.indexOf('{'),e=text.lastIndexOf('}');
+    var parsed=JSON.parse(text.substring(s,e+1));
+    c.scores=parsed.scores||c.scores;
+    c.strengths=parsed.strengths||c.strengths;
+    c.improvements=parsed.improvements||c.improvements;
+    saveCalls(calls);
+    statusEl.textContent='Done.';
+    openModal(c.id);
+  }catch(err){
+    statusEl.style.color='var(--danger)';
+    statusEl.textContent='Error: '+err.message;
+    console.warn('Re-analyze error:',err);
+  }
 }
 
-function copyText(histId) {
-  const h = DB.history.find(x => String(x.id) === String(histId));
-  if (h) navigator.clipboard.writeText(h.content).catch(() => {});
+function updateCall(){
+  var calls=loadCalls();
+  var c=calls.find(function(x){return x.id===openCallId;});
+  if(!c) return;
+  var newOutcome=document.getElementById('m-outcome').value;
+  var newCallDate=document.getElementById('m-call-date').value;
+  var dateClosed=document.getElementById('m-date-closed').value;
+  var newCash=parseFloat(document.getElementById('m-cash').value)||0;
+  var newRevenue=parseFloat(document.getElementById('m-revenue').value)||0;
+  var newInst=parseInt(document.getElementById('m-installments').value)||1;
+  var refundAmt=parseFloat(document.getElementById('m-refund').value)||0;
+  c.outcome=newOutcome;
+  if(newCallDate) c.timestamp=newCallDate+'T12:00:00.000Z';
+  if(dateClosed){c.dateClosed=dateClosed;if(newOutcome==='closed'&&!newCallDate) c.timestamp=dateClosed+'T12:00:00.000Z';}
+  var effRefund=Math.min(refundAmt,newRevenue);
+  c.generatedRevenue=newRevenue-effRefund;
+  c.cashCollected=effRefund>=newRevenue?0:newCash;
+  c.installments=newInst;
+  c.refund=effRefund;
+  saveCalls(calls);
+  setStatus('m-status','Updated ✓','success');
+  renderDashboard();
 }
 
-function clearHistory() {
-  if (!confirm('Delete all history?')) return;
-  DB.history = []; saveDB(); renderHistory();
+function deleteCall(){
+  if(!openCallId||!confirm('Delete this call?')) return;
+  saveCalls(loadCalls().filter(function(c){return c.id!==openCallId;}));
+  document.getElementById('modal').classList.remove('open');
+  renderDashboard();
 }
 
-// ─── UTILS ────────────────────────────────────────────────────────────────────
-function copyEl(id) {
-  const el = document.getElementById(id);
-  if (el) navigator.clipboard.writeText(el.textContent).catch(() => {});
+// SYNTH CACHE
+function getSynthKey(calls){
+  var ids=calls.map(function(c){return c.id;}).sort().join(',');
+  return 'synth_'+ids.substring(0,200);
+}
+function loadSynth(key){try{var d=localStorage.getItem(key);return d?JSON.parse(d):null;}catch(e){return null;}}
+function saveSynth(key,data){try{localStorage.setItem(key,JSON.stringify(data));}catch(e){}}
+
+// SYNTHESIZE FEEDBACK
+function synthesizeFeedback(){
+  var calls=getFiltered();
+  if(!calls.length) return;
+  var btn=document.getElementById('btn-synth');
+  var allS=[], allI=[];
+  calls.forEach(function(c){
+    (c.strengths||[]).forEach(function(s){if(s&&s!=='...') allS.push(s);});
+    (c.improvements||[]).forEach(function(i){if(i&&i!=='...') allI.push(i);});
+  });
+  if(!allS.length&&!allI.length){
+    document.getElementById('synth-content').textContent='No strengths or improvements stored for these calls yet. Import or analyze calls first.';
+    return;
+  }
+  // Find recurring themes by keyword frequency
+  function extractThemes(items, topN){
+    // Score each item by how many keywords it shares with others
+    var keywords=[
+      'discovery','rapport','emotional','close','objection','pitch','EQ','belief','commitment',
+      'accountability','follow','urgency','trust','pain','financial','nervous','structure',
+      'reframe','process','transparency','consistent','anchor','pattern','mindset','control'
+    ];
+    var scores=items.map(function(item){
+      var score=0;
+      var lower=item.toLowerCase();
+      keywords.forEach(function(k){ if(lower.indexOf(k.toLowerCase())>=0) score++; });
+      // Also score by how many other items share at least one keyword
+      items.forEach(function(other){
+        if(other===item) return;
+        var otherLower=other.toLowerCase();
+        keywords.forEach(function(k){
+          if(lower.indexOf(k.toLowerCase())>=0&&otherLower.indexOf(k.toLowerCase())>=0) score++;
+        });
+      });
+      return {item:item,score:score};
+    });
+    scores.sort(function(a,b){return b.score-a.score;});
+    // Deduplicate — skip items too similar to already picked ones
+    var picked=[];
+    scores.forEach(function(s){
+      if(picked.length>=topN) return;
+      var tooSimilar=picked.some(function(p){
+        var words=s.item.toLowerCase().split(' ').filter(function(w){return w.length>5;});
+        var matches=words.filter(function(w){return p.toLowerCase().indexOf(w)>=0;});
+        return matches.length>=2;
+      });
+      if(!tooSimilar) picked.push(s.item);
+    });
+    // Pad if needed
+    scores.forEach(function(s){
+      if(picked.length>=topN) return;
+      if(picked.indexOf(s.item)<0) picked.push(s.item);
+    });
+    return picked.slice(0,topN);
+  }
+  var top3S=extractThemes(allS,3);
+  var top3I=extractThemes(allI,3);
+  var result={strengths:top3S,improvements:top3I};
+  renderFeedbackBox('synth-content',result.strengths,result.improvements);
+  saveSynth(getSynthKey(calls),result);
+  btn.textContent='Refresh insights';
 }
 
-function exportData() {
-  const blob = new Blob([JSON.stringify(DB, null, 2)], { type: 'application/json' });
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = 'closer-hq-backup-' + new Date().toISOString().slice(0,10) + '.json';
+// EXPORT / IMPORT
+function cleanDuplicates(){
+  var calls=loadCalls();
+  var before=calls.length;
+  // Remove any records with fake IDs I generated (174xxx range from bad import)
+  var cleaned=calls.filter(function(c){return !String(c.id).startsWith('174');});
+  saveCalls(cleaned);
+  alert('Removed '+(before-cleaned.length)+' duplicate records. '+cleaned.length+' calls remain.');
+  renderDashboard();
+}
+function debugMissing(){
+  var calls=JSON.parse(localStorage.getItem('sales_calls')||'[]');
+  var missing=calls.filter(function(c){return !c.strengths||!c.strengths.length;});
+  if(!missing.length){alert('All calls have strengths/improvements.');return;}
+  var report=missing.map(function(c){
+    return (c.client||'Unknown')+': transcript='+(c.transcript?c.transcript.length+'chars':'NONE')+', feedback='+(c.feedback?'YES':'NONE');
+  }).join('\n');
+  alert(missing.length+' calls missing strengths:\n'+report);
+}
+function calibrateScores(){
+  if(!confirm('Apply calibration to all stored scores? This will adjust scores up based on the rubric comparison and cannot be undone without a backup.')) return;
+  var deltas={
+    call_control:2,
+    discovery_depth:2,
+    belief_shifting:1,
+    objection_handling:1,
+    pitch_effectiveness:2,
+    closing_strength:2,
+    eq_in_closing:0
+  };
+  var calls=loadCalls();
+  var updated=0;
+  calls.forEach(function(c){
+    if(!c.scores) return;
+    Object.keys(deltas).forEach(function(k){
+      if(typeof c.scores[k]==='number'){
+        c.scores[k]=Math.min(10, c.scores[k]+deltas[k]);
+      }
+    });
+    updated++;
+  });
+  saveCalls(calls);
+  alert('Calibrated '+updated+' calls. Export a backup if needed.');
+  renderDashboard();
+}
+
+async function rescoreAll(){
+  var apiKey=document.getElementById('api-key').value.trim();
+  if(!apiKey){alert('Enter your API key in the Analyze tab first.');return;}
+  var calls=loadCalls();
+  if(!confirm('Re-score '+calls.length+' calls with the updated rubric (batched, ~'+Math.ceil(calls.length/5)+' API calls)? This will overwrite existing scores, strengths and improvements.')) return;
+  await runRescoreBatches(calls, calls, apiKey);
+}
+
+async function rescoreSelected(){
+  var apiKey=document.getElementById('api-key').value.trim();
+  if(!apiKey){alert('Enter your API key in the Analyze tab first.');return;}
+  if(!selectedCallIds.size){alert('Select at least one call using the checkboxes in the table first.');return;}
+  var allCalls=loadCalls();
+  var subset=allCalls.filter(function(c){return selectedCallIds.has(c.id);});
+  if(!confirm('Re-score '+subset.length+' selected call(s) with the updated rubric (batched, ~'+Math.ceil(subset.length/5)+' API call(s))? This will overwrite existing scores, strengths and improvements for these calls only.')) return;
+  await runRescoreBatches(subset, allCalls, apiKey);
+}
+
+async function runRescoreBatches(callsToScore, allCalls, apiKey){
+  var BATCH_SIZE=5;
+  var prog=document.createElement('div');
+  prog.style.cssText='position:fixed;bottom:20px;right:20px;background:#185FA5;color:#fff;padding:12px 18px;border-radius:12px;font-size:13px;z-index:9999;box-shadow:0 4px 12px rgba(0,0,0,0.2)';
+  document.body.appendChild(prog);
+
+  var system='Score each category 0-10 based on actual execution in the transcript. Be specific and consistent — base every score on concrete moments in the call, not overall impression.\n\ncall_control (0-10): Did the closer set and hold the frame, agenda, and pace throughout? 0=no control, prospect drove the call entirely. 10=confident control maintained start to finish with no drift.\ndiscovery_depth (0-10): Did discovery surface real emotional drivers, consequences, and identity-level motivation (SPIN/NEPQ), or stay on surface facts? 0=almost no discovery. 10=deep emotional drivers fully surfaced and connected to the goal.\nbelief_shifting (0-10): Did the closer identify a limiting belief and actually shift it, with the prospect visibly acknowledging a new perspective? 0=no belief work attempted. 10=a clear limiting belief was named and the prospect\'s perspective visibly changed.\nobjection_handling (0-10): Was the real objection identified and fully resolved (not just discussed)? 0=objection ignored or avoided. 10=objection fully resolved, prospect no longer holds it.\npitch_effectiveness (0-10): Was the pitch specifically tied to what was discovered in this call, or a generic walkthrough? 0=no pitch or completely generic. 10=pitch built entirely around this prospect\'s specific stated pain and goals.\nclosing_strength (0-10): Was there a clear, confident ask with a concrete next step (date/action), or a passive ending? 0=no ask, no next step. 10=assumptive close, clear commitment and timeline secured.\neq_in_closing (0-10): Was there genuine warmth and emotional connection throughout, or a transactional/awkward tone? 0=cold or disconnected. 10=consistently warm, attuned, made the prospect feel safe and understood.\n\nA call that did not close due to a genuine objection (e.g. budget) can still score well on discovery_depth, belief_shifting, and eq_in_closing if those were executed well — closing_strength and objection_handling should reflect whether the specific objection was resolved, separate from whether a sale happened.\nYou will receive one or more calls in one request, each labeled with an index number and either a transcript or fallback call data. For each one, score it independently using the calibration above.\n\nReturn ONLY a valid JSON array, no markdown, one object per call IN THE SAME ORDER, each with this shape:\n{"index":<n>,"scores":{"call_control":<0-10>,"discovery_depth":<0-10>,"belief_shifting":<0-10>,"objection_handling":<0-10>,"pitch_effectiveness":<0-10>,"closing_strength":<0-10>,"eq_in_closing":<0-10>},"strengths":["<s1>","<s2>","<s3>"],"improvements":["<i1>","<i2>","<i3>"]}\n\nIf a call was not pitched (call type not_pitched or no_show), score accordingly — discovery/control/EQ can still be scored, but pitch_effectiveness and closing_strength should reflect that no pitch/close was attempted.\n';
+
+  var done=0, failed=0, errors=[];
+  for(var b=0;b<callsToScore.length;b+=BATCH_SIZE){
+    var batch=callsToScore.slice(b,b+BATCH_SIZE);
+    prog.textContent='Re-scoring batch '+(Math.floor(b/BATCH_SIZE)+1)+'/'+Math.ceil(callsToScore.length/BATCH_SIZE)+' ('+(b+1)+'-'+Math.min(b+BATCH_SIZE,callsToScore.length)+' of '+callsToScore.length+')...';
+    var userContent=batch.map(function(c,i){
+      var isNoPitch=c.callType==='not_pitched'||c.callType==='no_show';
+      var body=c.transcript&&c.transcript.length>50
+        ?'Transcript:\\n'+c.transcript.substring(0,6000)
+        :'Call data:\\nClient: '+(c.client||'')+'\\nOutcome: '+(c.outcome||'')+'\\nCall type: '+(c.callType||'')+'\\nStrengths: '+(c.strengths||[]).join('; ')+'\\nImprovements: '+(c.improvements||[]).join('; ');
+      return '=== CALL '+(i+1)+' ('+(isNoPitch?'not pitched':'pitched')+', client: '+(c.client||'unknown')+') ===\\n'+body;
+    }).join('\\n\\n');
+    var rawText='';
+    try{
+      var resp=await fetch('https://api.anthropic.com/v1/messages',{
+        method:'POST',
+        headers:{'Content-Type':'application/json','x-api-key':apiKey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+        body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:4000,system:system,
+          messages:[{role:'user',content:userContent}]
+        })
+      });
+      var data=await resp.json();
+      if(data.error) throw new Error('API error: '+JSON.stringify(data.error));
+      rawText=data.content.map(function(t){return t.text||'';}).join('');
+      var s=rawText.indexOf('['),e=rawText.lastIndexOf(']');
+      if(s===-1||e===-1) throw new Error('No JSON array found in response. Raw (first 300 chars): '+rawText.substring(0,300));
+      var parsedArr;
+      try{
+        parsedArr=JSON.parse(rawText.substring(s,e+1));
+      }catch(parseErr){
+        var objMatches=rawText.match(/\\{[^{}]*"index"[^{}]*\\{[^{}]*\\}[^{}]*\\}/g);
+        if(!objMatches) throw new Error('JSON parse failed and no fallback objects found. Raw (first 300 chars): '+rawText.substring(0,300));
+        parsedArr=objMatches.map(function(m){return JSON.parse(m);});
+      }
+      parsedArr.forEach(function(parsed){
+        var idx=(parsed.index||1)-1;
+        var c=batch[idx];
+        if(!c) return;
+        c.scores=parsed.scores||c.scores;
+        c.strengths=parsed.strengths||c.strengths;
+        c.improvements=parsed.improvements||c.improvements;
+        done++;
+      });
+      if(parsedArr.length<batch.length){
+        errors.push('Batch '+(Math.floor(b/BATCH_SIZE)+1)+': only '+parsedArr.length+'/'+batch.length+' results parsed');
+      }
+    }catch(err){
+      console.warn('Batch re-score failed for batch starting at',b,err,'Raw response:',rawText);
+      errors.push('Batch '+(Math.floor(b/BATCH_SIZE)+1)+' (clients: '+batch.map(function(c){return c.client;}).join(', ')+'): '+err.message);
+      failed+=batch.length;
+    }
+    saveCalls(allCalls);
+  }
+  if(errors.length){
+    prog.style.background='#A32D2D';
+    prog.style.maxWidth='420px';
+    prog.style.whiteSpace='pre-wrap';
+    prog.innerHTML='Done with errors: '+done+' re-scored, '+failed+' failed.<br><br>'+errors.join('<br><br>')+'<br><br><span style="text-decoration:underline;cursor:pointer" onclick="this.parentElement.remove();renderDashboard()">Dismiss</span>';
+  } else {
+    prog.textContent='Done! '+done+' re-scored, 0 failed.';
+    setTimeout(function(){if(prog.parentNode)prog.parentNode.removeChild(prog);renderDashboard();},4000);
+  }
+}
+
+function exportData(){
+  var calls=loadCalls();
+  var blob=new Blob([JSON.stringify(calls,null,2)],{type:'application/json'});
+  var a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download='sales-calls-'+new Date().toISOString().substring(0,10)+'.json';
   a.click();
 }
 
-function importData(event) {
-  const file = event.target.files[0];
-  if (!file) return;
-  const reader = new FileReader();
-  reader.onload = e => {
-    try {
-      const data = JSON.parse(e.target.result);
-      if (confirm('This will replace all current data. Continue?')) {
-        DB = { ...DB, ...data };
-        saveDB(); location.reload();
-      }
-    } catch(err) { alert('Invalid backup file.'); }
+function importData(e){
+  var file=e.target.files[0];
+  if(!file) return;
+  document.getElementById('import-input').value='';
+  var reader=new FileReader();
+  reader.onload=function(ev){
+    var imported,merged;
+    try{
+      imported=JSON.parse(ev.target.result);
+      if(!Array.isArray(imported)) throw new Error('Invalid format');
+      var existing=loadCalls();
+      var importMap={};
+      imported.forEach(function(c){importMap[c.id]=c;});
+      var updatedIds=new Set();
+      merged=existing.map(function(c){
+        if(importMap[c.id]){
+          updatedIds.add(c.id);
+          var imp=importMap[c.id];
+          var rec=Object.assign({},c,imp);
+          if(imp.strengths&&imp.strengths.length) rec.strengths=imp.strengths;
+          if(imp.improvements&&imp.improvements.length) rec.improvements=imp.improvements;
+          if(imp.transcript) rec.transcript=imp.transcript;
+          return rec;
+        }
+        return c;
+      });
+      imported.forEach(function(c){
+        if(!updatedIds.has(c.id)) merged.push(c);
+      });
+      merged.sort(function(a,b){return new Date(b.timestamp)-new Date(a.timestamp);});
+      saveCalls(merged);
+      alert('Imported '+imported.length+' calls successfully.');
+      renderDashboard();
+    }catch(err){
+      alert('Import failed: '+err.message);
+    }
   };
   reader.readAsText(file);
 }
 
-// ─── SOCIAL FEED ─────────────────────────────────────────────────────────────
-function renderFeedPanel() {
-  // Populate influencer select
-  const sel = document.getElementById('feed-inf-sel');
-  if (sel) {
-    sel.innerHTML = '<option value="">— all influencers —</option>' + DB.influencers.map(i => `<option value="${i.id}">${i.name}</option>`).join('');
-  }
-  renderFeedRaw();
+function clearAll(){
+  if(confirm('Delete all saved calls?')){localStorage.removeItem(STORAGE_KEY);}
 }
-
-function renderFeedRaw() {
-  const el = document.getElementById('feed-raw');
-  if (!el) return;
-  const infId = document.getElementById('feed-inf-sel')?.value || '';
-  const days = parseInt(document.getElementById('feed-window')?.value || '14');
-  const cutoff = days > 0 ? new Date(Date.now() - days * 86400000) : null;
-
-  const infs = infId ? DB.influencers.filter(i => String(i.id) === infId) : DB.influencers;
-  let allPosts = [];
-  for (const inf of infs) {
-    const posts = (inf.socialItems || []).filter(p => {
-      if (!cutoff) return true;
-      if (!p.date) return true;
-      return new Date(p.date) >= cutoff;
-    }).map(p => ({ ...p, infName: inf.name }));
-    allPosts = [...allPosts, ...posts];
-  }
-
-  if (!allPosts.length) {
-    el.innerHTML = `<div class="empty">No posts found for this time window. Sync social content first.</div>`;
-    return;
-  }
-
-  // Group by influencer
-  const byInf = {};
-  for (const p of allPosts) {
-    if (!byInf[p.infName]) byInf[p.infName] = [];
-    byInf[p.infName].push(p);
-  }
-
-  el.innerHTML = Object.entries(byInf).map(([name, posts]) => `
-    <div class="card" style="margin-bottom:.75rem">
-      <div style="font-weight:600;font-size:13px;margin-bottom:8px">${name} <span style="font-weight:400;color:var(--text3)">(${posts.length} posts)</span></div>
-      ${posts.slice(0, 10).map(p => `
-        <div class="item-row">
-          <span class="badge badge-purple" style="flex-shrink:0;font-size:9px">${p.postType || 'IG'}</span>
-          <div class="item-title">
-            <span>${p.desc ? p.desc.slice(0, 120) + (p.desc.length > 120 ? '...' : '') : p.title}</span>
-            <div class="item-meta">${p.date || ''}</div>
-          </div>
-        </div>`).join('')}
-      ${posts.length > 10 ? `<div style="font-size:11px;color:var(--text3);margin-top:4px">+ ${posts.length - 10} more posts</div>` : ''}
-    </div>`).join('');
-}
-
-async function generateFeedRecap() {
-  const infId = document.getElementById('feed-inf-sel')?.value || '';
-  const days = parseInt(document.getElementById('feed-window')?.value || '14');
-  const cutoff = days > 0 ? new Date(Date.now() - days * 86400000) : null;
-
-  const infs = infId ? DB.influencers.filter(i => String(i.id) === infId) : DB.influencers;
-  let allPosts = [];
-  for (const inf of infs) {
-    const posts = (inf.socialItems || []).filter(p => {
-      if (!cutoff || !p.date) return !cutoff;
-      return new Date(p.date) >= cutoff;
-    }).map(p => ({ ...p, infName: inf.name }));
-    allPosts = [...allPosts, ...posts];
-  }
-
-  if (!allPosts.length) { alert('No posts to recap for this window.'); return; }
-  if (!getApiKey()) { alert('Add your API key in Settings first.'); return; }
-
-  document.getElementById('feed-recap-section').style.display = 'block';
-  const out = document.getElementById('feed-recap-out');
-  out.className = 'ai-out loading';
-  out.textContent = 'Generating recap...';
-
-  const postText = allPosts.slice(0, 40).map(p => `[${p.infName}] ${p.postType || 'Post'}: ${p.desc || p.title}`).join('\n');
-  const windowLabel = days > 0 ? `last ${days} days` : 'all time';
-
-  const prompt = `You are analyzing recent Instagram posts from fitness/health influencers to brief a sales closer.
-
-Posts from the ${windowLabel}:
-${postText}
-
-For each influencer, produce a tight content recap using this format:
-
-## [Influencer Name]
-
-**🎯 Main focus this period**
-One sentence on what they've been pushing most.
-
-**😣 Problems they're highlighting**
-• [problem or pain point from posts]
-• [problem or pain point from posts]
-
-**💡 Key messages / learnings**
-• [key angle, lesson, or idea from posts]
-• [key angle, lesson, or idea from posts]
-
-**❓ Useful angles for a closer**
-• [how a closer could reference this content in a call — specific and tactical]
-• [another angle]
-
-Keep each section to 2-3 bullets max. Be specific to the actual post content, not generic.`;
-
-  try {
-    const text = await callAI(prompt, 1200);
-    out.className = 'ai-out';
-    out.textContent = text;
-  } catch(e) {
-    out.className = 'ai-out';
-    out.textContent = 'Error: ' + e.message;
-  }
-}
-
-// ─── INIT ─────────────────────────────────────────────────────────────────────
-renderInfluencers();
-renderProspects();
-updateAllSelects();
 </script>
 </body>
 </html>
