@@ -525,13 +525,19 @@
           <textarea id="tf-context" style="min-height:60px" placeholder="e.g. Sarah, 12 weeks, lost 8kg, started after her second kid..."></textarea>
         </div>
 
-        <button class="btn btn-primary" onclick="generateTransformation()">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01z"/></svg>
-          Generate story
-        </button>
+        <div class="btn-row" style="margin-top:0">
+          <button class="btn btn-primary" onclick="generateTransformation('story')">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01z"/></svg>
+            Generate story
+          </button>
+          <button class="btn btn-secondary" onclick="generateTransformation('analysis')">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            Analyse transformation
+          </button>
+        </div>
         <div id="tf-status" style="font-size:12px;margin-top:8px"></div>
 
-        <div id="tf-result" style="display:none;margin-top:1rem">
+        <div id="tf-result-story" style="display:none;margin-top:1rem">
           <hr class="divider" style="margin:.75rem 0">
           <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
             <div class="sec-label" style="margin:0">Generated story</div>
@@ -541,6 +547,15 @@
           <div style="margin-top:10px">
             <button class="btn btn-secondary btn-sm" onclick="saveTransformation()">Save to library</button>
           </div>
+        </div>
+
+        <div id="tf-result-analysis" style="display:none;margin-top:1rem">
+          <hr class="divider" style="margin:.75rem 0">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
+            <div class="sec-label" style="margin:0">Transformation analysis <span style="font-size:10px;font-weight:400;color:var(--text3)">— internal only, do not share</span></div>
+            <button class="copy-btn" onclick="copyEl('tf-analysis-out')">Copy</button>
+          </div>
+          <div id="tf-analysis-out" class="ai-out"></div>
         </div>
       </div>
 
@@ -2181,7 +2196,7 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 });
 
-async function generateTransformation() {
+async function generateTransformation(mode = 'story') {
   const infId = document.getElementById('tf-inf').value;
   const status = document.getElementById('tf-status');
 
@@ -2202,7 +2217,10 @@ async function generateTransformation() {
   const salesAngles = inf?.analysis?.salesAngles?.join('; ') || '';
   const recentCaptions = (inf?.socialItems || []).slice(0, 5).map(s => s.desc || s.title).filter(Boolean).join('\n---\n');
 
-  const systemPrompt = `You are writing in the voice and style of ${inf?.name || 'a fitness influencer'} (${inf?.niche || ''}).
+  let systemPrompt = '';
+
+  if (mode === 'story') {
+    systemPrompt = `You are writing in the voice and style of ${inf?.name || 'a fitness influencer'} (${inf?.niche || ''}).
 
 Their content themes: ${themes}
 Their frameworks/methods: ${frameworks}
@@ -2229,6 +2247,34 @@ STORY:
 
 SEND MESSAGE:
 [message]`;
+  } else {
+    systemPrompt = `You are a body composition analyst reviewing transformation photos. This analysis is INTERNAL ONLY — for the sales closer's reference, never to be shared with the client.
+
+${contextText ? 'Context: ' + contextText : ''}
+
+Analyse the photos and provide:
+
+📊 VISUAL BODY FAT ESTIMATE
+Before: ~[X-Y]% (explain what visual cues suggest this)
+After: ~[X-Y]% (explain what visual cues suggest this)
+Estimated change: ~[X]% reduction
+
+Note: These are visual estimates only. Accuracy affected by lighting, angle, clothing, and hydration. Not a clinical measurement.
+
+💪 VISIBLE COMPOSITION CHANGES
+• [specific change — e.g. "Visible abdominal definition where previously none", "Shoulder/arm muscle separation now apparent"]
+• [specific change]
+• [specific change]
+
+📐 AREAS OF MOST CHANGE
+[Which body areas changed most visibly and what that suggests about the training/nutrition approach]
+
+⏱ ESTIMATED TIMEFRAME (if not provided)
+[Based on the degree of change visible, rough estimate of how long this likely took — only if context doesn't specify]
+
+🔍 PHOTO QUALITY NOTE
+[Flag anything that affects estimate accuracy — different lighting, angle changes between before/after, clothing differences, etc.]`;
+  }
 
   try {
     // Build image content — supports single combined image or separate before/after
@@ -2263,9 +2309,16 @@ SEND MESSAGE:
     const text = (d.content || []).map(b => b.text || '').join('');
     tfLastStory = text;
 
-    document.getElementById('tf-result').style.display = 'block';
-    document.getElementById('tf-story-out').textContent = text;
-    status.textContent = 'Generated! Review and save to library if you want to keep it.';
+    if (mode === 'story') {
+      document.getElementById('tf-result-story').style.display = 'block';
+      document.getElementById('tf-story-out').textContent = text;
+      tfLastStory = text;
+      status.textContent = 'Story generated! Save to library to use in pre-call prep and follow-up sequences.';
+    } else {
+      document.getElementById('tf-result-analysis').style.display = 'block';
+      document.getElementById('tf-analysis-out').textContent = text;
+      status.textContent = 'Analysis complete — internal reference only.';
+    }
     status.style.color = 'var(--green-text)';
   } catch(e) {
     status.textContent = 'Error: ' + e.message;
@@ -2322,7 +2375,8 @@ function saveTransformation() {
   document.getElementById('tf-after-img').style.display = 'none';
   document.getElementById('tf-after-placeholder').style.display = 'none';
   document.getElementById('tf-context').value = '';
-  document.getElementById('tf-result').style.display = 'none';
+  document.getElementById('tf-result-story').style.display = 'none';
+  document.getElementById('tf-result-analysis').style.display = 'none';
   document.getElementById('tf-main-input').value = '';
   document.getElementById('tf-before-input').value = '';
   document.getElementById('tf-after-input').value = '';
