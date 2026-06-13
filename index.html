@@ -431,6 +431,10 @@
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
         Build follow-up sequence
       </button>
+      <button class="btn btn-secondary" onclick="runFollowup('content14')">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+        14 content pieces
+      </button>
       <button class="btn btn-secondary" onclick="runFollowup('analysis')">
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
         Analyze call
@@ -1638,16 +1642,22 @@ Recommend the best content to send before this call. For each piece (up to 3):
 
 1. CONTENT — title and full URL
 2. WHY THIS PERSON — connect it specifically to their pain point or motive, not generic reasons
-3. WHEN TO SEND — how many days/hours before the call
+3. SEND TIMING — use non-temporal labels only: "Before the call", "Day before", "A few hours before", "Right after booking". NO days of the week, NO dates, NO "tomorrow" or "Monday".
 
-4. MESSAGE — write a complete ready-to-send text/DM message (not email) to accompany this link.
-   - 2-4 sentences max
-   - Warm and curious tone, not salesy
-   - Reference something specific about them or their situation
-   - End with a soft hook that makes them want to consume it before the call
-   - Sound like a real person texting someone they genuinely want to help — not a marketer, not a coach doing outreach. Casual grammar is fine. A sentence fragment is fine. No perfect three-part structure.
-   - No "I thought of you when I saw this", no "I truly believe this could help", no "just wanted to share". If it sounds like it came from a sequence, rewrite it.
-   - Each message must be meaningfully different in wording, opening and angle from the others
+4. TEXT VERSION — ready-to-send DM/text:
+   - 2-4 sentences, casual, like texting a friend
+   - Reference something specific about them
+   - End with a soft hook to make them watch/listen before the call
+   - No templates, no "I thought of you when I saw this", no "just wanted to share"
+   - Casual grammar fine, sentence fragments fine
+
+5. EMAIL VERSION — ready-to-send email:
+   - Subject: [short, non-salesy subject line]
+   - 3-5 sentences, same warm tone but slightly more structured
+   - Same link, different framing from the text version
+   - Still sounds human, not like a sequence
+
+Each content piece must have both versions. Each set of messages must be meaningfully different in opening and angle from the others.
 
 Prioritize YouTube videos and podcast episodes. Be tactical and specific.`;
   }
@@ -1692,7 +1702,8 @@ Be exhaustive — if Ryan says "cut/fat loss phase leading into a long bulk" and
   }
 
   try {
-    const text = await callAI(prompt, 1200);
+    const maxTokens = mode === 'content' ? 2000 : mode === 'briefing' ? 1500 : 1200;
+    const text = await callAI(prompt, maxTokens);
     document.getElementById(outId + '-text').className = 'ai-out';
     document.getElementById(outId + '-text').textContent = text;
     saveToHistory({ type: mode, prospectId: p.id, prospectName: p.name, content: text, goal, callDate: new Date().toISOString().slice(0,10) });
@@ -1716,7 +1727,7 @@ async function runFollowup(mode) {
   const bank = buildContentBank(p);
 
   const outId = 'fu-out-' + mode;
-  const labels = { sequence: '7-day follow-up sequence', analysis: 'Call analysis' };
+  const labels = { sequence: 'Follow-up sequence', content14: '14 content pieces', analysis: 'Call analysis' };
   const container = document.getElementById('followup-outputs');
 
   let block = document.getElementById(outId);
@@ -1750,30 +1761,68 @@ ${transcript.slice(0, 3000)}
 
 ${bank}${testimonialCtx}${safetyInstructions}
 
-Build a 7-day follow-up sequence. For each touchpoint output exactly this structure:
+Build a follow-up sequence with 7 touchpoints. For each touchpoint output exactly this structure:
 
 ---
-📅 DAY [X] — [timing label e.g. "Same day", "Next morning", "Day 3"]
-📱 FORMAT: [Text/DM] or [Email]
+📌 TOUCHPOINT [1-7] — [label based on intent, NOT time: e.g. "Same-day check-in", "Short follow-up", "Value drop", "Reframe", "Story share", "Objection revisit", "Final touch"]
 🎯 GOAL: [one sentence — what this message is trying to do]
 
-MESSAGE:
-[Full ready-to-send message. For texts: 2-4 sentences, written like you're texting a real person — incomplete thoughts fine, casual punctuation fine. For emails: subject line first (short and non-salesy), then 4-6 sentences — conversational, not formal. NO placeholders — use the prospect's actual name and real specifics from the call. If it reads like a template, rewrite it. No "I hope this message finds you well", no "I wanted to reach out", no "I truly believe". Think: how would you write this to a friend you just got off a call with?]
+📱 TEXT VERSION:
+[2-4 sentences, casual, like you're texting a friend. Incomplete thoughts fine. No "I hope this finds you well", no "I wanted to reach out", no "I truly believe". Use the prospect's actual name and real specifics from the call. Never use the word "just".]
 
-📎 ATTACH: [If relevant, one piece of content from the bank to attach — title + URL. Otherwise write "None"]
-WHY: [One sentence on why this content fits this specific moment in the sequence]
+📧 EMAIL VERSION:
+Subject: [short, non-salesy subject line]
+[4-6 sentences, same message, different framing. More structured but still conversational. Reads like a real person, not a sales sequence.]
+
+📎 CONTENT TO ATTACH: [title + URL from the content bank if relevant, otherwise "None"]
+WHY: [one sentence on why this content fits this specific touchpoint]
 ---
 
-Sequence must cover: Day 0 (same day), Day 1, Day 3, Day 5, Day 7, Day 10, Day 14.
+Cover these 7 touchpoints in order:
+1. Same-day check-in
+2. Short follow-up
+3. Value drop
+4. Reframe or objection revisit
+5. Story / social proof (use transformation story if available)
+6. Perspective shift
+7. Final touch
 
 Rules:
-- Use texts/DMs for Days 0, 1, 3 — short, casual, like you're texting a friend
-- Use email for Days 5, 7, 10, 14 — a bit more structured but still conversational, not formal
-- Each message must reference something SPECIFIC from the call — no generic follow-ups
-- Use NEPQ language: questions that surface consequences and identity, not feature pushes
-- Never use the word "just" — it kills authority
-- TONE — this is the most important rule: write like a real person, not a marketer. Incomplete thoughts are fine. Short punchy sentences. No "I hope this finds you well", no "I wanted to reach out", no "I truly believe". No three-part structures. If it reads like a sales email, rewrite it. Think: what would you actually text someone you genuinely care about helping?
-- Vary the angle and opening every single time — no repeated hooks`;
+- NO temporal references anywhere — no days of the week, no dates, no "tomorrow", no "Monday", no "Day 3". Labels based on intent only.
+- Each touchpoint must reference something SPECIFIC from the call
+- Use NEPQ language: surface consequences and identity, don't push features
+- Never use the word "just"
+- Vary the opening and angle every single touchpoint — no repeated hooks
+- TONE: write like a real human who genuinely cares, not a marketer. If it reads like a template, rewrite it.`;
+
+  } else if (mode === 'content14') {
+    const sensitivityResult14 = await analyzeSensitivity(p);
+    const safetyInstructions14 = buildSafetyInstructions(sensitivityResult14);
+    const testimonialCtx14 = buildTestimonialContext(p);
+    prompt = `You are an expert sales coach. Based on this call transcript, generate 14 content pieces from the content bank that could be sent to this prospect at any point in the follow-up sequence.
+
+${ctx}
+${goal ? '\nCall goal: ' + goal : ''}
+
+CALL TRANSCRIPT:
+${transcript.slice(0, 3000)}
+
+${bank}${testimonialCtx14}${safetyInstructions14}
+
+Generate exactly 14 content recommendations. For each one:
+
+---
+#[1-14] [Content title]
+URL: [full URL]
+WHY FOR THIS PERSON: [1-2 sentences — connect it specifically to something from the call or their profile]
+BEST MOMENT TO USE: [intent-based label, NO temporal references — e.g. "After price objection", "If they go quiet", "After they mention X", "As an opener", "To rebuild momentum", "As final push"]
+
+📱 TEXT: [1-3 sentences casual text/DM introducing this piece — human, not salesy]
+📧 EMAIL SUBJECT: [short subject line]
+📧 EMAIL BODY: [3-4 sentences email version — same warmth, slightly more structured]
+---
+
+Include a variety of content types: YouTube videos, podcast episodes, blog posts, and transformation stories if available. Each recommendation must be meaningfully different in angle and purpose. No filler — every piece must be genuinely relevant to what came up on this specific call.`;
 
   } else if (mode === 'analysis') {
     prompt = `Analyze this sales call transcript and give a closer honest feedback.
@@ -1795,7 +1844,8 @@ Be direct and honest. This closer wants to improve.`;
   }
 
   try {
-    const text = await callAI(prompt, 1400);
+    const maxTok = mode === 'content14' ? 4000 : mode === 'sequence' ? 3000 : 1400;
+    const text = await callAI(prompt, maxTok);
     document.getElementById(outId + '-text').className = 'ai-out';
     document.getElementById(outId + '-text').textContent = text;
     saveToHistory({ type: mode, prospectId: p.id, prospectName: p.name, content: text, goal, callDate: new Date().toISOString().slice(0,10) });
