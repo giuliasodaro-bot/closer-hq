@@ -252,14 +252,33 @@
 
 <!-- OUTBOX -->
 <div id="panel-outbox" class="panel">
-  <div class="panel-header"><div class="panel-title">Outbox</div><div class="panel-desc">Approved messages ready to send. Set dates, edit, then copy to Gmail or WhatsApp.</div></div>
-  <div style="display:flex;gap:10px;margin-bottom:1rem;flex-wrap:wrap;align-items:center">
-    <select id="outbox-filter-prospect" onchange="renderOutbox()" style="width:180px"><option value="">All prospects</option></select>
-    <select id="outbox-filter-type" onchange="renderOutbox()" style="width:140px"><option value="">All types</option><option value="email">Email</option><option value="text">Text / DM</option></select>
-    <select id="outbox-filter-status" onchange="renderOutbox()" style="width:130px"><option value="">All status</option><option value="pending">Pending</option><option value="sent">Sent</option></select>
-    <button class="copy-btn" style="margin-left:auto" onclick="clearSentOutbox()">Clear sent</button>
+  <div class="panel-header"><div class="panel-title">Outbox</div><div class="panel-desc">Approved messages ready to send. Set dates, then copy to Gmail or WhatsApp.</div></div>
+  <div class="tabs-inline">
+    <button class="tab-inline active" onclick="switchOutboxTab('messages',this)">All messages</button>
+    <button class="tab-inline" onclick="switchOutboxTab('agenda',this)">Daily agenda</button>
   </div>
-  <div id="outbox-list"><div class="empty">No messages yet. Use "&rarr; Outbox" on any generated message to save it here.</div></div>
+  <div id="outbox-messages-tab">
+    <div style="display:flex;gap:10px;margin-bottom:1rem;flex-wrap:wrap;align-items:center">
+      <select id="outbox-filter-prospect" onchange="renderOutbox()" style="width:180px"><option value="">All prospects</option></select>
+      <select id="outbox-filter-type" onchange="renderOutbox()" style="width:140px"><option value="">All types</option><option value="email">Email</option><option value="text">Text / DM</option></select>
+      <select id="outbox-filter-status" onchange="renderOutbox()" style="width:130px"><option value="">All status</option><option value="pending">Pending</option><option value="sent">Sent</option></select>
+      <button class="copy-btn" style="margin-left:auto" onclick="clearSentOutbox()">Clear sent</button>
+    </div>
+    <div id="outbox-list"><div class="empty">No messages yet. Use "&rarr; Outbox" on any generated message to save it here.</div></div>
+  </div>
+  <div id="outbox-agenda-tab" style="display:none">
+    <div style="display:flex;gap:10px;margin-bottom:1rem;flex-wrap:wrap;align-items:center">
+      <select id="agenda-days" onchange="renderAgenda()" style="width:180px">
+        <option value="0">Today only</option>
+        <option value="7" selected>Next 7 days</option>
+        <option value="14">Next 14 days</option>
+        <option value="30">Next 30 days</option>
+        <option value="-1">All scheduled</option>
+      </select>
+      <label style="display:flex;align-items:center;gap:6px;font-size:12px;margin:0"><input type="checkbox" id="agenda-show-unscheduled" onchange="renderAgenda()"> Show unscheduled</label>
+    </div>
+    <div id="agenda-list"><div class="empty">No scheduled messages yet. Set dates on your messages in the All messages tab.</div></div>
+  </div>
 </div>
 
 <!-- PRE-CALL PREP -->
@@ -1004,7 +1023,7 @@ function renderOutbox() {
       <div class="card-header" style="margin-bottom:8px"><div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">${typeBadge}${sentBadge}<span style="font-weight:500;font-size:13px">${o.prospectName}</span></div><button class="btn btn-sm btn-danger" onclick="deleteOutboxItem(${o.id})">✕</button></div>
       ${contactLine}
       ${o.type==='email'&&o.subject?`<div style="font-size:12px;font-weight:500;margin-bottom:5px">Subject: <span style="font-weight:400">${o.subject}</span></div>`:''}
-      <textarea id="ob-body-${o.id}" style="width:100%;font-size:12px;line-height:1.6;min-height:75px;border:1px solid var(--border);border-radius:var(--radius);padding:8px;font-family:inherit;resize:vertical" onchange="updateOutboxItem(${o.id},{body:this.value})">${o.body}</textarea>
+      <textarea id="ob-body-${o.id}" style="width:100%;font-size:12px;line-height:1.6;min-height:140px;border:1px solid var(--border);border-radius:var(--radius);padding:10px;font-family:inherit;resize:vertical" onchange="updateOutboxItem(${o.id},{body:this.value})">${o.body}</textarea>
       <div style="display:flex;gap:8px;align-items:center;margin-top:8px;flex-wrap:wrap">
         <label style="font-size:11px;color:var(--text2);margin:0;display:flex;align-items:center;gap:5px">Date: <input type="date" value="${o.scheduledDate||''}" onchange="updateOutboxItem(${o.id},{scheduledDate:this.value})" style="font-size:12px;padding:3px 6px;border:1px solid var(--border2);border-radius:var(--radius);font-family:inherit"></label>
         <button class="copy-btn" onclick="copyOutboxItem(${o.id})">Copy</button>
@@ -1195,7 +1214,7 @@ async function runFollowup(mode) {
   const container = document.getElementById('followup-outputs');
   let block = document.getElementById(outId);
   if (!block) { block = document.createElement('div'); block.style.marginBottom = '1rem'; block.id = outId; container.appendChild(block); }
-  const obBtn = (mode === 'sequence' || mode === 'content14') ? `<button class="copy-btn" onclick="promptSaveToOutbox('${outId}-text','${p.id}','${p.name.replace(/'/g,"\\'")}')">→ Outbox</button>` : '';
+  const obBtn = (mode === 'sequence') ? `<button class="copy-btn" onclick="promptSaveToOutbox('${outId}-text','${p.id}','${p.name.replace(/'/g,"\\'")}')">→ Outbox</button>` : '';
   const emailBtn = mode === 'sequence' ? `<button class="copy-btn" onclick="emailSequence('${outId}-text', '${p.name}')">📧 Email to me</button>` : '';
   block.innerHTML = `<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;flex-wrap:wrap;gap:6px"><div class="sec-label" style="margin:0">${labels[mode]}</div><div style="display:flex;gap:5px">${obBtn}${emailBtn}<button class="copy-btn" onclick="copyEl('${outId}-text')">Copy</button></div></div><div id="${outId}-text" class="ai-out loading">Generating…</div>`;
 
@@ -1538,6 +1557,124 @@ function renderTfLibrary() {
 }
 
 function copyTfStory(id) { const t = DB.transformations.find(x => x.id === id); if (t) navigator.clipboard.writeText(t.story).catch(()=>{}); }
+
+// ─── OUTBOX TABS + AGENDA ────────────────────────────────────────────────────
+function switchOutboxTab(tab, btn) {
+  document.querySelectorAll('#panel-outbox .tab-inline').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('outbox-messages-tab').style.display = tab === 'messages' ? 'block' : 'none';
+  document.getElementById('outbox-agenda-tab').style.display = tab === 'agenda' ? 'block' : 'none';
+  if (tab === 'agenda') renderAgenda();
+}
+
+function renderAgenda() {
+  const el = document.getElementById('agenda-list');
+  if (!el) return;
+  const daysAhead = parseInt(document.getElementById('agenda-days')?.value ?? '7');
+  const showUnscheduled = document.getElementById('agenda-show-unscheduled')?.checked || false;
+  const today = new Date(); today.setHours(0,0,0,0);
+  const todayStr = today.toISOString().slice(0,10);
+
+  const allPending = (DB.outbox || []).filter(o => o.status !== 'sent');
+  const scheduled = allPending.filter(o => o.scheduledDate);
+  const unscheduled = allPending.filter(o => !o.scheduledDate);
+
+  const overdue = scheduled.filter(o => { const d = new Date(o.scheduledDate); d.setHours(0,0,0,0); return d < today; });
+  const upcoming = scheduled.filter(o => {
+    const d = new Date(o.scheduledDate); d.setHours(0,0,0,0);
+    if (d < today) return false;
+    if (daysAhead === -1) return true;
+    const limit = new Date(today); limit.setDate(limit.getDate() + daysAhead);
+    return d <= limit;
+  });
+
+  if (!overdue.length && !upcoming.length && (!showUnscheduled || !unscheduled.length)) {
+    el.innerHTML = '<div class="empty">No messages scheduled for this window.<br>Set dates in the All messages tab.</div>';
+    return;
+  }
+
+  // Group all by date key
+  const byDate = {};
+  const addToDate = (o, label) => { if (!byDate[label]) byDate[label] = []; byDate[label].push(o); };
+
+  for (const o of overdue) addToDate(o, 'OVERDUE|' + o.scheduledDate);
+  for (const o of upcoming) addToDate(o, (o.scheduledDate === todayStr ? 'TODAY|' : 'FUTURE|') + o.scheduledDate);
+
+  // Sort: overdue first, then chronological
+  const sortedKeys = Object.keys(byDate).sort((a, b) => {
+    const [typeA, dateA] = a.split('|');
+    const [typeB, dateB] = b.split('|');
+    if (typeA === 'OVERDUE' && typeB !== 'OVERDUE') return -1;
+    if (typeB === 'OVERDUE' && typeA !== 'OVERDUE') return 1;
+    return dateA.localeCompare(dateB);
+  });
+
+  let html = '';
+  for (const key of sortedKeys) {
+    const [type, dateStr] = key.split('|');
+    const msgs = byDate[key];
+    const isToday = type === 'TODAY';
+    const isOverdue = type === 'OVERDUE';
+    let displayDate = dateStr;
+    try { const d = new Date(dateStr + 'T12:00:00'); displayDate = d.toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long' }); } catch(e) {}
+
+    const hBg = isOverdue ? 'var(--red-bg)' : isToday ? 'var(--blue-bg)' : 'var(--bg3)';
+    const hColor = isOverdue ? 'var(--red-text)' : isToday ? 'var(--blue-text)' : 'var(--text2)';
+    const prefix = isOverdue ? '⚠️ OVERDUE · ' : isToday ? '📅 TODAY · ' : '';
+
+    html += `<div style="margin-bottom:1.5rem">
+      <div style="background:${hBg};color:${hColor};padding:7px 12px;border-radius:var(--radius);font-weight:600;font-size:12px;margin-bottom:10px;display:flex;align-items:center;justify-content:space-between">
+        <span>${prefix}${displayDate}</span>
+        <span style="font-weight:400;font-size:11px">${msgs.length} message${msgs.length>1?'s':''}</span>
+      </div>`;
+
+    for (const o of msgs) {
+      const p = DB.prospects.find(x => String(x.id) === String(o.prospectId));
+      const typeBadge = o.type === 'email' ? `<span class="badge badge-blue">Email</span>` : `<span class="badge badge-purple">Text</span>`;
+      const contact = o.type === 'email' ? (p?.email || '') : (p?.phone || '');
+      const contactEl = contact
+        ? `<span style="font-size:12px;font-weight:500;color:var(--blue-text)">${contact}</span>`
+        : `<span style="font-size:11px;color:var(--amber-text)">⚠ No ${o.type==='email'?'email':'phone'}</span>`;
+
+      html += `<div class="card" style="margin-bottom:8px;border-left:3px solid ${o.type==='email'?'var(--blue-text)':'var(--purple-text)'}">
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;flex-wrap:wrap;margin-bottom:8px">
+          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+            ${typeBadge}
+            <span style="font-weight:600;font-size:13px">${o.prospectName}</span>
+            ${contactEl}
+          </div>
+          <div style="display:flex;gap:5px;flex-shrink:0">
+            <button class="copy-btn" onclick="copyAgendaItem(${o.id})">Copy</button>
+            ${o.type==='email'&&p?.email?`<button class="copy-btn" onclick="openOutboxEmail(${o.id})">Open in mail</button>`:''}
+            <button class="btn btn-sm btn-secondary" onclick="markSent(${o.id});renderAgenda()">✓ Done</button>
+          </div>
+        </div>
+        ${o.type==='email'&&o.subject?`<div style="font-size:12px;color:var(--text2);margin-bottom:6px"><strong>Subject:</strong> ${o.subject}</div>`:''}
+        <div style="font-size:13px;line-height:1.75;white-space:pre-wrap;background:var(--bg2);padding:10px 14px;border-radius:var(--radius)">${o.body}</div>
+      </div>`;
+    }
+    html += '</div>';
+  }
+
+  if (showUnscheduled && unscheduled.length) {
+    html += `<div style="margin-bottom:1rem"><div style="background:var(--bg3);color:var(--text2);padding:7px 12px;border-radius:var(--radius);font-weight:600;font-size:12px;margin-bottom:8px">📋 UNSCHEDULED — ${unscheduled.length} messages (set dates in All messages)</div>`;
+    for (const o of unscheduled) {
+      const p = DB.prospects.find(x => String(x.id) === String(o.prospectId));
+      const contact = o.type === 'email' ? (p?.email || 'no email') : (p?.phone || 'no phone');
+      html += `<div class="card" style="margin-bottom:6px;opacity:.7"><div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap"><span class="badge ${o.type==='email'?'badge-blue':'badge-purple'}">${o.type}</span><span style="font-weight:600;font-size:13px">${o.prospectName}</span><span style="font-size:12px;color:var(--text2)">${contact}</span></div><div style="font-size:12px;color:var(--text2);margin-top:6px;white-space:pre-wrap">${(o.body||'').slice(0,100)}${(o.body||'').length>100?'...':''}</div></div>`;
+    }
+    html += '</div>';
+  }
+
+  el.innerHTML = html;
+}
+
+function copyAgendaItem(id) {
+  const o = (DB.outbox||[]).find(x => x.id === id);
+  if (!o) return;
+  const text = o.type==='email'&&o.subject ? `Subject: ${o.subject}\n\n${o.body}` : o.body;
+  navigator.clipboard.writeText(text).catch(()=>{});
+}
 
 // ─── INIT ─────────────────────────────────────────────────────────────────────
 renderInfluencers();
