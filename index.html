@@ -6,51 +6,36 @@
 <title>Closer's Command Center</title>
 <style>
   :root {
-    --bg: #fafaf9;
-    --bg2: #f4f3f0;
-    --bg3: #eceae5;
-    --text: #1a1a18;
-    --text2: #6b6b67;
-    --text3: #9b9b96;
-    --border: rgba(0,0,0,0.1);
-    --border2: rgba(0,0,0,0.18);
-    --accent: #1a1a18;
+    --bg: #fafaf9; --bg2: #f4f3f0; --bg3: #eceae5;
+    --text: #1a1a18; --text2: #6b6b67; --text3: #9b9b96;
+    --border: rgba(0,0,0,0.1); --border2: rgba(0,0,0,0.18); --accent: #1a1a18;
     --green-bg: #e8f5ee; --green-text: #1a5c36;
     --blue-bg: #e8f0fb; --blue-text: #1a3a6b;
     --amber-bg: #fdf3e3; --amber-text: #7a4a0a;
     --red-bg: #fde8e8; --red-text: #7a1a1a;
     --purple-bg: #f0eafe; --purple-text: #4a2a8a;
     --teal-bg: #e5f7f5; --teal-text: #0f5a52;
-    --radius: 8px; --radius-lg: 12px;
-    --shadow: 0 1px 3px rgba(0,0,0,0.06);
+    --radius: 8px; --radius-lg: 12px; --shadow: 0 1px 3px rgba(0,0,0,0.06);
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); font-size: 14px; line-height: 1.5; }
-
-  /* Layout */
   .app { display: grid; grid-template-columns: 220px 1fr; min-height: 100vh; }
   .sidebar { background: var(--bg2); border-right: 1px solid var(--border); padding: 1.25rem 0; position: sticky; top: 0; height: 100vh; overflow-y: auto; }
   .main { overflow-y: auto; padding: 2rem; max-width: 900px; }
   .logo { padding: 0 1.25rem 1.25rem; border-bottom: 1px solid var(--border); margin-bottom: .75rem; }
-  .logo-title { font-size: 13px; font-weight: 600; letter-spacing: .02em; color: var(--text); }
+  .logo-title { font-size: 13px; font-weight: 600; letter-spacing: .02em; }
   .logo-sub { font-size: 11px; color: var(--text3); margin-top: 2px; }
   .nav-section { padding: .5rem 1.25rem .25rem; font-size: 10px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--text3); }
   .nav-item { display: flex; align-items: center; gap: 8px; padding: .5rem 1.25rem; font-size: 13px; color: var(--text2); cursor: pointer; border-left: 2px solid transparent; transition: all .15s; text-decoration: none; }
   .nav-item:hover { color: var(--text); background: var(--bg3); }
   .nav-item.active { color: var(--text); border-left-color: var(--accent); background: var(--bg3); font-weight: 500; }
   .nav-item svg { width: 15px; height: 15px; flex-shrink: 0; }
-
-  /* Panels */
   .panel { display: none; } .panel.active { display: block; }
   .panel-header { margin-bottom: 1.5rem; }
   .panel-title { font-size: 20px; font-weight: 600; }
   .panel-desc { font-size: 13px; color: var(--text2); margin-top: 4px; }
-
-  /* Cards */
   .card { background: #fff; border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 1rem 1.25rem; margin-bottom: .75rem; box-shadow: var(--shadow); }
   .card-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; }
-
-  /* Forms */
   label { font-size: 12px; color: var(--text2); display: block; margin-bottom: 3px; font-weight: 500; }
   input[type=text], input[type=url], select, textarea { width: 100%; padding: 7px 10px; border: 1px solid var(--border2); border-radius: var(--radius); font-size: 13px; font-family: inherit; background: #fff; color: var(--text); transition: border-color .15s; }
   input[type=text]:focus, input[type=url]:focus, select:focus, textarea:focus { outline: none; border-color: var(--accent); }
@@ -58,8 +43,6 @@
   .field { display: flex; flex-direction: column; margin-bottom: 10px; }
   .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
   .grid3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
-
-  /* Buttons */
   .btn { display: inline-flex; align-items: center; gap: 5px; padding: 7px 14px; font-size: 12px; font-weight: 500; border-radius: var(--radius); cursor: pointer; font-family: inherit; transition: all .15s; border: 1px solid transparent; white-space: nowrap; }
   .btn-primary { background: var(--accent); color: #fff; border-color: var(--accent); }
   .btn-primary:hover { opacity: .85; }
@@ -71,8 +54,6 @@
   .btn-danger:hover { background: var(--red-bg); }
   .btn-sm { padding: 4px 9px; font-size: 11px; }
   .btn-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
-
-  /* Badges / Tags */
   .badge { display: inline-flex; align-items: center; gap: 3px; font-size: 10px; padding: 2px 7px; border-radius: 99px; font-weight: 500; }
   .badge-green { background: var(--green-bg); color: var(--green-text); }
   .badge-blue { background: var(--blue-bg); color: var(--blue-text); }
@@ -81,8 +62,6 @@
   .badge-purple { background: var(--purple-bg); color: var(--purple-text); }
   .badge-teal { background: var(--teal-bg); color: var(--teal-text); }
   .badge-gray { background: var(--bg3); color: var(--text2); }
-
-  /* Misc UI */
   .divider { border: none; border-top: 1px solid var(--border); margin: 1.25rem 0; }
   .empty { text-align: center; padding: 2rem 1rem; color: var(--text3); font-size: 13px; }
   .scroll-list { max-height: 400px; overflow-y: auto; padding-right: 2px; }
@@ -114,12 +93,8 @@
   .tab-inline.active { color: var(--text); border-bottom-color: var(--accent); }
   .slack-badge { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; padding: 2px 8px; border-radius: 99px; background: #4a154b1a; color: #4a154b; font-weight: 500; }
   .content-count-row { display: flex; gap: 8px; flex-wrap: wrap; margin: 6px 0; }
-
-  /* Prospect card */
   .prospect-card { background: #fff; border: 1px solid var(--border); border-radius: var(--radius-lg); padding: .875rem 1rem; margin-bottom: .5rem; cursor: default; }
   .prospect-name { font-size: 14px; font-weight: 600; }
-
-  /* Responsive */
   @media (max-width: 700px) {
     .app { grid-template-columns: 1fr; }
     .sidebar { position: static; height: auto; }
@@ -131,516 +106,290 @@
 </head>
 <body>
 <div class="app">
-
-<!-- SIDEBAR -->
 <nav class="sidebar">
-  <div class="logo">
-    <div class="logo-title">Closer's HQ</div>
-    <div class="logo-sub">Content bank + call prep</div>
-  </div>
+  <div class="logo"><div class="logo-title">Closer's HQ</div><div class="logo-sub">Content bank + call prep</div></div>
   <div class="nav-section">Content</div>
-  <a class="nav-item active" onclick="showPanel('bank',this)">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 10h16M4 14h8M4 18h8"/></svg>
-    Content bank
-  </a>
-  <a class="nav-item" onclick="showPanel('slack',this)">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 9h6M9 12h6M9 15h4"/></svg>
-    Sync social
-  </a>
-  <a class="nav-item" onclick="showPanel('feed',this)">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 11a9 9 0 0 1 9 9"/><path d="M4 4a16 16 0 0 1 16 16"/><circle cx="5" cy="19" r="1"/></svg>
-    Social feed
-  </a>
-  <a class="nav-item" onclick="showPanel('transformations',this)">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="18" rx="1"/><rect x="14" y="3" width="7" height="18" rx="1"/><path d="M10 12h4"/></svg>
-    Transformations
-  </a>
+  <a class="nav-item active" onclick="showPanel('bank',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 10h16M4 14h8M4 18h8"/></svg>Content bank</a>
+  <a class="nav-item" onclick="showPanel('slack',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 9h6M9 12h6M9 15h4"/></svg>Sync social</a>
+  <a class="nav-item" onclick="showPanel('feed',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 11a9 9 0 0 1 9 9"/><path d="M4 4a16 16 0 0 1 16 16"/><circle cx="5" cy="19" r="1"/></svg>Social feed</a>
+  <a class="nav-item" onclick="showPanel('transformations',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="18" rx="1"/><rect x="14" y="3" width="7" height="18" rx="1"/><path d="M10 12h4"/></svg>Transformations</a>
   <div class="nav-section">Prospects</div>
-  <a class="nav-item" onclick="showPanel('prospects',this)">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="7" r="4"/><path d="M3 21v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/><path d="M21 21v-2a4 4 0 0 0-3-3.85"/></svg>
-    Prospects
-  </a>
+  <a class="nav-item" onclick="showPanel('prospects',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="7" r="4"/><path d="M3 21v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/><path d="M21 21v-2a4 4 0 0 0-3-3.85"/></svg>Prospects</a>
   <div class="nav-section">Call tools</div>
-  <a class="nav-item" onclick="showPanel('prep',this)">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01z"/></svg>
-    Pre-call prep
-  </a>
-  <a class="nav-item" onclick="showPanel('followup',this)">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-    Post-call follow-up
-  </a>
-  <a class="nav-item" onclick="showPanel('history',this)">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-    History
-  </a>
-  <div class="divider" style="margin: .75rem 1.25rem;"></div>
-  <a class="nav-item" onclick="event.stopPropagation();openDailyDigest()" style="color:var(--green-text);cursor:pointer">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
-    Email today's digest
-  </a>
-  <a class="nav-item" onclick="showPanel('settings',this)">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg>
-    Settings
-  </a>
+  <a class="nav-item" onclick="showPanel('outbox',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 2L11 13"/><path d="M22 2L15 22 11 13 2 9l20-7z"/></svg>Outbox</a>
+  <a class="nav-item" onclick="showPanel('prep',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01z"/></svg>Pre-call prep</a>
+  <a class="nav-item" onclick="showPanel('followup',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>Post-call follow-up</a>
+  <a class="nav-item" onclick="showPanel('history',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>History</a>
+  <div class="divider" style="margin:.75rem 1.25rem"></div>
+  <a class="nav-item" onclick="event.stopPropagation();openDailyDigest()" style="color:var(--green-text);cursor:pointer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>Email today's digest</a>
+  <a class="nav-item" onclick="showPanel('settings',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg>Settings</a>
 </nav>
-
-<!-- MAIN -->
 <main class="main">
 
-  <!-- ═══ CONTENT BANK ═══ -->
-  <div id="panel-bank" class="panel active">
-    <div class="panel-header">
-      <div class="panel-title">Content bank</div>
-      <div class="panel-desc">Add influencers and their content sources. All sources are analyzed by AI and used for prospect matching.</div>
-    </div>
-    <div class="split">
-      <div>
-        <div class="sec-label">Add influencer</div>
-        <div class="field"><label>Name</label><input type="text" id="inf-name" placeholder="e.g. ScottyK Fitness"></div>
-        <div class="field"><label>Handle / username</label><input type="text" id="inf-handle" placeholder="e.g. @scottykfitness"></div>
-        <div class="field"><label>Niche / topic</label><input type="text" id="inf-niche" placeholder="e.g. fitness coaching, weight loss"></div>
-
-        <div class="sec-label" style="margin-top:1rem">Content sources</div>
-        <div class="info-box">Add any combination of sources. YouTube and podcast feeds are fetched automatically. Website/blog URLs are crawled for content.</div>
-
-        <div id="source-rows">
-          <div class="source-row" id="src-0">
-            <select id="stype-0">
-              <option value="youtube">YouTube channel</option>
-              <option value="podcast">Podcast RSS</option>
-              <option value="blog-index">Blog index URL</option>
-              <option value="article">Article / page URL</option>
-            </select>
-            <input type="url" id="surl-0" placeholder="Paste URL...">
-            <button class="btn btn-sm btn-secondary" onclick="addSourceRow()">+</button>
-          </div>
+<!-- CONTENT BANK -->
+<div id="panel-bank" class="panel active">
+  <div class="panel-header"><div class="panel-title">Content bank</div><div class="panel-desc">Add influencers and their content sources. All sources are analyzed by AI and used for prospect matching.</div></div>
+  <div class="split">
+    <div>
+      <div class="sec-label">Add influencer</div>
+      <div class="field"><label>Name</label><input type="text" id="inf-name" placeholder="e.g. ScottyK Fitness"></div>
+      <div class="field"><label>Handle / username</label><input type="text" id="inf-handle" placeholder="e.g. @scottykfitness"></div>
+      <div class="field"><label>Niche / topic</label><input type="text" id="inf-niche" placeholder="e.g. fitness coaching, weight loss"></div>
+      <div class="sec-label" style="margin-top:1rem">Content sources</div>
+      <div class="info-box">Add any combination of sources. YouTube and podcast feeds are fetched automatically. Website/blog URLs are crawled for content.</div>
+      <div id="source-rows">
+        <div class="source-row" id="src-0">
+          <select id="stype-0"><option value="youtube">YouTube channel</option><option value="podcast">Podcast RSS</option><option value="blog-index">Blog index URL</option><option value="article">Article / page URL</option></select>
+          <input type="url" id="surl-0" placeholder="Paste URL...">
+          <button class="btn btn-sm btn-secondary" onclick="addSourceRow()">+</button>
         </div>
-
-        <div class="field" style="margin-top:8px"><label>Extra notes for AI (optional)</label><textarea id="inf-notes" placeholder="Key themes, target audience, signature frameworks, selling style..."></textarea></div>
-        <button class="btn btn-primary" onclick="addInfluencer()">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="8 17 12 21 16 17"/><line x1="12" y1="3" x2="12" y2="21"/></svg>
-          Fetch &amp; analyze
-        </button>
       </div>
-      <div>
-        <div class="sec-label">Influencers <span id="inf-count" style="font-weight:400;color:var(--text3)"></span></div>
-        <div class="scroll-list" id="inf-list"><div class="empty">No influencers yet.</div></div>
-      </div>
+      <div class="field" style="margin-top:8px"><label>Extra notes for AI (optional)</label><textarea id="inf-notes" placeholder="Key themes, target audience, signature frameworks, selling style..."></textarea></div>
+      <button class="btn btn-primary" onclick="addInfluencer()"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="8 17 12 21 16 17"/><line x1="12" y1="3" x2="12" y2="21"/></svg>Fetch &amp; analyze</button>
+    </div>
+    <div>
+      <div class="sec-label">Influencers <span id="inf-count" style="font-weight:400;color:var(--text3)"></span></div>
+      <div class="scroll-list" id="inf-list"><div class="empty">No influencers yet.</div></div>
     </div>
   </div>
+</div>
 
-  <!-- ═══ SYNC SOCIAL ═══ -->
-  <div id="panel-slack" class="panel">
-    <div class="panel-header">
-      <div class="panel-title">Sync social content</div>
-      <div class="panel-desc">Pull Instagram posts from <strong>#creator-socials</strong> and import them into the content bank.</div>
-    </div>
-
-    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:1px;background:var(--border);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;margin-bottom:1.5rem">
-      <div style="background:var(--bg);padding:.875rem 1rem">
-        <div style="font-size:11px;font-weight:600;color:var(--text3);margin-bottom:4px">STEP 1</div>
-        <div style="font-size:13px;font-weight:500;margin-bottom:3px">Open Claude.ai</div>
-        <div style="font-size:12px;color:var(--text2)">Click the button below — it opens Claude with the exact prompt pre-filled.</div>
-      </div>
-      <div style="background:var(--bg);padding:.875rem 1rem">
-        <div style="font-size:11px;font-weight:600;color:var(--text3);margin-bottom:4px">STEP 2</div>
-        <div style="font-size:13px;font-weight:500;margin-bottom:3px">Run &amp; copy JSON</div>
-        <div style="font-size:12px;color:var(--text2)">Claude reads Slack and outputs a JSON block. Copy it.</div>
-      </div>
-      <div style="background:var(--bg);padding:.875rem 1rem">
-        <div style="font-size:11px;font-weight:600;color:var(--text3);margin-bottom:4px">STEP 3</div>
-        <div style="font-size:13px;font-weight:500;margin-bottom:3px">Paste &amp; import</div>
-        <div style="font-size:12px;color:var(--text2)">Paste the JSON below and click Import. Done.</div>
-      </div>
-    </div>
-
-    <div style="display:flex;gap:10px;align-items:center;margin-bottom:1.25rem;flex-wrap:wrap">
-      <div class="field" style="margin:0;min-width:160px">
-        <label>Posts to fetch</label>
-        <select id="slack-limit" style="width:160px">
-          <option value="50">50 most recent</option>
-          <option value="100" selected>100 most recent</option>
-          <option value="200">200 most recent</option>
-        </select>
-      </div>
-      <div style="padding-top:18px">
-        <button class="btn btn-primary" onclick="openClaudePrompt()">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
-          Open Claude.ai with prompt
-        </button>
-      </div>
-    </div>
-
-    <div class="field" style="margin-bottom:10px">
-      <label>Paste JSON from Claude here</label>
-      <textarea id="slack-json-paste" style="min-height:100px;font-family:monospace;font-size:12px" placeholder='[{"account":"ScottyK Fitness","creator":"@scottykfitness","type":"Reel","caption":"...","posted":"2026-06-10"},...]'></textarea>
-    </div>
-    <button class="btn btn-primary" onclick="importSlackJSON()">
-      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="8 17 12 21 16 17"/><line x1="12" y1="3" x2="12" y2="21"/></svg>
-      Import posts
-    </button>
-    <div id="slack-status" style="margin-top:10px;font-size:13px"></div>
-
-    <hr class="divider">
-    <div class="sec-label">Current social content</div>
-    <div id="slack-inf-list"><div class="empty" style="padding:.5rem">No influencers added yet.</div></div>
+<!-- SYNC SOCIAL -->
+<div id="panel-slack" class="panel">
+  <div class="panel-header"><div class="panel-title">Sync social content</div><div class="panel-desc">Pull Instagram posts from <strong>#creator-socials</strong> and import them into the content bank.</div></div>
+  <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:1px;background:var(--border);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;margin-bottom:1.5rem">
+    <div style="background:var(--bg);padding:.875rem 1rem"><div style="font-size:11px;font-weight:600;color:var(--text3);margin-bottom:4px">STEP 1</div><div style="font-size:13px;font-weight:500;margin-bottom:3px">Open Claude.ai</div><div style="font-size:12px;color:var(--text2)">Click the button below — it opens Claude with the exact prompt pre-filled.</div></div>
+    <div style="background:var(--bg);padding:.875rem 1rem"><div style="font-size:11px;font-weight:600;color:var(--text3);margin-bottom:4px">STEP 2</div><div style="font-size:13px;font-weight:500;margin-bottom:3px">Run &amp; copy JSON</div><div style="font-size:12px;color:var(--text2)">Claude reads Slack and outputs a JSON block. Copy it.</div></div>
+    <div style="background:var(--bg);padding:.875rem 1rem"><div style="font-size:11px;font-weight:600;color:var(--text3);margin-bottom:4px">STEP 3</div><div style="font-size:13px;font-weight:500;margin-bottom:3px">Paste &amp; import</div><div style="font-size:12px;color:var(--text2)">Paste the JSON below and click Import. Done.</div></div>
   </div>
+  <div style="display:flex;gap:10px;align-items:center;margin-bottom:1.25rem;flex-wrap:wrap">
+    <div class="field" style="margin:0;min-width:160px"><label>Posts to fetch</label><select id="slack-limit" style="width:160px"><option value="50">50 most recent</option><option value="100" selected>100 most recent</option><option value="200">200 most recent</option></select></div>
+    <div style="padding-top:18px"><button class="btn btn-primary" onclick="openClaudePrompt()"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>Open Claude.ai with prompt</button></div>
+  </div>
+  <div class="field" style="margin-bottom:10px"><label>Paste JSON from Claude here</label><textarea id="slack-json-paste" style="min-height:100px;font-family:monospace;font-size:12px" placeholder='[{"account":"ScottyK Fitness","creator":"@scottykfitness","type":"Reel","caption":"...","posted":"2026-06-10"},...]'></textarea></div>
+  <button class="btn btn-primary" onclick="importSlackJSON()"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="8 17 12 21 16 17"/><line x1="12" y1="3" x2="12" y2="21"/></svg>Import posts</button>
+  <div id="slack-status" style="margin-top:10px;font-size:13px"></div>
+  <hr class="divider">
+  <div class="sec-label">Current social content</div>
+  <div id="slack-inf-list"><div class="empty" style="padding:.5rem">No influencers added yet.</div></div>
+</div>
 
-  <!-- ═══ PROSPECTS ═══ -->
-  <div id="panel-prospects" class="panel">
-    <div class="panel-header">
-      <div class="panel-title">Prospects</div>
-      <div class="panel-desc">Paste any info or drop a screenshot — AI extracts and fills the profile automatically.</div>
+<!-- PROSPECTS -->
+<div id="panel-prospects" class="panel">
+  <div class="panel-header"><div class="panel-title">Prospects</div><div class="panel-desc">Paste any info or drop a screenshot — AI extracts and fills the profile automatically.</div></div>
+  <div class="split">
+    <div>
+      <div class="tabs-inline" style="margin-bottom:1rem">
+        <button class="tab-inline active" onclick="switchProspectTab('smart',this)">Smart extract</button>
+        <button class="tab-inline" onclick="switchProspectTab('manual',this)">Manual</button>
+      </div>
+      <div id="prospect-smart">
+        <div class="info-box" style="margin-bottom:10px">Paste anything — DM thread, notes, form submission, email — or drop a screenshot. AI will extract name, role, pain points, personality and fill all fields.</div>
+        <div id="screenshot-drop" onclick="document.getElementById('screenshot-input').click()" style="border:2px dashed var(--border2);border-radius:var(--radius-lg);padding:1rem;text-align:center;cursor:pointer;margin-bottom:10px;transition:background .15s;background:#fff">
+          <div id="screenshot-preview" style="display:none"><img id="screenshot-img" style="max-height:120px;border-radius:var(--radius);margin-bottom:6px"><div style="font-size:11px;color:var(--text3)">Screenshot loaded — will be analyzed with text</div></div>
+          <div id="screenshot-placeholder">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--text3)" stroke-width="1.5" style="margin-bottom:4px"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+            <div style="font-size:12px;color:var(--text3)">Drop screenshot here or click to upload</div>
+            <div style="font-size:11px;color:var(--text3);margin-top:2px">Intake form, CRM, chat, anything visual</div>
+          </div>
+          <input type="file" id="screenshot-input" accept="image/*" style="display:none" onchange="handleScreenshot(event)">
+        </div>
+        <div class="field" style="margin-bottom:10px"><label>Paste text (optional — combine with screenshot or use alone)</label><textarea id="smart-text" style="min-height:90px" placeholder="Paste DM conversation, intake form notes, email thread, anything..."></textarea></div>
+        <div class="field" style="margin-bottom:12px"><label>Influencer they came through</label><select id="smart-inf"><option value="">— select influencer —</option></select></div>
+        <div style="display:flex;gap:8px;align-items:center">
+          <button class="btn btn-primary" onclick="smartExtract()"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01z"/></svg>Extract &amp; fill fields</button>
+          <button class="btn btn-ghost btn-sm" onclick="clearScreenshot()">Clear screenshot</button>
+        </div>
+        <div id="smart-status" style="font-size:12px;margin-top:8px"></div>
+      </div>
+      <div id="prospect-manual" style="display:none">
+        <div class="grid2">
+          <div class="field"><label>Full name</label><input type="text" id="m-name" placeholder="Name"></div>
+          <div class="field"><label>Role / title</label><input type="text" id="m-role" placeholder="e.g. CEO, gym owner"></div>
+        </div>
+        <div class="grid2">
+          <div class="field"><label>Email</label><input type="text" id="m-email" placeholder="email@example.com"></div>
+          <div class="field"><label>Phone / WhatsApp</label><input type="text" id="m-phone" placeholder="+1 234 567 8900"></div>
+        </div>
+        <div class="grid2">
+          <div class="field"><label>Company / industry</label><input type="text" id="m-company" placeholder="Company or industry"></div>
+          <div class="field"><label>Offer they're considering</label><input type="text" id="m-offer" placeholder="e.g. 12-week coaching program"></div>
+        </div>
+        <div class="field"><label>Stated pain points</label><textarea id="m-pain" placeholder="What have they said they struggle with?"></textarea></div>
+        <div class="field"><label>Personality / buyer type</label><input type="text" id="m-style" placeholder="e.g. analytical, emotional, fast decision maker..."></div>
+        <div class="field"><label>Influencer they follow / came through</label><select id="m-inf"><option value="">— select influencer —</option></select></div>
+        <div class="field"><label>Notes</label><textarea id="m-notes" placeholder="Objections raised, content they've seen, funnel stage..."></textarea></div>
+      </div>
+      <div id="extracted-preview" style="display:none;margin-top:1rem">
+        <hr class="divider" style="margin:.75rem 0">
+        <div class="sec-label">Extracted profile — review &amp; edit</div>
+        <div class="grid2">
+          <div class="field"><label>Full name</label><input type="text" id="p-name" placeholder="Name"></div>
+          <div class="field"><label>Role / title</label><input type="text" id="p-role" placeholder="e.g. CEO, gym owner"></div>
+        </div>
+        <div class="grid2">
+          <div class="field"><label>Email</label><input type="text" id="p-email" placeholder="email@example.com"></div>
+          <div class="field"><label>Phone / WhatsApp</label><input type="text" id="p-phone" placeholder="+1 234 567 8900"></div>
+        </div>
+        <div class="grid2">
+          <div class="field"><label>Company / industry</label><input type="text" id="p-company" placeholder="Company or industry"></div>
+          <div class="field"><label>Offer they're considering</label><input type="text" id="p-offer" placeholder="e.g. 12-week coaching program"></div>
+        </div>
+        <div class="field"><label>Stated pain points</label><textarea id="p-pain" placeholder="Pain points"></textarea></div>
+        <div class="field"><label>Personality / buyer type</label><input type="text" id="p-style" placeholder="Personality type"></div>
+        <div class="field"><label>Influencer they follow / came through</label><select id="p-inf"><option value="">— select influencer —</option></select></div>
+        <div class="field"><label>Notes</label><textarea id="p-notes" placeholder="Any extra context..."></textarea></div>
+        <button class="btn btn-primary" onclick="saveProspect()">Save prospect</button>
+      </div>
+      <div id="manual-save-btn" style="display:none;margin-top:10px"><button class="btn btn-primary" onclick="saveProspect()">Save prospect</button></div>
     </div>
-    <div class="split">
-      <div>
-        <!-- INPUT MODE TABS -->
-        <div class="tabs-inline" style="margin-bottom:1rem">
-          <button class="tab-inline active" onclick="switchProspectTab('smart',this)">Smart extract</button>
-          <button class="tab-inline" onclick="switchProspectTab('manual',this)">Manual</button>
-        </div>
-
-        <!-- SMART EXTRACT -->
-        <div id="prospect-smart">
-          <div class="info-box" style="margin-bottom:10px">Paste anything — DM thread, notes, form submission, email — or drop a screenshot. AI will extract name, role, pain points, personality and fill all fields.</div>
-
-          <!-- Screenshot drop zone -->
-          <div id="screenshot-drop" onclick="document.getElementById('screenshot-input').click()" style="border:2px dashed var(--border2);border-radius:var(--radius-lg);padding:1rem;text-align:center;cursor:pointer;margin-bottom:10px;transition:background .15s;background:#fff">
-            <div id="screenshot-preview" style="display:none"><img id="screenshot-img" style="max-height:120px;border-radius:var(--radius);margin-bottom:6px"><div style="font-size:11px;color:var(--text3)">Screenshot loaded — will be analyzed with text</div></div>
-            <div id="screenshot-placeholder">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--text3)" stroke-width="1.5" style="margin-bottom:4px"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-              <div style="font-size:12px;color:var(--text3)">Drop screenshot here or click to upload</div>
-              <div style="font-size:11px;color:var(--text3);margin-top:2px">Intake form, CRM, chat, anything visual</div>
-            </div>
-            <input type="file" id="screenshot-input" accept="image/*" style="display:none" onchange="handleScreenshot(event)">
-          </div>
-
-          <div class="field" style="margin-bottom:10px">
-            <label>Paste text (optional — combine with screenshot or use alone)</label>
-            <textarea id="smart-text" style="min-height:90px" placeholder="Paste DM conversation, intake form notes, email thread, anything..."></textarea>
-          </div>
-
-          <div class="field" style="margin-bottom:12px">
-            <label>Influencer they came through</label>
-            <select id="smart-inf"><option value="">— select influencer —</option></select>
-          </div>
-
-          <div style="display:flex;gap:8px;align-items:center">
-            <button class="btn btn-primary" onclick="smartExtract()">
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01z"/></svg>
-              Extract &amp; fill fields
-            </button>
-            <button class="btn btn-ghost btn-sm" onclick="clearScreenshot()">Clear screenshot</button>
-          </div>
-          <div id="smart-status" style="font-size:12px;margin-top:8px"></div>
-        </div>
-
-        <!-- MANUAL FORM -->
-        <div id="prospect-manual" style="display:none">
-          <div class="grid2">
-            <div class="field"><label>Full name</label><input type="text" id="m-name" placeholder="Name"></div>
-            <div class="field"><label>Role / title</label><input type="text" id="m-role" placeholder="e.g. CEO, gym owner"></div>
-          </div>
-          <div class="grid2">
-            <div class="field"><label>Company / industry</label><input type="text" id="m-company" placeholder="Company or industry"></div>
-            <div class="field"><label>Offer they're considering</label><input type="text" id="m-offer" placeholder="e.g. 12-week coaching program"></div>
-          </div>
-          <div class="field"><label>Stated pain points</label><textarea id="m-pain" placeholder="What have they said they struggle with?"></textarea></div>
-          <div class="field"><label>Personality / buyer type</label><input type="text" id="m-style" placeholder="e.g. analytical, emotional, fast decision maker..."></div>
-          <div class="field"><label>Influencer they follow / came through</label><select id="m-inf"><option value="">— select influencer —</option></select></div>
-          <div class="field"><label>Notes</label><textarea id="m-notes" placeholder="Objections raised, content they've seen, funnel stage..."></textarea></div>
-        </div>
-
-        <!-- EXTRACTED PREVIEW — shown after smart extract -->
-        <div id="extracted-preview" style="display:none;margin-top:1rem">
-          <hr class="divider" style="margin:.75rem 0">
-          <div class="sec-label">Extracted profile — review &amp; edit</div>
-          <div class="grid2">
-            <div class="field"><label>Full name</label><input type="text" id="p-name" placeholder="Name"></div>
-            <div class="field"><label>Role / title</label><input type="text" id="p-role" placeholder="e.g. CEO, gym owner"></div>
-          </div>
-          <div class="grid2">
-            <div class="field"><label>Company / industry</label><input type="text" id="p-company" placeholder="Company or industry"></div>
-            <div class="field"><label>Offer they're considering</label><input type="text" id="p-offer" placeholder="e.g. 12-week coaching program"></div>
-          </div>
-          <div class="field"><label>Stated pain points</label><textarea id="p-pain" placeholder="Pain points"></textarea></div>
-          <div class="field"><label>Personality / buyer type</label><input type="text" id="p-style" placeholder="Personality type"></div>
-          <div class="field"><label>Influencer they follow / came through</label><select id="p-inf"><option value="">— select influencer —</option></select></div>
-          <div class="field"><label>Notes</label><textarea id="p-notes" placeholder="Any extra context..."></textarea></div>
-          <button class="btn btn-primary" onclick="saveProspect()">Save prospect</button>
-        </div>
-
-        <!-- Manual save button (shown in manual tab) -->
-        <div id="manual-save-btn" style="display:none;margin-top:10px">
-          <button class="btn btn-primary" onclick="saveProspect()">Save prospect</button>
-        </div>
-      </div>
-
-      <div>
-        <div class="sec-label">Saved prospects <span id="p-count" style="font-weight:400;color:var(--text3)"></span></div>
-        <div class="scroll-list" id="prospect-list"><div class="empty">No prospects yet.</div></div>
-      </div>
+    <div>
+      <div class="sec-label">Saved prospects <span id="p-count" style="font-weight:400;color:var(--text3)"></span></div>
+      <div class="scroll-list" id="prospect-list"><div class="empty">No prospects yet.</div></div>
     </div>
   </div>
+</div>
 
-  <!-- ═══ PRE-CALL PREP ═══ -->
-  <div id="panel-prep" class="panel">
-    <div class="panel-header">
-      <div class="panel-title">Pre-call prep</div>
-      <div class="panel-desc">AI-generated strategy and content recommendations for your next call.</div>
-    </div>
-    <div class="grid2" style="margin-bottom:10px">
-      <div class="field"><label>Select prospect</label><select id="prep-sel" onchange="loadPrepProspect()"><option value="">— choose prospect —</option></select></div>
-      <div class="field"><label>Call goal (optional)</label><input type="text" id="prep-goal" placeholder="e.g. close on program, handle price objection"></div>
-    </div>
-    <div id="prep-prospect-card" style="display:none;margin-bottom:12px"></div>
-    <div class="btn-row">
-      <button class="btn btn-primary" onclick="runPrep('strategy')">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01z"/></svg>
-        Generate strategy
-      </button>
-      <button class="btn btn-secondary" onclick="runPrep('content')">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
-        Match content to send
-      </button>
-      <button class="btn btn-secondary" onclick="runPrep('briefing')">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
-        Field briefing
-      </button>
-    </div>
-    <div id="prep-outputs" style="margin-top:1.25rem"></div>
+<!-- OUTBOX -->
+<div id="panel-outbox" class="panel">
+  <div class="panel-header"><div class="panel-title">Outbox</div><div class="panel-desc">Approved messages ready to send. Set dates, edit, then copy to Gmail or WhatsApp.</div></div>
+  <div style="display:flex;gap:10px;margin-bottom:1rem;flex-wrap:wrap;align-items:center">
+    <select id="outbox-filter-prospect" onchange="renderOutbox()" style="width:180px"><option value="">All prospects</option></select>
+    <select id="outbox-filter-type" onchange="renderOutbox()" style="width:140px"><option value="">All types</option><option value="email">Email</option><option value="text">Text / DM</option></select>
+    <select id="outbox-filter-status" onchange="renderOutbox()" style="width:130px"><option value="">All status</option><option value="pending">Pending</option><option value="sent">Sent</option></select>
+    <button class="copy-btn" style="margin-left:auto" onclick="clearSentOutbox()">Clear sent</button>
   </div>
+  <div id="outbox-list"><div class="empty">No messages yet. Use "&rarr; Outbox" on any generated message to save it here.</div></div>
+</div>
 
-  <!-- ═══ POST-CALL FOLLOW-UP ═══ -->
-  <div id="panel-followup" class="panel">
-    <div class="panel-header">
-      <div class="panel-title">Post-call follow-up</div>
-      <div class="panel-desc">Paste the Fathom transcript — get a full 7-day follow-up sequence with messages, content, and send timing.</div>
-    </div>
-    <div class="grid2" style="margin-bottom:10px">
-      <div class="field"><label>Select prospect</label><select id="fu-sel" onchange="loadFollowupProspect()"><option value="">— choose prospect —</option></select></div>
-      <div class="field"><label>Call goal / what you were trying to close</label><input type="text" id="fu-goal" placeholder="e.g. close on $2k program"></div>
-    </div>
-    <div id="fu-prospect-card" style="display:none;margin-bottom:12px"></div>
-    <div class="field">
-      <label>Fathom transcript</label>
-      <textarea id="fu-transcript" style="min-height:140px" placeholder="Paste the Fathom call transcript here..."></textarea>
-    </div>
-    <div class="btn-row">
-      <button class="btn btn-primary" onclick="runFollowup('sequence')">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
-        Build follow-up sequence
-      </button>
-      <button class="btn btn-secondary" onclick="runFollowup('content14')">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
-        14 content pieces
-      </button>
-      <button class="btn btn-secondary" onclick="runFollowup('analysis')">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-        Analyze call
-      </button>
-    </div>
-    <div id="followup-outputs" style="margin-top:1.25rem"></div>
+<!-- PRE-CALL PREP -->
+<div id="panel-prep" class="panel">
+  <div class="panel-header"><div class="panel-title">Pre-call prep</div><div class="panel-desc">AI-generated strategy and content recommendations for your next call.</div></div>
+  <div class="grid2" style="margin-bottom:10px">
+    <div class="field"><label>Select prospect</label><select id="prep-sel" onchange="loadPrepProspect()"><option value="">— choose prospect —</option></select></div>
+    <div class="field"><label>Call goal (optional)</label><input type="text" id="prep-goal" placeholder="e.g. close on program, handle price objection"></div>
   </div>
-
-  <!-- ═══ HISTORY ═══ -->
-  <!-- ═══ SOCIAL FEED ═══ -->
-  <div id="panel-feed" class="panel">
-    <div class="panel-header">
-      <div class="panel-title">Social feed</div>
-      <div class="panel-desc">Recent posts from the last 2 weeks, broken down by topic — focus, problem, key learning.</div>
-    </div>
-    <div style="display:flex;gap:10px;align-items:flex-end;margin-bottom:1.25rem;flex-wrap:wrap">
-      <div class="field" style="margin:0;min-width:180px">
-        <label>Influencer</label>
-        <select id="feed-inf-sel" style="width:200px" onchange="renderFeedRaw()"><option value="">— all influencers —</option></select>
-      </div>
-      <div class="field" style="margin:0;min-width:120px">
-        <label>Time window</label>
-        <select id="feed-window" style="width:140px" onchange="renderFeedRaw()">
-          <option value="14">Last 2 weeks</option>
-          <option value="7">Last week</option>
-          <option value="30">Last month</option>
-          <option value="0">All time</option>
-        </select>
-      </div>
-      <button class="btn btn-primary" onclick="generateFeedRecap()">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01z"/></svg>
-        Generate recap
-      </button>
-    </div>
-    <div id="feed-raw" style="margin-bottom:1rem"></div>
-    <div id="feed-recap-section" style="display:none">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
-        <div class="sec-label" style="margin:0">Content recap</div>
-        <button class="copy-btn" onclick="copyEl('feed-recap-out')">Copy</button>
-      </div>
-      <div id="feed-recap-out" class="ai-out loading">Generating...</div>
-    </div>
+  <div id="prep-prospect-card" style="display:none;margin-bottom:12px"></div>
+  <div class="btn-row">
+    <button class="btn btn-primary" onclick="runPrep('strategy')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01z"/></svg>Generate strategy</button>
+    <button class="btn btn-secondary" onclick="runPrep('content')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>Match content to send</button>
+    <button class="btn btn-secondary" onclick="runPrep('briefing')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>Field briefing</button>
   </div>
+  <div id="prep-outputs" style="margin-top:1.25rem"></div>
+</div>
 
-  <!-- ═══ TRANSFORMATIONS ═══ -->
-  <div id="panel-transformations" class="panel">
-    <div class="panel-header">
-      <div class="panel-title">Transformations</div>
-      <div class="panel-desc">Upload before/after results — AI writes a short story in the influencer's voice, ready to send to prospects as social proof.</div>
-    </div>
-    <div class="split">
-      <div>
-        <div class="sec-label">New transformation</div>
-        <div class="field" style="margin-bottom:10px">
-          <label>Influencer</label>
-          <select id="tf-inf"><option value="">— select influencer —</option></select>
-        </div>
-
-        <div class="field" style="margin-bottom:10px">
-          <label>Before/After photo — upload one combined image or two separate photos</label>
-          <div id="tf-main-drop" onclick="document.getElementById('tf-main-input').click()" style="border:2px dashed var(--border2);border-radius:var(--radius-lg);padding:1rem;text-align:center;cursor:pointer;background:#fff;min-height:120px;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:6px">
-            <div id="tf-main-placeholder">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--text3)" stroke-width="1.5" style="margin-bottom:4px"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-              <div style="font-size:12px;color:var(--text3)">Drop image here or click to upload</div>
-              <div style="font-size:11px;color:var(--text3);margin-top:2px">Single combined before/after image, or upload one at a time below</div>
-            </div>
-            <img id="tf-main-img" style="display:none;max-height:200px;max-width:100%;border-radius:var(--radius)">
-          </div>
-          <input type="file" id="tf-main-input" accept="image/*" style="display:none" onchange="handleTfImage(event,'main')">
-        </div>
-        <div class="grid2" style="margin-bottom:10px">
-          <div class="field" style="margin:0">
-            <label style="font-size:11px">Or: Before only</label>
-            <div id="tf-before-drop" onclick="document.getElementById('tf-before-input').click()" style="border:1px dashed var(--border);border-radius:var(--radius);padding:.5rem;text-align:center;cursor:pointer;background:var(--bg2);min-height:70px;display:flex;align-items:center;justify-content:center">
-              <div id="tf-before-placeholder"><div style="font-size:11px;color:var(--text3)">Before</div></div>
-              <img id="tf-before-img" style="display:none;max-height:80px;max-width:100%;border-radius:4px">
-            </div>
-            <input type="file" id="tf-before-input" accept="image/*" style="display:none" onchange="handleTfImage(event,'before')">
-          </div>
-          <div class="field" style="margin:0">
-            <label style="font-size:11px">After only</label>
-            <div id="tf-after-drop" onclick="document.getElementById('tf-after-input').click()" style="border:1px dashed var(--border);border-radius:var(--radius);padding:.5rem;text-align:center;cursor:pointer;background:var(--bg2);min-height:70px;display:flex;align-items:center;justify-content:center">
-              <div id="tf-after-placeholder"><div style="font-size:11px;color:var(--text3)">After</div></div>
-              <img id="tf-after-img" style="display:none;max-height:80px;max-width:100%;border-radius:4px">
-            </div>
-            <input type="file" id="tf-after-input" accept="image/*" style="display:none" onchange="handleTfImage(event,'after')">
-          </div>
-        </div>
-
-        <div class="field" style="margin-bottom:10px">
-          <label>Context (optional — name, timeframe, anything relevant)</label>
-          <textarea id="tf-context" style="min-height:60px" placeholder="e.g. Sarah, 12 weeks, lost 8kg, started after her second kid..."></textarea>
-        </div>
-
-        <div class="btn-row" style="margin-top:0">
-          <button class="btn btn-primary" onclick="generateTransformation('story')">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01z"/></svg>
-            Generate story
-          </button>
-          <button class="btn btn-secondary" onclick="generateTransformation('analysis')">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-            Analyse transformation
-          </button>
-        </div>
-        <div id="tf-status" style="font-size:12px;margin-top:8px"></div>
-
-        <div id="tf-result-story" style="display:none;margin-top:1rem">
-          <hr class="divider" style="margin:.75rem 0">
-          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
-            <div class="sec-label" style="margin:0">Generated story</div>
-            <button class="copy-btn" onclick="copyEl('tf-story-out')">Copy</button>
-          </div>
-          <div id="tf-story-out" class="ai-out"></div>
-          <div style="margin-top:10px">
-            <button class="btn btn-secondary btn-sm" onclick="saveTransformation()">Save to library</button>
-          </div>
-        </div>
-
-        <div id="tf-result-analysis" style="display:none;margin-top:1rem">
-          <hr class="divider" style="margin:.75rem 0">
-          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
-            <div class="sec-label" style="margin:0">Transformation analysis <span style="font-size:10px;font-weight:400;color:var(--text3)">— internal only, do not share</span></div>
-            <button class="copy-btn" onclick="copyEl('tf-analysis-out')">Copy</button>
-          </div>
-          <div id="tf-analysis-out" class="ai-out"></div>
-        </div>
-      </div>
-
-      <div>
-        <div class="sec-label">Library <span id="tf-count" style="font-weight:400;color:var(--text3)"></span></div>
-        <div class="scroll-list" id="tf-library"><div class="empty">No transformations saved yet.</div></div>
-      </div>
-    </div>
+<!-- POST-CALL -->
+<div id="panel-followup" class="panel">
+  <div class="panel-header"><div class="panel-title">Post-call follow-up</div><div class="panel-desc">Paste the Fathom transcript — get a full follow-up sequence with messages, content, and timing.</div></div>
+  <div class="grid2" style="margin-bottom:10px">
+    <div class="field"><label>Select prospect</label><select id="fu-sel" onchange="loadFollowupProspect()"><option value="">— choose prospect —</option></select></div>
+    <div class="field"><label>Call goal / what you were trying to close</label><input type="text" id="fu-goal" placeholder="e.g. close on $2k program"></div>
   </div>
-
-  <div id="panel-history" class="panel">
-    <div class="panel-header">
-      <div class="panel-title">History</div>
-      <div class="panel-desc">All saved AI suggestions, timestamped per prospect.</div>
-    </div>
-    <div style="display:flex;gap:10px;margin-bottom:1rem;flex-wrap:wrap;align-items:center">
-      <select id="hist-filter-prospect" onchange="renderHistory()" style="width:180px">
-        <option value="">All prospects</option>
-      </select>
-      <select id="hist-filter-type" onchange="renderHistory()" style="width:160px">
-        <option value="">All types</option>
-        <option value="strategy">Pre-call strategy</option>
-        <option value="content">Content recs</option>
-        <option value="sequence">Follow-up sequence</option>
-        <option value="analysis">Call analysis</option>
-      </select>
-      <button class="btn btn-secondary btn-sm" onclick="openDailyDigest()" style="margin-left:auto">
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
-        Email today's digest
-      </button>
-      <button class="btn btn-danger btn-sm" onclick="clearHistory()">Clear all</button>
-    </div>
-    <div id="history-list"><div class="empty">No history yet. Run pre-call prep or post-call follow-up to save suggestions.</div></div>
+  <div id="fu-prospect-card" style="display:none;margin-bottom:12px"></div>
+  <div class="field"><label>Fathom transcript</label><textarea id="fu-transcript" style="min-height:140px" placeholder="Paste the Fathom call transcript here..."></textarea></div>
+  <div class="btn-row">
+    <button class="btn btn-primary" onclick="runFollowup('sequence')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>Build follow-up sequence</button>
+    <button class="btn btn-secondary" onclick="runFollowup('content14')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>14 content pieces</button>
+    <button class="btn btn-secondary" onclick="runFollowup('analysis')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>Analyze call</button>
   </div>
+  <div id="followup-outputs" style="margin-top:1.25rem"></div>
+</div>
 
-  <!-- ═══ SETTINGS ═══ -->
-  <div id="panel-settings" class="panel">
-    <div class="panel-header">
-      <div class="panel-title">Settings</div>
-      <div class="panel-desc">Configure your API keys and preferences.</div>
-    </div>
-    <div class="card" style="max-width:520px">
-      <div style="font-weight:600;margin-bottom:.75rem">Anthropic API key</div>
-      <div class="info-box" style="margin-bottom:10px">Required for AI features. Get your key at <a href="https://console.anthropic.com" target="_blank" style="color:var(--blue-text)">console.anthropic.com</a>. Stored locally in your browser only.</div>
-      <div class="field"><label>API key</label><input type="text" id="api-key-input" placeholder="sk-ant-..."></div>
-      <div class="field">
-        <label>Slack MCP URL (optional — for syncing #creator-socials)</label>
-        <input type="url" id="slack-mcp-url" placeholder="https://mcp.slack.com/mcp">
-        <div style="font-size:11px;color:var(--text3);margin-top:3px">Only needed if running outside Claude.ai. Leave blank when using Claude.ai directly.</div>
+<!-- SOCIAL FEED -->
+<div id="panel-feed" class="panel">
+  <div class="panel-header"><div class="panel-title">Social feed</div><div class="panel-desc">Recent posts from the last 2 weeks, broken down by topic — focus, problem, key learning.</div></div>
+  <div style="display:flex;gap:10px;align-items:flex-end;margin-bottom:1.25rem;flex-wrap:wrap">
+    <div class="field" style="margin:0;min-width:180px"><label>Influencer</label><select id="feed-inf-sel" style="width:200px" onchange="renderFeedRaw()"><option value="">— all influencers —</option></select></div>
+    <div class="field" style="margin:0;min-width:120px"><label>Time window</label><select id="feed-window" style="width:140px" onchange="renderFeedRaw()"><option value="14">Last 2 weeks</option><option value="7">Last week</option><option value="30">Last month</option><option value="0">All time</option></select></div>
+    <button class="btn btn-primary" onclick="generateFeedRecap()"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01z"/></svg>Generate recap</button>
+  </div>
+  <div id="feed-raw" style="margin-bottom:1rem"></div>
+  <div id="feed-recap-section" style="display:none">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px"><div class="sec-label" style="margin:0">Content recap</div><button class="copy-btn" onclick="copyEl('feed-recap-out')">Copy</button></div>
+    <div id="feed-recap-out" class="ai-out loading">Generating...</div>
+  </div>
+</div>
+
+<!-- TRANSFORMATIONS -->
+<div id="panel-transformations" class="panel">
+  <div class="panel-header"><div class="panel-title">Transformations</div><div class="panel-desc">Upload before/after results — AI writes a story in the influencer's voice, ready to send as social proof.</div></div>
+  <div class="split">
+    <div>
+      <div class="sec-label">New transformation</div>
+      <div class="field" style="margin-bottom:10px"><label>Influencer</label><select id="tf-inf"><option value="">— select influencer —</option></select></div>
+      <div class="field" style="margin-bottom:10px">
+        <label>Before/After photo — combined image or two separate photos</label>
+        <div id="tf-main-drop" onclick="document.getElementById('tf-main-input').click()" style="border:2px dashed var(--border2);border-radius:var(--radius-lg);padding:1rem;text-align:center;cursor:pointer;background:#fff;min-height:120px;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:6px">
+          <div id="tf-main-placeholder"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--text3)" stroke-width="1.5" style="margin-bottom:4px"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg><div style="font-size:12px;color:var(--text3)">Drop image here or click to upload</div><div style="font-size:11px;color:var(--text3);margin-top:2px">Single combined before/after, or upload separately below</div></div>
+          <img id="tf-main-img" style="display:none;max-height:200px;max-width:100%;border-radius:var(--radius)">
+        </div>
+        <input type="file" id="tf-main-input" accept="image/*" style="display:none" onchange="handleTfImage(event,'main')">
       </div>
-      <button class="btn btn-primary" onclick="saveSettings()">Save settings</button>
-      <div id="settings-msg" style="font-size:12px;color:var(--green-text);margin-top:8px;display:none">Saved.</div>
-    </div>
-    <div class="card" style="max-width:520px;margin-top:.75rem">
-      <div style="font-weight:600;margin-bottom:.75rem">Data</div>
-      <div style="font-size:13px;color:var(--text2);margin-bottom:10px">All data is stored locally in your browser. Export to back it up.</div>
+      <div class="grid2" style="margin-bottom:10px">
+        <div class="field" style="margin:0"><label style="font-size:11px">Or: Before only</label><div id="tf-before-drop" onclick="document.getElementById('tf-before-input').click()" style="border:1px dashed var(--border);border-radius:var(--radius);padding:.5rem;text-align:center;cursor:pointer;background:var(--bg2);min-height:70px;display:flex;align-items:center;justify-content:center"><div id="tf-before-placeholder"><div style="font-size:11px;color:var(--text3)">Before</div></div><img id="tf-before-img" style="display:none;max-height:80px;max-width:100%;border-radius:4px"></div><input type="file" id="tf-before-input" accept="image/*" style="display:none" onchange="handleTfImage(event,'before')"></div>
+        <div class="field" style="margin:0"><label style="font-size:11px">After only</label><div id="tf-after-drop" onclick="document.getElementById('tf-after-input').click()" style="border:1px dashed var(--border);border-radius:var(--radius);padding:.5rem;text-align:center;cursor:pointer;background:var(--bg2);min-height:70px;display:flex;align-items:center;justify-content:center"><div id="tf-after-placeholder"><div style="font-size:11px;color:var(--text3)">After</div></div><img id="tf-after-img" style="display:none;max-height:80px;max-width:100%;border-radius:4px"></div><input type="file" id="tf-after-input" accept="image/*" style="display:none" onchange="handleTfImage(event,'after')"></div>
+      </div>
+      <div class="field" style="margin-bottom:10px"><label>Context (optional)</label><textarea id="tf-context" style="min-height:60px" placeholder="e.g. Sarah, 12 weeks, lost 8kg, started after her second kid..."></textarea></div>
       <div class="btn-row" style="margin-top:0">
-        <button class="btn btn-secondary" onclick="exportData()">Export JSON backup</button>
-        <button class="btn btn-secondary" onclick="document.getElementById('import-file').click()">Import backup</button>
-        <input type="file" id="import-file" accept=".json" style="display:none" onchange="importData(event)">
-        <button class="btn btn-danger" onclick="if(confirm('Delete all data?')){localStorage.clear();location.reload()}">Reset all data</button>
+        <button class="btn btn-primary" onclick="generateTransformation('story')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01z"/></svg>Generate story</button>
+        <button class="btn btn-secondary" onclick="generateTransformation('analysis')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>Analyse transformation</button>
       </div>
+      <div id="tf-status" style="font-size:12px;margin-top:8px"></div>
+      <div id="tf-result-story" style="display:none;margin-top:1rem"><hr class="divider" style="margin:.75rem 0"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px"><div class="sec-label" style="margin:0">Generated story</div><button class="copy-btn" onclick="copyEl('tf-story-out')">Copy</button></div><div id="tf-story-out" class="ai-out"></div><div style="margin-top:10px"><button class="btn btn-secondary btn-sm" onclick="saveTransformation()">Save to library</button></div></div>
+      <div id="tf-result-analysis" style="display:none;margin-top:1rem"><hr class="divider" style="margin:.75rem 0"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px"><div class="sec-label" style="margin:0">Transformation analysis <span style="font-size:10px;font-weight:400;color:var(--text3)">— internal only</span></div><button class="copy-btn" onclick="copyEl('tf-analysis-out')">Copy</button></div><div id="tf-analysis-out" class="ai-out"></div></div>
+    </div>
+    <div><div class="sec-label">Library <span id="tf-count" style="font-weight:400;color:var(--text3)"></span></div><div class="scroll-list" id="tf-library"><div class="empty">No transformations saved yet.</div></div></div>
+  </div>
+</div>
+
+<!-- HISTORY -->
+<div id="panel-history" class="panel">
+  <div class="panel-header"><div class="panel-title">History</div><div class="panel-desc">All saved AI suggestions, timestamped per prospect.</div></div>
+  <div style="display:flex;gap:10px;margin-bottom:1rem;flex-wrap:wrap;align-items:center">
+    <select id="hist-filter-prospect" onchange="renderHistory()" style="width:180px"><option value="">All prospects</option></select>
+    <select id="hist-filter-type" onchange="renderHistory()" style="width:160px"><option value="">All types</option><option value="strategy">Pre-call strategy</option><option value="content">Content recs</option><option value="sequence">Follow-up sequence</option><option value="analysis">Call analysis</option></select>
+    <button class="btn btn-secondary btn-sm" onclick="openDailyDigest()" style="margin-left:auto"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>Email today's digest</button>
+    <button class="btn btn-danger btn-sm" onclick="clearHistory()">Clear all</button>
+  </div>
+  <div id="history-list"><div class="empty">No history yet.</div></div>
+</div>
+
+<!-- SETTINGS -->
+<div id="panel-settings" class="panel">
+  <div class="panel-header"><div class="panel-title">Settings</div><div class="panel-desc">Configure your API keys and preferences.</div></div>
+  <div class="card" style="max-width:520px">
+    <div style="font-weight:600;margin-bottom:.75rem">Anthropic API key</div>
+    <div class="info-box" style="margin-bottom:10px">Required for AI features. Get your key at <a href="https://console.anthropic.com" target="_blank" style="color:var(--blue-text)">console.anthropic.com</a>. Stored locally in your browser only.</div>
+    <div class="field"><label>API key</label><input type="text" id="api-key-input" placeholder="sk-ant-..."></div>
+    <div class="field"><label>Slack MCP URL (optional)</label><input type="url" id="slack-mcp-url" placeholder="https://mcp.slack.com/mcp"><div style="font-size:11px;color:var(--text3);margin-top:3px">Only needed if running outside Claude.ai.</div></div>
+    <button class="btn btn-primary" onclick="saveSettings()">Save settings</button>
+    <div id="settings-msg" style="font-size:12px;color:var(--green-text);margin-top:8px;display:none">Saved.</div>
+  </div>
+  <div class="card" style="max-width:520px;margin-top:.75rem">
+    <div style="font-weight:600;margin-bottom:.75rem">Data</div>
+    <div style="font-size:13px;color:var(--text2);margin-bottom:10px">All data is stored locally in your browser. Export to back it up.</div>
+    <div class="btn-row" style="margin-top:0">
+      <button class="btn btn-secondary" onclick="exportData()">Export JSON backup</button>
+      <button class="btn btn-secondary" onclick="document.getElementById('import-file').click()">Import backup</button>
+      <input type="file" id="import-file" accept=".json" style="display:none" onchange="importData(event)">
+      <button class="btn btn-danger" onclick="if(confirm('Delete all data?')){localStorage.clear();location.reload()}">Reset all data</button>
     </div>
   </div>
+</div>
 
 </main>
 </div>
-
 <script>
 // ─── STATE ────────────────────────────────────────────────────────────────────
-let DB = { influencers: [], prospects: [], history: [], settings: {}, transformations: [] };
+let DB = { influencers: [], prospects: [], history: [], settings: {}, transformations: [], outbox: [] };
 let srcCount = 1;
 
 function loadDB() {
   try {
-    const s = localStorage.getItem('ccc_v3');
-    if (s) DB = { ...DB, ...JSON.parse(s) };
-    const sk = localStorage.getItem('ccc_settings');
-    if (sk) DB.settings = JSON.parse(sk);
-    const tf = localStorage.getItem('ccc_transformations');
-    if (tf) DB.transformations = JSON.parse(tf);
+    const s = localStorage.getItem('ccc_v3'); if (s) DB = { ...DB, ...JSON.parse(s) };
+    const sk = localStorage.getItem('ccc_settings'); if (sk) DB.settings = JSON.parse(sk);
+    const tf = localStorage.getItem('ccc_transformations'); if (tf) DB.transformations = JSON.parse(tf);
+    const ob = localStorage.getItem('ccc_outbox'); if (ob) DB.outbox = JSON.parse(ob);
   } catch(e) {}
 }
 
@@ -652,12 +401,11 @@ function saveDB() {
 }
 
 function saveTransformationsDB() {
-  try {
-    localStorage.setItem('ccc_transformations', JSON.stringify(DB.transformations));
-    return true;
-  } catch(e) {
-    return false;
-  }
+  try { localStorage.setItem('ccc_transformations', JSON.stringify(DB.transformations)); return true; } catch(e) { return false; }
+}
+
+function saveOutboxDB() {
+  try { localStorage.setItem('ccc_outbox', JSON.stringify(DB.outbox || [])); return true; } catch(e) { return false; }
 }
 
 loadDB();
@@ -671,6 +419,7 @@ function showPanel(name, el) {
   if (name === 'slack') renderSlackPanel();
   if (name === 'feed') renderFeedPanel();
   if (name === 'transformations') renderTransformationsPanel();
+  if (name === 'outbox') { refreshOutboxFilters(); renderOutbox(); }
   if (name === 'history') { refreshHistoryFilters(); renderHistory(); }
   if (name === 'settings') loadSettings();
 }
@@ -680,19 +429,14 @@ function loadSettings() {
   document.getElementById('api-key-input').value = DB.settings.apiKey || '';
   document.getElementById('slack-mcp-url').value = DB.settings.slackMcpUrl || '';
 }
-
 function saveSettings() {
   DB.settings.apiKey = document.getElementById('api-key-input').value.trim();
   DB.settings.slackMcpUrl = document.getElementById('slack-mcp-url').value.trim();
   saveDB();
   const msg = document.getElementById('settings-msg');
-  msg.style.display = 'block';
-  setTimeout(() => msg.style.display = 'none', 2000);
+  msg.style.display = 'block'; setTimeout(() => msg.style.display = 'none', 2000);
 }
-
-function getApiKey() {
-  return DB.settings.apiKey || '';
-}
+function getApiKey() { return DB.settings.apiKey || ''; }
 
 // ─── AI CALL ──────────────────────────────────────────────────────────────────
 async function callAI(prompt, maxTokens = 1200) {
@@ -709,11 +453,8 @@ async function callAI(prompt, maxTokens = 1200) {
 }
 
 // ─── PROXY FETCH ──────────────────────────────────────────────────────────────
-async function proxyFetch(url) {
-  return proxyFetchMulti(url);
-}
+async function proxyFetch(url) { return proxyFetchMulti(url); }
 
-// ─── YOUTUBE FETCH ────────────────────────────────────────────────────────────
 async function proxyFetchMulti(url) {
   const encoded = encodeURIComponent(url);
   const proxies = [
@@ -728,15 +469,14 @@ async function proxyFetchMulti(url) {
       const r = await fetch(proxy.url, { signal: AbortSignal.timeout(10000) });
       if (!r.ok) continue;
       const content = await proxy.extract(r);
-      if (typeof content === 'string' && content.length > 200 && !content.startsWith('Oops') && !content.startsWith('Error')) {
-        return content;
-      }
+      if (typeof content === 'string' && content.length > 200 && !content.startsWith('Oops') && !content.startsWith('Error')) return content;
     } catch(e) { lastErr = e.message; }
     await new Promise(res => setTimeout(res, 500));
   }
   throw new Error('All proxies failed. Last error: ' + lastErr);
 }
 
+// ─── YOUTUBE ──────────────────────────────────────────────────────────────────
 async function parseYouTubeFeed(xml) {
   const doc = new DOMParser().parseFromString(xml, 'text/xml');
   const entries = Array.from(doc.querySelectorAll('entry'));
@@ -745,62 +485,31 @@ async function parseYouTubeFeed(xml) {
     type: 'youtube',
     title: e.querySelector('title')?.textContent || '',
     url: e.querySelector('link')?.getAttribute('href') || '',
-    desc: (e.querySelector('media\:description,description')?.textContent || '').slice(0, 300),
+    desc: (e.querySelector('media\\:description,description')?.textContent || '').slice(0, 300),
     date: e.querySelector('published')?.textContent?.slice(0, 10) || ''
   })).filter(i => i.title && i.url);
 }
 
 async function fetchYouTubeDirect(channelId) {
   const feedUrl = `https://www.youtube.com/feeds/videos.xml?channel_id=${channelId}`;
-
-  // Method 1: rss2json.com — reliable, designed for this, no CORS issues
   try {
     const r = await fetch(`https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(feedUrl)}`, { signal: AbortSignal.timeout(12000) });
     const d = await r.json();
-    if (d.status === 'ok' && d.items?.length) {
-      return d.items.slice(0, 30).map(i => ({
-        type: 'youtube',
-        title: i.title || '',
-        url: i.link || '',
-        desc: (i.description || '').replace(/<[^>]+>/g, '').slice(0, 300),
-        date: (i.pubDate || '').slice(0, 10)
-      })).filter(i => i.title);
-    }
+    if (d.status === 'ok' && d.items?.length) return d.items.slice(0, 30).map(i => ({ type: 'youtube', title: i.title || '', url: i.link || '', desc: (i.description || '').replace(/<[^>]+>/g, '').slice(0, 300), date: (i.pubDate || '').slice(0, 10) })).filter(i => i.title);
   } catch(e) {}
-
-  // Method 2: direct fetch (works in some environments)
-  try {
-    const r = await fetch(feedUrl, { signal: AbortSignal.timeout(10000) });
-    if (r.ok) {
-      const xml = await r.text();
-      const items = await parseYouTubeFeed(xml);
-      if (items.length) return items;
-    }
-  } catch(e) {}
-
-  // Method 3: proxy chain
-  try {
-    const xml = await proxyFetchMulti(feedUrl);
-    return parseYouTubeFeed(xml);
-  } catch(e) {}
-
-  throw new Error(`All methods failed for channel ${channelId}. YouTube may be temporarily blocking requests — try again in a few minutes.`);
+  try { const r = await fetch(feedUrl, { signal: AbortSignal.timeout(10000) }); if (r.ok) { const xml = await r.text(); const items = await parseYouTubeFeed(xml); if (items.length) return items; } } catch(e) {}
+  try { const xml = await proxyFetchMulti(feedUrl); return parseYouTubeFeed(xml); } catch(e) {}
+  throw new Error(`All methods failed for channel ${channelId}. Try again in a few minutes.`);
 }
 
 async function resolveChannelId(handle) {
   const channelUrl = `https://www.youtube.com/@${handle}`;
-  const proxies = [
-    { url: `https://corsproxy.io/?url=${encodeURIComponent(channelUrl)}`, isJson: false },
-    { url: `https://api.allorigins.win/get?url=${encodeURIComponent(channelUrl)}`, isJson: true },
-  ];
-  for (const p of proxies) {
+  for (const p of [{ url: `https://corsproxy.io/?url=${encodeURIComponent(channelUrl)}`, isJson: false }, { url: `https://api.allorigins.win/get?url=${encodeURIComponent(channelUrl)}`, isJson: true }]) {
     try {
       const r = await fetch(p.url, { signal: AbortSignal.timeout(12000) });
       const html = p.isJson ? (await r.json()).contents || '' : await r.text();
-      const patterns = [/"channelId":"(UC[A-Za-z0-9_-]{22})"/, /"externalId":"(UC[A-Za-z0-9_-]{22})"/, /channel\/(UC[A-Za-z0-9_-]{22})/];
-      for (const pat of patterns) {
-        const m = html.match(pat);
-        if (m) return m[1];
+      for (const pat of [/"channelId":"(UC[A-Za-z0-9_-]{22})"/, /"externalId":"(UC[A-Za-z0-9_-]{22})"/, /channel\/(UC[A-Za-z0-9_-]{22})/]) {
+        const m = html.match(pat); if (m) return m[1];
       }
     } catch(e) {}
     await new Promise(res => setTimeout(res, 800));
@@ -809,89 +518,55 @@ async function resolveChannelId(handle) {
 }
 
 async function fetchYouTube(rawUrl) {
-  // UC channel ID in URL — most reliable
   const ucm = rawUrl.match(/(UC[A-Za-z0-9_-]{22})/);
   if (ucm) return fetchYouTubeDirect(ucm[1]);
-
-  // @handle URL
   const hm = rawUrl.match(/youtube\.com\/@([A-Za-z0-9_.\-]+)/i);
   const handle = hm ? hm[1] : null;
   if (handle) {
-    // Try legacy username RSS via rss2json first
     try {
       const userFeed = `https://www.youtube.com/feeds/videos.xml?user=${handle}`;
       const r = await fetch(`https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(userFeed)}`, { signal: AbortSignal.timeout(10000) });
       const d = await r.json();
-      if (d.status === 'ok' && d.items?.length) {
-        return d.items.slice(0, 30).map(i => ({ type: 'youtube', title: i.title || '', url: i.link || '', desc: (i.description || '').replace(/<[^>]+>/g, '').slice(0, 300), date: (i.pubDate || '').slice(0, 10) })).filter(i => i.title);
-      }
+      if (d.status === 'ok' && d.items?.length) return d.items.slice(0, 30).map(i => ({ type: 'youtube', title: i.title || '', url: i.link || '', desc: (i.description || '').replace(/<[^>]+>/g, '').slice(0, 300), date: (i.pubDate || '').slice(0, 10) })).filter(i => i.title);
     } catch(e) {}
-
-    // Resolve handle to channel ID
     const channelId = await resolveChannelId(handle);
     if (channelId) return fetchYouTubeDirect(channelId);
-    throw new Error(`Could not resolve @${handle}. Go to their YouTube channel → right-click → View Page Source → search "channelId" → paste the UC... URL directly.`);
+    throw new Error(`Could not resolve @${handle}. Go to their YouTube channel page source → search "channelId" → paste UC... URL.`);
   }
-
   throw new Error('Unrecognized YouTube URL. Use youtube.com/@handle or a UC... channel URL.');
 }
-// ─── PODCAST FETCH ────────────────────────────────────────────────────────────
+
+// ─── PODCAST ──────────────────────────────────────────────────────────────────
 async function fetchPodcast(rssUrl) {
   const xml = await proxyFetch(rssUrl);
   const doc = new DOMParser().parseFromString(xml, 'text/xml');
   return Array.from(doc.querySelectorAll('item')).slice(0, 100).map(i => {
-    // Prefer <link> (web page URL) over <enclosure> (raw audio file)
     const enclosureUrl = i.querySelector('enclosure')?.getAttribute('url') || '';
     const rawLink = i.querySelector('link')?.textContent?.trim() || i.querySelector('link')?.nextSibling?.textContent?.trim() || '';
     const isAudio = u => /\.(mp3|m4a|ogg|wav|aac)/i.test(u);
-    // Pick best URL: web link > Spotify episode page > enclosure
     let url = (!isAudio(rawLink) && rawLink) ? rawLink : enclosureUrl;
-    // For Anchor/Spotify RSS, build a proper shareable episode URL
-    if (isAudio(url) && enclosureUrl.includes('anchor.fm')) {
-      const m = enclosureUrl.match(/\/episodes\/([^/?]+)/);
-      if (m) url = 'https://anchor.fm/episode/' + m[1];
-    }
-    return {
-      type: 'podcast',
-      title: i.querySelector('title')?.textContent || '',
-      url,
-      desc: (i.querySelector('description,summary')?.textContent || '').replace(/<[^>]+>/g, '').slice(0, 300),
-      date: i.querySelector('pubDate')?.textContent?.slice(0, 16) || ''
-    };
+    if (isAudio(url) && enclosureUrl.includes('anchor.fm')) { const m = enclosureUrl.match(/\/episodes\/([^/?]+)/); if (m) url = 'https://anchor.fm/episode/' + m[1]; }
+    return { type: 'podcast', title: i.querySelector('title')?.textContent || '', url, desc: (i.querySelector('description,summary')?.textContent || '').replace(/<[^>]+>/g, '').slice(0, 300), date: i.querySelector('pubDate')?.textContent?.slice(0, 16) || '' };
   }).filter(i => i.title);
 }
 
-// ─── BLOG / ARTICLE FETCH ─────────────────────────────────────────────────────
+// ─── BLOG ─────────────────────────────────────────────────────────────────────
 async function fetchBlogIndex(indexUrl) {
   const html = await proxyFetch(indexUrl);
-  // Extract all internal links that look like article URLs
   const base = new URL(indexUrl);
   const links = new Set();
-  const regex = /href="([^"]+)"/g;
-  let m;
+  const regex = /href="([^"]+)"/g; let m;
   while ((m = regex.exec(html)) !== null) {
-    try {
-      const u = new URL(m[1], base.origin);
-      if (u.hostname === base.hostname && u.pathname !== '/' && u.pathname !== base.pathname && !u.pathname.match(/\.(jpg|jpeg|png|gif|svg|css|js|xml|json|pdf)$/i)) {
-        links.add(u.href);
-      }
-    } catch(e) {}
+    try { const u = new URL(m[1], base.origin); if (u.hostname === base.hostname && u.pathname !== '/' && u.pathname !== base.pathname && !u.pathname.match(/\.(jpg|jpeg|png|gif|svg|css|js|xml|json|pdf)$/i)) links.add(u.href); } catch(e) {}
   }
-  const urls = Array.from(links).slice(0, 15);
   const items = [];
-  for (const url of urls.slice(0, 8)) {
-    try {
-      const art = await fetchArticle(url);
-      if (art) items.push(art);
-    } catch(e) {}
-  }
+  for (const url of Array.from(links).slice(0, 8)) { try { const a = await fetchArticle(url); if (a) items.push(a); } catch(e) {} }
   return items;
 }
 
 async function fetchArticle(url) {
   const html = await proxyFetch(url);
   const doc = new DOMParser().parseFromString(html, 'text/html');
-  // Remove nav/footer/script/style noise
   ['nav','footer','header','script','style','aside'].forEach(t => doc.querySelectorAll(t).forEach(el => el.remove()));
   const title = doc.querySelector('h1')?.textContent?.trim() || doc.querySelector('title')?.textContent?.trim() || '';
   const body = (doc.querySelector('article,main,.post,.entry-content,.content') || doc.body)?.textContent?.replace(/\s+/g, ' ').trim().slice(0, 500) || '';
@@ -910,11 +585,7 @@ function addSourceRow() {
 
 function collectSources() {
   const sources = [];
-  for (let i = 0; i < srcCount; i++) {
-    const t = document.getElementById('stype-' + i);
-    const u = document.getElementById('surl-' + i);
-    if (t && u && u.value.trim()) sources.push({ type: t.value, url: u.value.trim() });
-  }
+  for (let i = 0; i < srcCount; i++) { const t = document.getElementById('stype-' + i); const u = document.getElementById('surl-' + i); if (t && u && u.value.trim()) sources.push({ type: t.value, url: u.value.trim() }); }
   return sources;
 }
 
@@ -926,20 +597,11 @@ async function addInfluencer() {
   const sources = collectSources();
   if (!name) { alert('Enter influencer name.'); return; }
   if (!sources.length) { alert('Add at least one source URL.'); return; }
-
   const inf = { id: Date.now(), name, handle, niche, notes, sources, items: [], socialItems: [], analysis: null, status: 'fetching', syncedAt: null };
-  DB.influencers.push(inf);
-  saveDB();
-  renderInfluencers(); updateAllSelects();
-
-  // Reset form
-  document.getElementById('inf-name').value = '';
-  document.getElementById('inf-handle').value = '';
-  document.getElementById('inf-niche').value = '';
-  document.getElementById('inf-notes').value = '';
+  DB.influencers.push(inf); saveDB(); renderInfluencers(); updateAllSelects();
+  document.getElementById('inf-name').value = ''; document.getElementById('inf-handle').value = ''; document.getElementById('inf-niche').value = ''; document.getElementById('inf-notes').value = '';
   document.getElementById('source-rows').innerHTML = `<div class="source-row" id="src-0"><select id="stype-0"><option value="youtube">YouTube channel</option><option value="podcast">Podcast RSS</option><option value="blog-index">Blog index URL</option><option value="article">Article / page URL</option></select><input type="url" id="surl-0" placeholder="Paste URL..."><button class="btn btn-sm btn-secondary" onclick="addSourceRow()">+</button></div>`;
   srcCount = 1;
-
   await fetchAndAnalyzeInfluencer(inf.id);
 }
 
@@ -947,10 +609,7 @@ async function fetchAndAnalyzeInfluencer(infId) {
   const inf = DB.influencers.find(x => x.id === infId);
   if (!inf) return;
   updateInfStatus(infId, 'Fetching content sources...', 10);
-
-  let allItems = [];
-  let srcDone = 0;
-  let lastError = '';
+  let allItems = [], srcDone = 0, lastError = '';
   for (const src of inf.sources) {
     try {
       let items = [];
@@ -961,52 +620,24 @@ async function fetchAndAnalyzeInfluencer(infId) {
       allItems = [...allItems, ...items];
     } catch(e) {
       lastError = e.message;
-      console.warn('Source fetch failed:', src.url, e.message);
       updateInfStatus(infId, `⚠ Error on source ${srcDone+1}: ${e.message.slice(0,120)}`, Math.round(10 + (srcDone / inf.sources.length) * 50));
       await new Promise(r => setTimeout(r, 2000));
     }
     srcDone++;
     if (allItems.length) updateInfStatus(infId, `Fetched ${srcDone}/${inf.sources.length} sources (${allItems.length} items)...`, Math.round(10 + (srcDone / inf.sources.length) * 50));
   }
-
   inf.items = allItems;
-  if (!allItems.length) {
-    inf.status = 'error';
-    inf.errorMsg = lastError || 'Could not fetch content. Check the URL.';
-    saveDB(); renderInfluencers(); return;
-  }
-
+  if (!allItems.length) { inf.status = 'error'; inf.errorMsg = lastError || 'Could not fetch content. Check the URL.'; saveDB(); renderInfluencers(); return; }
   updateInfStatus(infId, `Analyzing ${allItems.length} pieces of content with AI...`, 65);
-
   const summary = allItems.slice(0, 25).map(i => `[${i.type.toUpperCase()}] ${i.title}${i.desc ? ' — ' + i.desc.slice(0, 120) : ''}`).join('\n');
   const prompt = `Analyze content from influencer "${inf.name}" (handle: ${inf.handle || 'N/A'}, niche: ${inf.niche || 'N/A'}).
-
-Recent content:
-${summary}
-
-${inf.notes ? 'Extra context: ' + inf.notes : ''}
-
+Recent content:\n${summary}\n${inf.notes ? 'Extra context: ' + inf.notes : ''}
 Return a JSON object (no markdown, no backticks):
-{
-  "themes": ["theme1","theme2","theme3","theme4","theme5"],
-  "frameworks": ["framework or method 1","framework 2"],
-  "audience": "one sentence: who their content targets and what they want",
-  "tone": "one sentence: their communication style and energy",
-  "salesAngles": ["pain point / angle 1 a closer can use","angle 2","angle 3"],
-  "contentSummary": "2-3 sentence summary of what this influencer's content is about"
-}`;
-
-  try {
-    const text = await callAI(prompt, 600);
-    inf.analysis = JSON.parse(text.replace(/```json|```/g, '').trim());
-    inf.status = 'ready';
-  } catch(e) {
-    inf.status = 'ready';
-    inf.analysis = { themes: [], frameworks: [], audience: '', tone: '', salesAngles: [], contentSummary: '' };
-  }
+{"themes":["theme1","theme2","theme3","theme4","theme5"],"frameworks":["framework 1","framework 2"],"audience":"one sentence: who their content targets and what they want","tone":"one sentence: their communication style and energy","salesAngles":["pain point 1 a closer can use","angle 2","angle 3"],"contentSummary":"2-3 sentence summary of what this influencer's content is about"}`;
+  try { const text = await callAI(prompt, 600); inf.analysis = JSON.parse(text.replace(/```json|```/g, '').trim()); inf.status = 'ready'; }
+  catch(e) { inf.status = 'ready'; inf.analysis = { themes: [], frameworks: [], audience: '', tone: '', salesAngles: [], contentSummary: '' }; }
   inf.syncedAt = new Date().toISOString().slice(0, 10);
-  saveDB();
-  renderInfluencers();
+  saveDB(); renderInfluencers();
 }
 
 function updateInfStatus(infId, msg, pct) {
@@ -1017,8 +648,7 @@ function updateInfStatus(infId, msg, pct) {
 
 function deleteInfluencer(id) {
   if (!confirm('Delete this influencer and all their content?')) return;
-  DB.influencers = DB.influencers.filter(i => i.id !== id);
-  saveDB(); renderInfluencers(); updateAllSelects();
+  DB.influencers = DB.influencers.filter(i => i.id !== id); saveDB(); renderInfluencers(); updateAllSelects();
 }
 
 async function reanalyze(id) {
@@ -1033,46 +663,16 @@ function renderInfluencers() {
   const cnt = document.getElementById('inf-count');
   if (!DB.influencers.length) { el.innerHTML = '<div class="empty">No influencers yet.</div>'; cnt.textContent = ''; return; }
   cnt.textContent = `(${DB.influencers.length})`;
-
   el.innerHTML = DB.influencers.map(inf => {
     const yt = inf.items.filter(i => i.type === 'youtube').length;
     const pod = inf.items.filter(i => i.type === 'podcast').length;
     const blog = inf.items.filter(i => i.type === 'blog').length;
     const social = (inf.socialItems || []).length;
-    const statusBadge = inf.status === 'ready'
-      ? `<span class="badge badge-green">✓ Ready</span>`
-      : inf.status === 'error'
-      ? `<span class="badge badge-red">Error</span>`
-      : `<span class="badge badge-amber">Processing…</span>`;
-    const errorBlock = (inf.status === 'error' && inf.errorMsg)
-      ? `<div style="font-size:11px;color:var(--red-text);background:var(--red-bg);padding:6px 8px;border-radius:var(--radius);margin-top:6px;line-height:1.5">${inf.errorMsg}</div>` : '';
+    const statusBadge = inf.status === 'ready' ? `<span class="badge badge-green">✓ Ready</span>` : inf.status === 'error' ? `<span class="badge badge-red">Error</span>` : `<span class="badge badge-amber">Processing…</span>`;
+    const errorBlock = (inf.status === 'error' && inf.errorMsg) ? `<div style="font-size:11px;color:var(--red-text);background:var(--red-bg);padding:6px 8px;border-radius:var(--radius);margin-top:6px;line-height:1.5">${inf.errorMsg}</div>` : '';
     const topics = (inf.analysis?.themes || []).slice(0, 5).map(t => `<span class="topic-pill">${t}</span>`).join('');
     const recent = inf.items.slice(0, 3).map(i => `<div class="item-row"><span class="badge ${i.type==='youtube'?'badge-red':i.type==='podcast'?'badge-green':'badge-blue'}" style="flex-shrink:0;font-size:9px">${i.type.slice(0,3).toUpperCase()}</span><div class="item-title"><span>${i.title}</span><div class="item-meta">${i.date || ''}</div></div></div>`).join('');
-    return `<div class="card">
-      <div class="card-header">
-        <div>
-          <div style="font-weight:600;font-size:14px">${inf.name} ${inf.handle ? `<span class="inf-handle">${inf.handle}</span>` : ''}</div>
-          ${inf.niche ? `<div style="font-size:12px;color:var(--text2)">${inf.niche}</div>` : ''}
-        </div>
-        <div style="display:flex;gap:6px;align-items:center">
-          ${statusBadge}
-          <button class="btn btn-sm btn-danger" onclick="deleteInfluencer(${inf.id})">✕</button>
-        </div>
-      </div>
-      <div id="inf-status-${inf.id}"></div>
-      ${errorBlock}
-      <div class="content-count-row">
-        ${yt ? `<span class="badge badge-red">${yt} videos</span>` : ''}
-        ${pod ? `<span class="badge badge-green">${pod} episodes</span>` : ''}
-        ${blog ? `<span class="badge badge-blue">${blog} articles</span>` : ''}
-        ${social ? `<span class="slack-badge">${social} posts</span>` : ''}
-        ${inf.syncedAt ? `<span class="badge badge-gray">Analyzed ${inf.syncedAt}</span>` : ''}
-      </div>
-      ${topics ? `<div style="margin-top:6px">${topics}</div>` : ''}
-      ${inf.analysis?.contentSummary ? `<div style="font-size:12px;color:var(--text2);margin-top:6px;line-height:1.5">${inf.analysis.contentSummary}</div>` : ''}
-      ${recent ? `<div style="margin-top:8px;border-top:1px solid var(--border);padding-top:6px">${recent}</div>` : ''}
-      ${(inf.status === 'ready' || inf.status === 'error') ? `<button class="btn btn-sm btn-secondary" style="margin-top:8px" onclick="reanalyze(${inf.id})">↺ Refresh</button>` : ''}
-    </div>`;
+    return `<div class="card"><div class="card-header"><div><div style="font-weight:600;font-size:14px">${inf.name} ${inf.handle ? `<span class="inf-handle">${inf.handle}</span>` : ''}</div>${inf.niche ? `<div style="font-size:12px;color:var(--text2)">${inf.niche}</div>` : ''}</div><div style="display:flex;gap:6px;align-items:center">${statusBadge}<button class="btn btn-sm btn-danger" onclick="deleteInfluencer(${inf.id})">✕</button></div></div><div id="inf-status-${inf.id}"></div>${errorBlock}<div class="content-count-row">${yt?`<span class="badge badge-red">${yt} videos</span>`:''} ${pod?`<span class="badge badge-green">${pod} episodes</span>`:''} ${blog?`<span class="badge badge-blue">${blog} articles</span>`:''} ${social?`<span class="slack-badge">${social} posts</span>`:''} ${inf.syncedAt?`<span class="badge badge-gray">Analyzed ${inf.syncedAt}</span>`:''}</div>${topics?`<div style="margin-top:6px">${topics}</div>`:''} ${inf.analysis?.contentSummary?`<div style="font-size:12px;color:var(--text2);margin-top:6px;line-height:1.5">${inf.analysis.contentSummary}</div>`:''} ${recent?`<div style="margin-top:8px;border-top:1px solid var(--border);padding-top:6px">${recent}</div>`:''} ${(inf.status==='ready'||inf.status==='error')?`<button class="btn btn-sm btn-secondary" style="margin-top:8px" onclick="reanalyze(${inf.id})">↺ Refresh</button>`:''}</div>`;
   }).join('');
 }
 
@@ -1083,114 +683,49 @@ function renderSlackPanel() {
   if (!DB.influencers.length) { el.innerHTML = '<div class="empty" style="padding:.5rem">Add influencers first.</div>'; return; }
   el.innerHTML = DB.influencers.map(inf => {
     const social = (inf.socialItems || []).length;
-    const lastSync = inf.lastSocialSync ? `<span class="badge badge-gray">Last synced ${inf.lastSocialSync}</span>` : '';
-    return `<div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--border)">
-      <div style="flex:1;font-size:13px;font-weight:500">${inf.name} <span style="font-size:11px;color:var(--text3);font-weight:400">${inf.handle || ''}</span></div>
-      <div style="display:flex;gap:6px;align-items:center">
-        ${social ? `<span class="slack-badge">${social} posts</span>` : '<span class="badge badge-gray">No posts yet</span>'}
-        ${lastSync}
-      </div>
-    </div>`;
+    return `<div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--border)"><div style="flex:1;font-size:13px;font-weight:500">${inf.name} <span style="font-size:11px;color:var(--text3);font-weight:400">${inf.handle || ''}</span></div><div style="display:flex;gap:6px;align-items:center">${social ? `<span class="slack-badge">${social} posts</span>` : '<span class="badge badge-gray">No posts yet</span>'} ${inf.lastSocialSync ? `<span class="badge badge-gray">Last synced ${inf.lastSocialSync}</span>` : ''}</div></div>`;
   }).join('');
 }
 
 function openClaudePrompt() {
   const limit = document.getElementById('slack-limit').value;
   const infNames = DB.influencers.map(i => `"${i.name}"`).join(', ');
-  const prompt = `Read the last ${limit} messages from the Slack channel #creator-socials (channel ID: C0B1TNT12CW).
-
-For each message that contains "New Instagram Post", extract:
-- account: text after "Account:"
-- creator: text after "Creator:"
-- type: text after "Type:" (Reel, Story, Image, Video)
-- caption: text after "Caption:" (if present, first 150 chars only)
-- posted: date after "Posted:" (YYYY-MM-DD format only)
-
-The influencers in the system are: ${infNames}
-
-Return ONLY a raw JSON array, no markdown, no backticks, no explanation:
-[{"account":"ScottyK Fitness","creator":"@scottykfitness","type":"Reel","caption":"...","posted":"2026-06-10"},...]
-
-Important: return ONLY the JSON array, nothing else.`;
-
-  const encodedPrompt = encodeURIComponent(prompt);
-  const url = `https://claude.ai/new?q=${encodedPrompt}`;
-  window.open(url, '_blank');
+  const prompt = `Read the last ${limit} messages from the Slack channel #creator-socials (channel ID: C0B1TNT12CW).\n\nFor each message that contains "New Instagram Post", extract:\n- account: text after "Account:"\n- creator: text after "Creator:"\n- type: text after "Type:" (Reel, Story, Image, Video)\n- caption: text after "Caption:" (if present, first 150 chars only)\n- posted: date after "Posted:" (YYYY-MM-DD format only)\n\nThe influencers in the system are: ${infNames}\n\nReturn ONLY a raw JSON array, no markdown, no backticks, no explanation:\n[{"account":"ScottyK Fitness","creator":"@scottykfitness","type":"Reel","caption":"...","posted":"2026-06-10"},...]\n\nImportant: return ONLY the JSON array, nothing else.`;
+  window.open(`https://claude.ai/new?q=${encodeURIComponent(prompt)}`, '_blank');
 }
 
 function importSlackJSON() {
   const status = document.getElementById('slack-status');
   const raw = document.getElementById('slack-json-paste').value.trim();
   if (!raw) { status.textContent = 'Paste the JSON from Claude first.'; status.style.color = 'var(--red-text)'; return; }
-
   let posts;
   try {
-    // Strip any markdown formatting Claude may have added
     let cleaned = raw.replace(/```json|```/g, '').trim();
-    // Find the JSON array — handle cases where Claude adds text before/after
     const jsonMatch = cleaned.match(/\[[\s\S]*\]/);
     if (!jsonMatch) throw new Error('No JSON array found');
-    // Fix common JSON issues: unescaped quotes in captions, newlines
-    let jsonStr = jsonMatch[0]
-      .replace(/\n/g, ' ')
-      .replace(/[\u0000-\u001F]/g, ' ');
+    let jsonStr = jsonMatch[0].replace(/\n/g, ' ').replace(/[\u0000-\u001F]/g, ' ');
     posts = JSON.parse(jsonStr);
   } catch(e) {
-    // Try line-by-line parsing as fallback
     try {
       const lines = raw.split('\n').filter(l => l.trim().startsWith('{'));
-      if (lines.length) {
-        posts = lines.map(l => { try { return JSON.parse(l.replace(/,$/, '')); } catch(e) { return null; } }).filter(Boolean);
-        if (!posts.length) throw new Error('empty');
-      } else throw new Error('no lines');
-    } catch(e2) {
-      status.textContent = 'Could not parse JSON — try copying just the JSON array from Claude (starting with [ and ending with ]).';
-      status.style.color = 'var(--red-text)';
-      return;
-    }
+      if (lines.length) { posts = lines.map(l => { try { return JSON.parse(l.replace(/,$/, '')); } catch(e) { return null; } }).filter(Boolean); if (!posts.length) throw new Error('empty'); }
+      else throw new Error('no lines');
+    } catch(e2) { status.textContent = 'Could not parse JSON — try copying just the JSON array from Claude (starting with [ and ending with ]).'; status.style.color = 'var(--red-text)'; return; }
   }
-
   let matched = 0;
   const today = new Date().toISOString().slice(0, 10);
   for (const inf of DB.influencers) {
-    const infPosts = posts.filter(p => {
-      const acc = (p.account || '').toLowerCase();
-      const infName = inf.name.toLowerCase();
-      const handle = (inf.handle || '').toLowerCase().replace('@', '');
-      return acc.includes(infName) || infName.includes(acc) || acc.includes(handle) || (p.creator || '').toLowerCase().includes(handle);
-    }).map(p => ({
-      type: 'social',
-      platform: 'instagram',
-      postType: p.type || '',
-      title: p.caption ? p.caption.slice(0, 100) : `${p.type || 'Post'} — ${p.posted || ''}`,
-      url: '',
-      desc: p.caption || '',
-      date: p.posted || ''
-    }));
-    if (infPosts.length) {
-      inf.socialItems = infPosts;
-      inf.lastSocialSync = today;
-      matched += infPosts.length;
-    }
+    const infPosts = posts.filter(p => { const acc = (p.account || '').toLowerCase(); const infName = inf.name.toLowerCase(); const handle = (inf.handle || '').toLowerCase().replace('@', ''); return acc.includes(infName) || infName.includes(acc) || acc.includes(handle) || (p.creator || '').toLowerCase().includes(handle); }).map(p => ({ type: 'social', platform: 'instagram', postType: p.type || '', title: p.caption ? p.caption.slice(0, 100) : `${p.type || 'Post'} — ${p.posted || ''}`, url: '', desc: p.caption || '', date: p.posted || '' }));
+    if (infPosts.length) { inf.socialItems = infPosts; inf.lastSocialSync = today; matched += infPosts.length; }
   }
-
-  saveDB();
-  renderSlackPanel();
-  renderInfluencers();
+  saveDB(); renderSlackPanel(); renderInfluencers();
   document.getElementById('slack-json-paste').value = '';
-
-  if (matched) {
-    status.textContent = `Imported ${posts.length} posts — matched ${matched} to influencers.`;
-    status.style.color = 'var(--green-text)';
-  } else {
-    status.textContent = `Parsed ${posts.length} posts but none matched your influencer names. Check that names match exactly (e.g. "ScottyK Fitness" not "Scotty K").`;
-    status.style.color = 'var(--amber-text)';
-  }
+  if (matched) { status.textContent = `Imported ${posts.length} posts — matched ${matched} to influencers.`; status.style.color = 'var(--green-text)'; }
+  else { status.textContent = `Parsed ${posts.length} posts but none matched. Check that names match exactly.`; status.style.color = 'var(--amber-text)'; }
 }
+
 // ─── PROSPECTS ────────────────────────────────────────────────────────────────
-// ─── PROSPECT SMART EXTRACT ──────────────────────────────────────────────────
-let screenshotBase64 = null;
-let screenshotType = null;
+let screenshotBase64 = null, screenshotType = null;
 
 function switchProspectTab(tab, btn) {
   document.querySelectorAll('.tabs-inline .tab-inline').forEach(t => t.classList.remove('active'));
@@ -1202,28 +737,17 @@ function switchProspectTab(tab, btn) {
 }
 
 function handleScreenshot(event) {
-  const file = event.target.files[0];
-  if (!file) return;
+  const file = event.target.files[0]; if (!file) return;
   const reader = new FileReader();
-  reader.onload = e => {
-    screenshotBase64 = e.target.result.split(',')[1];
-    screenshotType = file.type;
-    document.getElementById('screenshot-img').src = e.target.result;
-    document.getElementById('screenshot-preview').style.display = 'block';
-    document.getElementById('screenshot-placeholder').style.display = 'none';
-  };
+  reader.onload = e => { screenshotBase64 = e.target.result.split(',')[1]; screenshotType = file.type; document.getElementById('screenshot-img').src = e.target.result; document.getElementById('screenshot-preview').style.display = 'block'; document.getElementById('screenshot-placeholder').style.display = 'none'; };
   reader.readAsDataURL(file);
 }
 
 function clearScreenshot() {
   screenshotBase64 = null; screenshotType = null;
-  document.getElementById('screenshot-img').src = '';
-  document.getElementById('screenshot-preview').style.display = 'none';
-  document.getElementById('screenshot-placeholder').style.display = 'block';
-  document.getElementById('screenshot-input').value = '';
+  document.getElementById('screenshot-img').src = ''; document.getElementById('screenshot-preview').style.display = 'none'; document.getElementById('screenshot-placeholder').style.display = 'block'; document.getElementById('screenshot-input').value = '';
 }
 
-// drag and drop
 document.addEventListener('DOMContentLoaded', () => {
   const zone = document.getElementById('screenshot-drop');
   if (!zone) return;
@@ -1232,17 +756,20 @@ document.addEventListener('DOMContentLoaded', () => {
   zone.addEventListener('drop', e => {
     e.preventDefault(); zone.style.background = '#fff';
     const file = e.dataTransfer.files[0];
-    if (file && file.type.startsWith('image/')) {
-      const reader = new FileReader();
-      reader.onload = ev => {
-        screenshotBase64 = ev.target.result.split(',')[1];
-        screenshotType = file.type;
-        document.getElementById('screenshot-img').src = ev.target.result;
-        document.getElementById('screenshot-preview').style.display = 'block';
-        document.getElementById('screenshot-placeholder').style.display = 'none';
-      };
-      reader.readAsDataURL(file);
-    }
+    if (file && file.type.startsWith('image/')) { const reader = new FileReader(); reader.onload = ev => { screenshotBase64 = ev.target.result.split(',')[1]; screenshotType = file.type; document.getElementById('screenshot-img').src = ev.target.result; document.getElementById('screenshot-preview').style.display = 'block'; document.getElementById('screenshot-placeholder').style.display = 'none'; }; reader.readAsDataURL(file); }
+  });
+  // TF image drag/drop
+  ['main','before','after'].forEach(slot => {
+    const z = document.getElementById(`tf-${slot}-drop`);
+    if (!z) return;
+    const bg = slot === 'main' ? '#fff' : 'var(--bg2)';
+    z.addEventListener('dragover', e => { e.preventDefault(); z.style.background = 'var(--blue-bg)'; });
+    z.addEventListener('dragleave', () => { z.style.background = bg; });
+    z.addEventListener('drop', async e => {
+      e.preventDefault(); z.style.background = bg;
+      const file = e.dataTransfer.files[0];
+      if (file && file.type.startsWith('image/')) { const dataUrl = await compressImage(file); setTfImage(slot, dataUrl); }
+    });
   });
 });
 
@@ -1250,57 +777,30 @@ async function smartExtract() {
   const text = document.getElementById('smart-text').value.trim();
   const infId = document.getElementById('smart-inf').value;
   const status = document.getElementById('smart-status');
-
   if (!text && !screenshotBase64) { status.textContent = 'Add some text or a screenshot first.'; status.style.color = 'var(--red-text)'; return; }
   if (!getApiKey()) { status.textContent = 'Add your API key in Settings first.'; status.style.color = 'var(--red-text)'; return; }
-
   status.textContent = 'Extracting prospect info…'; status.style.color = 'var(--text2)';
-
-  const infNames = DB.influencers.map(i => i.name).join(', ') || 'none';
-  const systemPrompt = `Extract prospect information from the provided content (text, screenshot, or both).
-Return ONLY a JSON object with these exact fields (use empty string if unknown):
-{"name":"","role":"","company":"","offer":"","pain":"","style":"","notes":""}
-
-- name: full name of the prospect
-- role: job title or role
-- company: company name or industry  
-- offer: what product/service/program they are considering
-- pain: their stated struggles, problems, goals — be specific and thorough
-- style: inferred personality/buyer type (analytical, emotional, skeptical, fast decision maker, price-sensitive, etc.)
-- notes: anything else relevant — objections mentioned, urgency, timeline, social proof they've seen, funnel context
-
-Be thorough on pain and notes — extract everything useful for a sales closer.
-Return ONLY valid JSON, no markdown, no explanation.`;
-
+  const systemPrompt = `Extract prospect information from the provided content.
+Return ONLY a JSON object:
+{"name":"","email":"","phone":"","role":"","company":"","offer":"","pain":"","style":"","notes":""}
+- name: full name, email: email address, phone: phone/WhatsApp number
+- role: job title, company: company or industry, offer: what they're considering
+- pain: their struggles/goals — be specific and thorough
+- style: inferred personality/buyer type
+- notes: objections, urgency, timeline, funnel context
+Return ONLY valid JSON, no markdown.`;
   try {
-    const messages = [];
     const userContent = [];
-
-    if (screenshotBase64) {
-      userContent.push({ type: 'image', source: { type: 'base64', media_type: screenshotType, data: screenshotBase64 } });
-    }
-    if (text) {
-      userContent.push({ type: 'text', text: `Extract prospect info from this:
-
-${text}` });
-    } else {
-      userContent.push({ type: 'text', text: 'Extract prospect info from this screenshot.' });
-    }
-    messages.push({ role: 'user', content: userContent });
-
+    if (screenshotBase64) userContent.push({ type: 'image', source: { type: 'base64', media_type: screenshotType, data: screenshotBase64 } });
+    userContent.push({ type: 'text', text: text ? `Extract prospect info from this:\n\n${text}` : 'Extract prospect info from this screenshot.' });
     const key = getApiKey();
-    const res = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'x-api-key': key, 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true' },
-      body: JSON.stringify({ model: 'claude-sonnet-4-6', max_tokens: 800, system: systemPrompt, messages })
-    });
+    const res = await fetch('https://api.anthropic.com/v1/messages', { method: 'POST', headers: { 'Content-Type': 'application/json', 'x-api-key': key, 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true' }, body: JSON.stringify({ model: 'claude-sonnet-4-6', max_tokens: 800, system: systemPrompt, messages: [{ role: 'user', content: userContent }] }) });
     const d = await res.json();
     if (d.error) throw new Error(d.error.message);
-    const raw = (d.content || []).map(b => b.text || '').join('').replace(/```json|```/g,'').trim();
-    const extracted = JSON.parse(raw);
-
-    // Fill the extracted preview fields
+    const extracted = JSON.parse((d.content || []).map(b => b.text || '').join('').replace(/```json|```/g,'').trim());
     document.getElementById('p-name').value = extracted.name || '';
+    const pEmailEl = document.getElementById('p-email'); if(pEmailEl) pEmailEl.value = extracted.email || '';
+    const pPhoneEl = document.getElementById('p-phone'); if(pPhoneEl) pPhoneEl.value = extracted.phone || '';
     document.getElementById('p-role').value = extracted.role || '';
     document.getElementById('p-company').value = extracted.company || '';
     document.getElementById('p-offer').value = extracted.offer || '';
@@ -1308,25 +808,21 @@ ${text}` });
     document.getElementById('p-style').value = extracted.style || '';
     document.getElementById('p-notes').value = extracted.notes || '';
     document.getElementById('p-inf').value = infId;
-
     document.getElementById('extracted-preview').style.display = 'block';
     document.getElementById('extracted-preview').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-    status.textContent = 'Extracted! Review the fields below and save.';
-    status.style.color = 'var(--green-text)';
-  } catch(e) {
-    status.textContent = 'Error: ' + e.message;
-    status.style.color = 'var(--red-text)';
-  }
+    status.textContent = 'Extracted! Review the fields below and save.'; status.style.color = 'var(--green-text)';
+  } catch(e) { status.textContent = 'Error: ' + e.message; status.style.color = 'var(--red-text)'; }
 }
 
 function saveProspect() {
-  // Read from whichever set of fields is visible
   const isManual = document.getElementById('prospect-manual').style.display !== 'none';
   const prefix = isManual ? 'm' : 'p';
   const name = document.getElementById(prefix+'-name').value.trim();
   if (!name) { alert('Enter a name.'); return; }
   const p = {
     id: Date.now(), name,
+    email: (document.getElementById(prefix+'-email')?.value || '').trim(),
+    phone: (document.getElementById(prefix+'-phone')?.value || '').trim(),
     role: document.getElementById(prefix+'-role').value.trim(),
     company: document.getElementById(prefix+'-company').value.trim(),
     offer: document.getElementById(prefix+'-offer').value.trim(),
@@ -1336,23 +832,16 @@ function saveProspect() {
     notes: document.getElementById(prefix+'-notes').value.trim()
   };
   DB.prospects.push(p); saveDB(); renderProspects(); updateAllSelects();
-  // Clear
-  ['name','role','company','offer','pain','style','notes'].forEach(f => {
-    const el = document.getElementById(prefix+'-'+f);
-    if (el) el.value = '';
-  });
-  const infEl = document.getElementById(prefix+'-inf');
-  if (infEl) infEl.value = '';
+  ['name','email','phone','role','company','offer','pain','style','notes'].forEach(f => { const el = document.getElementById(prefix+'-'+f); if (el) el.value = ''; });
+  const infEl = document.getElementById(prefix+'-inf'); if (infEl) infEl.value = '';
   document.getElementById('extracted-preview').style.display = 'none';
-  document.getElementById('smart-text').value = '';
-  document.getElementById('smart-status').textContent = '';
+  document.getElementById('smart-text').value = ''; document.getElementById('smart-status').textContent = '';
   clearScreenshot();
 }
 
 function deleteProspect(id) {
   if (!confirm('Delete this prospect?')) return;
-  DB.prospects = DB.prospects.filter(p => p.id !== id);
-  saveDB(); renderProspects(); updateAllSelects();
+  DB.prospects = DB.prospects.filter(p => p.id !== id); saveDB(); renderProspects(); updateAllSelects();
 }
 
 function renderProspects() {
@@ -1362,23 +851,7 @@ function renderProspects() {
   cnt.textContent = `(${DB.prospects.length})`;
   el.innerHTML = DB.prospects.map(p => {
     const inf = DB.influencers.find(i => String(i.id) === String(p.infId));
-    return `<div class="prospect-card">
-      <div class="card-header">
-        <div style="display:flex;align-items:center;gap:8px">
-          <div class="avatar">${p.name.split(' ').map(w => w[0]).slice(0,2).join('')}</div>
-          <div>
-            <div class="prospect-name">${p.name}</div>
-            <div style="font-size:11px;color:var(--text3)">${[p.role, p.company].filter(Boolean).join(' · ')}</div>
-          </div>
-        </div>
-        <div style="display:flex;gap:6px;align-items:center">
-          ${inf ? `<span class="badge badge-blue">${inf.name}</span>` : ''}
-          <button class="btn btn-sm btn-danger" onclick="deleteProspect(${p.id})">✕</button>
-        </div>
-      </div>
-      ${p.offer ? `<div style="font-size:12px;color:var(--text2);margin-top:6px">Offer: ${p.offer}</div>` : ''}
-      ${p.pain ? `<div style="font-size:12px;color:var(--text3);margin-top:3px">${p.pain.slice(0,100)}${p.pain.length>100?'...':''}</div>` : ''}
-    </div>`;
+    return `<div class="prospect-card"><div class="card-header"><div style="display:flex;align-items:center;gap:8px"><div class="avatar">${p.name.split(' ').map(w=>w[0]).slice(0,2).join('')}</div><div><div class="prospect-name">${p.name}</div><div style="font-size:11px;color:var(--text3)">${[p.role,p.company].filter(Boolean).join(' · ')}</div>${p.email?`<div style="font-size:11px;color:var(--text3)">${p.email}</div>`:''}</div></div><div style="display:flex;gap:6px;align-items:center">${inf?`<span class="badge badge-blue">${inf.name}</span>`:''}<button class="btn btn-sm btn-danger" onclick="deleteProspect(${p.id})">✕</button></div></div>${p.offer?`<div style="font-size:12px;color:var(--text2);margin-top:6px">Offer: ${p.offer}</div>`:''} ${p.pain?`<div style="font-size:12px;color:var(--text3);margin-top:3px">${p.pain.slice(0,100)}${p.pain.length>100?'...':''}</div>`:''}</div>`;
   }).join('');
 }
 
@@ -1386,11 +859,9 @@ function renderProspects() {
 function updateAllSelects() {
   const infOpts = '<option value="">— select influencer —</option>' + DB.influencers.map(i => `<option value="${i.id}">${i.name}</option>`).join('');
   ['p-inf','m-inf','smart-inf','feed-inf-sel','tf-inf'].forEach(id => { const el = document.getElementById(id); if (el) el.innerHTML = infOpts; });
-
-  const pOpts = '<option value="">— choose prospect —</option>' + DB.prospects.map(p => `<option value="${p.id}">${p.name}${p.company ? ' · ' + p.company : ''}</option>`).join('');
+  const pOpts = '<option value="">— choose prospect —</option>' + DB.prospects.map(p => `<option value="${p.id}">${p.name}${p.company?' · '+p.company:''}</option>`).join('');
   document.getElementById('prep-sel').innerHTML = pOpts;
   document.getElementById('fu-sel').innerHTML = pOpts;
-
   refreshHistoryFilters();
 }
 
@@ -1398,19 +869,27 @@ function updateAllSelects() {
 function buildProspectCard(p) {
   if (!p) return '';
   const inf = DB.influencers.find(i => String(i.id) === String(p.infId));
-  return `<div class="card" style="margin:0">
-    <div style="display:flex;align-items:center;gap:10px">
-      <div class="avatar">${p.name.split(' ').map(w=>w[0]).slice(0,2).join('')}</div>
-      <div style="flex:1">
-        <div style="font-weight:600">${p.name}</div>
-        <div style="font-size:12px;color:var(--text2)">${[p.role,p.company,p.offer].filter(Boolean).join(' · ')}</div>
-      </div>
-      ${inf ? `<span class="badge badge-blue">${inf.name}</span>` : ''}
-    </div>
-    ${p.pain ? `<div style="font-size:12px;margin-top:8px;border-top:1px solid var(--border);padding-top:6px"><strong>Pain:</strong> ${p.pain}</div>` : ''}
-    ${p.style ? `<div style="font-size:12px;margin-top:3px"><strong>Style:</strong> ${p.style}</div>` : ''}
-    ${p.notes ? `<div style="font-size:12px;margin-top:3px;color:var(--text2)">${p.notes}</div>` : ''}
-  </div>`;
+  return `<div class="card" style="margin:0"><div style="display:flex;align-items:center;gap:10px"><div class="avatar">${p.name.split(' ').map(w=>w[0]).slice(0,2).join('')}</div><div style="flex:1"><div style="font-weight:600">${p.name}</div><div style="font-size:12px;color:var(--text2)">${[p.role,p.company,p.offer].filter(Boolean).join(' · ')}</div>${p.email||p.phone?`<div style="font-size:11px;color:var(--text3)">${[p.email,p.phone].filter(Boolean).join(' · ')}</div>`:''}</div>${inf?`<span class="badge badge-blue">${inf.name}</span>`:''}</div>${p.pain?`<div style="font-size:12px;margin-top:8px;border-top:1px solid var(--border);padding-top:6px"><strong>Pain:</strong> ${p.pain}</div>`:''} ${p.style?`<div style="font-size:12px;margin-top:3px"><strong>Style:</strong> ${p.style}</div>`:''} ${p.notes?`<div style="font-size:12px;margin-top:3px;color:var(--text2)">${p.notes}</div>`:''}</div>`;
+}
+
+const sensitivityCache = {};
+
+async function analyzeSensitivity(p) {
+  if (sensitivityCache[p.id]) return sensitivityCache[p.id];
+  if (!getApiKey()) return null;
+  const profileText = [p.pain, p.notes, p.style, p.offer, p.role, p.company].filter(Boolean).join(' | ');
+  const prompt = `You are reviewing a sales prospect profile to identify sensitivity flags.\nProfile:\n${profileText}\n\nReturn JSON:\n{"hasMedical":true/false,"medicalSummary":"brief description or empty string","hasDemographic":true/false,"demographicSummary":"brief description or empty string","contentInstructions":"specific rules for what to avoid — empty string if none","warningLabel":"short label or empty string"}\n\nMedical: injuries, chronic conditions, diagnoses, medications, surgery, mental health, eating disorders, hormonal issues.\nDemographic: age groups, menopause, postpartum, pregnancy, specific life stages.\nReturn ONLY valid JSON.`;
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', { method: 'POST', headers: { 'Content-Type': 'application/json', 'x-api-key': getApiKey(), 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true' }, body: JSON.stringify({ model: 'claude-sonnet-4-6', max_tokens: 400, messages: [{ role: 'user', content: prompt }] }) });
+    const d = await res.json();
+    const result = JSON.parse((d.content || []).map(b => b.text || '').join('').replace(/```json|```/g, '').trim());
+    sensitivityCache[p.id] = result; return result;
+  } catch(e) { return null; }
+}
+
+function buildSafetyInstructions(sensitivityResult) {
+  if (!sensitivityResult || (!sensitivityResult.hasMedical && !sensitivityResult.hasDemographic) || !sensitivityResult.contentInstructions) return '';
+  return `\n\n⚠️ CONTENT SAFETY RULES FOR THIS PROSPECT:\n${sensitivityResult.contentInstructions}\n- When in doubt, skip and explain why.\n- Flag skipped content as "⚠️ SKIPPED — [reason]"`;
 }
 
 async function loadPrepProspect() {
@@ -1419,17 +898,10 @@ async function loadPrepProspect() {
   if (!id) { el.style.display = 'none'; return; }
   const p = DB.prospects.find(x => String(x.id) === id);
   if (!p) { el.style.display = 'none'; return; }
-  el.innerHTML = buildProspectCard(p);
-  el.style.display = 'block';
-  // Run AI sensitivity analysis in background
+  el.innerHTML = buildProspectCard(p); el.style.display = 'block';
   const sensitivity = await analyzeSensitivity(p);
   if (sensitivity && (sensitivity.hasMedical || sensitivity.hasDemographic)) {
-    const flagHTML = `<div style="margin-top:8px;padding:8px 12px;background:#FFF8E6;border:1px solid #F0C040;border-radius:var(--radius);font-size:12px;color:#7A5000;line-height:1.5">
-      <strong>⚠️ ${sensitivity.warningLabel || 'Sensitive profile'}</strong><br>
-      ${[sensitivity.medicalSummary, sensitivity.demographicSummary].filter(Boolean).join(' · ')}<br>
-      <span style="color:#9A6500">Content suggestions and messages will be filtered accordingly.</span>
-    </div>`;
-    el.innerHTML = buildProspectCard(p) + flagHTML;
+    el.innerHTML = buildProspectCard(p) + `<div style="margin-top:8px;padding:8px 12px;background:#FFF8E6;border:1px solid #F0C040;border-radius:var(--radius);font-size:12px;color:#7A5000;line-height:1.5"><strong>⚠️ ${sensitivity.warningLabel || 'Sensitive profile'}</strong><br>${[sensitivity.medicalSummary,sensitivity.demographicSummary].filter(Boolean).join(' · ')}<br><span style="color:#9A6500">Content suggestions and messages will be filtered accordingly.</span></div>`;
   }
 }
 
@@ -1438,64 +910,7 @@ function loadFollowupProspect() {
   const el = document.getElementById('fu-prospect-card');
   if (!id) { el.style.display = 'none'; return; }
   const p = DB.prospects.find(x => String(x.id) === id);
-  el.innerHTML = buildProspectCard(p);
-  el.style.display = p ? 'block' : 'none';
-}
-
-// ─── CONTEXT BUILDERS ─────────────────────────────────────────────────────────
-// AI-powered sensitive profile analysis — runs once per prospect and caches result
-const sensitivityCache = {};
-
-async function analyzeSensitivity(p) {
-  if (sensitivityCache[p.id]) return sensitivityCache[p.id];
-  if (!getApiKey()) return null;
-
-  const profileText = [p.pain, p.notes, p.style, p.offer, p.role, p.company].filter(Boolean).join(' | ');
-
-  const prompt = `You are reviewing a sales prospect profile to identify any sensitivity flags before a closer recommends content or sends messages.
-
-Profile:
-${profileText}
-
-Analyze this profile and return a JSON object:
-{
-  "hasMedical": true/false,
-  "medicalSummary": "brief description of medical/health context if present, empty string if none",
-  "hasDemographic": true/false,
-  "demographicSummary": "brief description of demographic-specific context (age group, life stage, etc.) if present, empty string if none",
-  "contentInstructions": "specific instructions for what to avoid when recommending content and writing messages — be precise about what topics, language, and content types to avoid for THIS specific person. Empty string if no flags.",
-  "warningLabel": "short label for the UI warning badge, e.g. 'Medical condition + over 40' — empty string if no flags"
-}
-
-Be thorough. Medical context includes: injuries, chronic conditions, diagnosed conditions, medications, doctor involvement, recovery, surgery, mental health, eating disorders, hormonal issues. Demographic context includes: age groups, menopause, postpartum, pregnancy, specific life stages.
-Return ONLY valid JSON, no markdown.`;
-
-  try {
-    const res = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': getApiKey(),
-        'anthropic-version': '2023-06-01',
-        'anthropic-dangerous-direct-browser-access': 'true'
-      },
-      body: JSON.stringify({ model: 'claude-sonnet-4-6', max_tokens: 400, messages: [{ role: 'user', content: prompt }] })
-    });
-    const d = await res.json();
-    const text = (d.content || []).map(b => b.text || '').join('').replace(/```json|```/g, '').trim();
-    const result = JSON.parse(text);
-    sensitivityCache[p.id] = result;
-    return result;
-  } catch(e) {
-    return null;
-  }
-}
-
-function buildSafetyInstructions(sensitivityResult) {
-  if (!sensitivityResult) return '';
-  if (!sensitivityResult.hasMedical && !sensitivityResult.hasDemographic) return '';
-  if (!sensitivityResult.contentInstructions) return '';
-  return `\n\n⚠️ CONTENT SAFETY RULES FOR THIS PROSPECT:\n${sensitivityResult.contentInstructions}\n- When in doubt about a piece of content, skip it and explain why.\n- Flag any skipped content as "⚠️ SKIPPED — [reason]"`;
+  el.innerHTML = buildProspectCard(p); el.style.display = p ? 'block' : 'none';
 }
 
 function buildProspectContext(p) {
@@ -1516,18 +931,10 @@ function buildProspectContext(p) {
     if (inf.analysis?.audience) ctx += `\nInfluencer audience: ${inf.analysis.audience}`;
     if (inf.analysis?.salesAngles?.length) ctx += `\nSales angles from this content: ${inf.analysis.salesAngles.join('; ')}`;
     if (inf.analysis?.tone) ctx += `\nInfluencer tone: ${inf.analysis.tone}`;
-    // Include recent social posts so AI can reference actual captions
     const socialItems = (inf.socialItems || []).slice(0, 8);
-    if (socialItems.length) {
-      ctx += `\n\nRecent Instagram posts from ${inf.name}:\n`;
-      ctx += socialItems.map(s => `- [${s.postType || 'Post'}] "${s.desc || s.title}"`).join('\n');
-    }
-    // Include recent YouTube/podcast titles for freshness
+    if (socialItems.length) { ctx += `\n\nRecent Instagram posts from ${inf.name}:\n`; ctx += socialItems.map(s => `- [${s.postType || 'Post'}] "${s.desc || s.title}"`).join('\n'); }
     const recentContent = (inf.items || []).slice(0, 6);
-    if (recentContent.length) {
-      ctx += `\n\nRecent content titles from ${inf.name}:\n`;
-      ctx += recentContent.map(i => `- [${i.type.toUpperCase()}] ${i.title}`).join('\n');
-    }
+    if (recentContent.length) { ctx += `\n\nRecent content titles from ${inf.name}:\n`; ctx += recentContent.map(i => `- [${i.type.toUpperCase()}] ${i.title}`).join('\n'); }
   }
   return ctx;
 }
@@ -1537,36 +944,114 @@ function buildContentBank(p) {
   if (!inf) return '\n\nNo influencer linked to this prospect.';
   const allItems = [...(inf.items || []), ...(inf.socialItems || [])];
   if (!allItems.length) return '\n\nNo content fetched yet for this influencer.';
-  const lines = allItems.slice(0, 40).map(i => {
-    const prefix = i.type === 'youtube' ? '[YT]' : i.type === 'podcast' ? '[POD]' : i.type === 'blog' ? '[BLOG]' : '[IG]';
-    const link = i.url ? ` | ${i.url}` : '';
-    const desc = i.desc ? ` | ${i.desc.slice(0, 100)}` : '';
-    return `${prefix} ${i.title}${link}${desc}`;
-  }).join('\n');
+  const lines = allItems.slice(0, 40).map(i => { const prefix = i.type==='youtube'?'[YT]':i.type==='podcast'?'[POD]':i.type==='blog'?'[BLOG]':'[IG]'; const link = i.url?` | ${i.url}`:''; const desc = i.desc?` | ${i.desc.slice(0,100)}`:''; return `${prefix} ${i.title}${link}${desc}`; }).join('\n');
   return `\n\nContent bank for ${inf.name} (${allItems.length} items):\n${lines}`;
 }
 
-// ─── TESTIMONIAL CONTEXT ─────────────────────────────────────────────────────
 function buildTestimonialContext(p) {
   const inf = DB.influencers.find(i => String(i.id) === String(p.infId));
   if (!inf) return '';
   const tfs = DB.transformations.filter(t => String(t.infId) === String(inf.id) && t.story);
   if (!tfs.length) return '';
-  // Pick up to 2 most recent
-  const picks = tfs.slice(0, 2);
-  let ctx = `
-
-TRANSFORMATION STORIES available from ${inf.name} (use the most relevant one as social proof):
-`;
-  picks.forEach((t, i) => {
-    ctx += `
-Story ${i + 1}${t.context ? ' (' + t.context + ')' : ''}:
-${t.story}
-`;
-  });
-  ctx += `
-If including a transformation story, work it naturally into a message — don't just paste it. Reference it conversationally.`;
+  let ctx = `\n\nTRANSFORMATION STORIES available from ${inf.name} (use the most relevant one as social proof):\n`;
+  tfs.slice(0, 2).forEach((t, i) => { ctx += `\nStory ${i+1}${t.context?' ('+t.context+')':''}:\n${t.story}\n`; });
+  ctx += `\nIf including a transformation story, work it naturally into a message — don't just paste it.`;
   return ctx;
+}
+
+// ─── OUTBOX ───────────────────────────────────────────────────────────────────
+function addToOutbox(item) {
+  DB.outbox = DB.outbox || [];
+  DB.outbox.unshift({ ...item, id: Date.now(), status: 'pending', createdAt: new Date().toISOString() });
+  saveOutboxDB();
+}
+
+function updateOutboxItem(id, changes) {
+  const idx = (DB.outbox || []).findIndex(o => o.id === id);
+  if (idx !== -1) { DB.outbox[idx] = { ...DB.outbox[idx], ...changes }; saveOutboxDB(); }
+}
+
+function deleteOutboxItem(id) { DB.outbox = (DB.outbox || []).filter(o => o.id !== id); saveOutboxDB(); renderOutbox(); }
+function markSent(id) { updateOutboxItem(id, { status: 'sent', sentAt: new Date().toISOString() }); renderOutbox(); }
+function clearSentOutbox() { if (!confirm('Remove all sent messages?')) return; DB.outbox = (DB.outbox || []).filter(o => o.status !== 'sent'); saveOutboxDB(); renderOutbox(); }
+
+function refreshOutboxFilters() {
+  const sel = document.getElementById('outbox-filter-prospect');
+  if (!sel) return;
+  const cur = sel.value;
+  const names = [...new Set((DB.outbox || []).map(o => o.prospectName).filter(Boolean))];
+  sel.innerHTML = '<option value="">All prospects</option>' + names.map(n => `<option value="${n}"${cur===n?' selected':''}>${n}</option>`).join('');
+}
+
+function renderOutbox() {
+  const el = document.getElementById('outbox-list');
+  if (!el) return;
+  refreshOutboxFilters();
+  const pf = document.getElementById('outbox-filter-prospect')?.value || '';
+  const tf = document.getElementById('outbox-filter-type')?.value || '';
+  const sf = document.getElementById('outbox-filter-status')?.value || '';
+  let items = DB.outbox || [];
+  if (pf) items = items.filter(o => o.prospectName === pf);
+  if (tf) items = items.filter(o => o.type === tf);
+  if (sf) items = items.filter(o => o.status === sf);
+  if (!items.length) { el.innerHTML = '<div class="empty">No messages match this filter.</div>'; return; }
+  el.innerHTML = items.map(o => {
+    const p = DB.prospects.find(x => String(x.id) === String(o.prospectId));
+    const sentBadge = o.status === 'sent' ? `<span class="badge badge-green">✓ Sent</span>` : `<span class="badge badge-amber">Pending</span>`;
+    const typeBadge = o.type === 'email' ? `<span class="badge badge-blue">Email</span>` : `<span class="badge badge-purple">Text</span>`;
+    const contactLine = o.type==='email'&&p?.email ? `<div style="font-size:11px;color:var(--text3);margin-bottom:4px">To: <b>${p.email}</b></div>` : o.type==='text'&&p?.phone ? `<div style="font-size:11px;color:var(--text3);margin-bottom:4px">To: <b>${p.phone}</b></div>` : (!p?.email && !p?.phone && p) ? `<div style="font-size:11px;color:var(--amber-text);margin-bottom:4px">⚠ No ${o.type==='email'?'email':'phone'} saved — add it in Prospects</div>` : '';
+    return `<div class="card" style="margin-bottom:.5rem;${o.status==='sent'?'opacity:.6':''}">
+      <div class="card-header" style="margin-bottom:8px"><div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">${typeBadge}${sentBadge}<span style="font-weight:500;font-size:13px">${o.prospectName}</span></div><button class="btn btn-sm btn-danger" onclick="deleteOutboxItem(${o.id})">✕</button></div>
+      ${contactLine}
+      ${o.type==='email'&&o.subject?`<div style="font-size:12px;font-weight:500;margin-bottom:5px">Subject: <span style="font-weight:400">${o.subject}</span></div>`:''}
+      <textarea id="ob-body-${o.id}" style="width:100%;font-size:12px;line-height:1.6;min-height:75px;border:1px solid var(--border);border-radius:var(--radius);padding:8px;font-family:inherit;resize:vertical" onchange="updateOutboxItem(${o.id},{body:this.value})">${o.body}</textarea>
+      <div style="display:flex;gap:8px;align-items:center;margin-top:8px;flex-wrap:wrap">
+        <label style="font-size:11px;color:var(--text2);margin:0;display:flex;align-items:center;gap:5px">Date: <input type="date" value="${o.scheduledDate||''}" onchange="updateOutboxItem(${o.id},{scheduledDate:this.value})" style="font-size:12px;padding:3px 6px;border:1px solid var(--border2);border-radius:var(--radius);font-family:inherit"></label>
+        <button class="copy-btn" onclick="copyOutboxItem(${o.id})">Copy</button>
+        ${o.type==='email'&&p?.email?`<button class="copy-btn" onclick="openOutboxEmail(${o.id})">Open in mail</button>`:''}
+        ${o.status!=='sent'?`<button class="btn btn-sm btn-secondary" style="margin-left:auto" onclick="markSent(${o.id})">✓ Mark sent</button>`:''}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function copyOutboxItem(id) {
+  const o = (DB.outbox||[]).find(x => x.id === id);
+  if (!o) return;
+  const text = o.type==='email'&&o.subject ? `Subject: ${o.subject}\n\n${o.body}` : o.body;
+  navigator.clipboard.writeText(text).then(() => { const ta = document.getElementById('ob-body-'+id); if(ta){const prev=ta.style.borderColor;ta.style.borderColor='var(--green-text)';setTimeout(()=>ta.style.borderColor=prev,1000);} }).catch(()=>{});
+}
+
+function openOutboxEmail(id) {
+  const o = (DB.outbox||[]).find(x => x.id === id);
+  const p = o ? DB.prospects.find(x => String(x.id) === String(o.prospectId)) : null;
+  if (!o) return;
+  const to = p?.email ? encodeURIComponent(p.email) : '';
+  const subj = encodeURIComponent(o.subject || '');
+  const body = encodeURIComponent(o.body || '');
+  if ((to+subj+body).length < 1800) window.open(`mailto:${to}?subject=${subj}&body=${body}`, '_blank');
+  else navigator.clipboard.writeText(o.body||'').then(()=>{ alert('Body copied to clipboard — email will open with subject pre-filled.'); window.open(`mailto:${to}?subject=${subj}`, '_blank'); });
+}
+
+function promptSaveToOutbox(elId, prospectId, prospectName) {
+  const text = document.getElementById(elId)?.textContent || '';
+  if (!text || text === 'Generating\u2026') return;
+  let saved = 0;
+  const textParts = text.split(/TEXT VERSION:\s*\n/i).slice(1);
+  const emailParts = text.split(/EMAIL VERSION:\s*\n/i).slice(1);
+  for (const part of textParts) {
+    const body = part.split(/\nEMAIL VERSION|\n---/)[0].trim();
+    if (body) { addToOutbox({ prospectId, prospectName, type: 'text', body }); saved++; }
+  }
+  for (const part of emailParts) {
+    const lines = part.split(/\nTEXT VERSION|\n---/)[0].split('\n');
+    const subjLine = lines.find(l => /^subject:/i.test(l.trim()));
+    const subject = subjLine ? subjLine.replace(/^subject:\s*/i,'').trim() : '';
+    const body = lines.filter(l => !/^subject:/i.test(l.trim())).join('\n').trim();
+    if (body) { addToOutbox({ prospectId, prospectName, type: 'email', subject, body }); saved++; }
+  }
+  if (!saved) { addToOutbox({ prospectId, prospectName, type: 'text', body: text.trim() }); saved = 1; }
+  alert(`${saved} message${saved>1?'s':''} saved to Outbox. Go to Outbox to set dates and copy.`);
 }
 
 // ─── PRE-CALL PREP ────────────────────────────────────────────────────────────
@@ -1577,19 +1062,13 @@ async function runPrep(mode) {
   if (!p) return;
   const goal = document.getElementById('prep-goal').value.trim();
   const ctx = buildProspectContext(p);
-
   const outId = 'prep-out-' + mode;
-  const label = mode === 'strategy' ? 'Pre-call strategy' : 'Content to send';
+  const label = mode === 'strategy' ? 'Pre-call strategy' : mode === 'briefing' ? '🎓 Field briefing' : 'Content to send';
   const container = document.getElementById('prep-outputs');
-
   let block = document.getElementById(outId);
-  if (!block) {
-    block = document.createElement('div');
-    block.style.marginBottom = '1rem';
-    block.id = outId;
-    container.appendChild(block);
-  }
-  block.innerHTML = `<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px"><div class="sec-label" style="margin:0">${label}</div><button class="copy-btn" onclick="copyEl('${outId}-text')">Copy</button></div><div id="${outId}-text" class="ai-out loading">Generating…</div>`;
+  if (!block) { block = document.createElement('div'); block.style.marginBottom = '1rem'; block.id = outId; container.appendChild(block); }
+  const obBtn = (mode === 'content') ? `<button class="copy-btn" onclick="promptSaveToOutbox('${outId}-text','${p.id}','${p.name.replace(/'/g,"\\'")}')">→ Outbox</button>` : '';
+  block.innerHTML = `<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;gap:6px;flex-wrap:wrap"><div class="sec-label" style="margin:0">${label}</div><div style="display:flex;gap:5px">${obBtn}<button class="copy-btn" onclick="copyEl('${outId}-text')">Copy</button></div></div><div id="${outId}-text" class="ai-out loading">Generating…</div>`;
 
   let prompt = '';
   if (mode === 'strategy') {
@@ -1620,14 +1099,11 @@ One sentence on how to open — what frame or hook to lead with given their infl
 1-2 specific references from their influencer's recent posts or content that you can drop naturally in the call.
 
 🎓 FIELD BRIEFING — CLOSER'S CHEAT SHEET
-Based on the prospect's pain points and the influencer's niche, list 3-5 concepts or terms this prospect is likely to mention or care about. For each:
-[Term]: Plain-English explanation (1 sentence) + how this specific influencer thinks about or frames it, based on their content (1 sentence)
-
-Example format:
-Bulking: Intentionally eating more calories than you burn to gain muscle mass. [Influencer] frames this as a "building phase" and focuses on doing it without unnecessary fat gain.
+List 3-5 concepts or terms this prospect is likely to mention. For each:
+[Term]: Plain-English explanation (1 sentence) + how this influencer specifically frames it (1 sentence)
 
 Keep every section tight. Max 2-3 lines each. No padding.`;
-  } else {
+  } else if (mode === 'content') {
     const bank = buildContentBank(p);
     const sensitivityResult = await analyzeSensitivity(p);
     const safetyInstructions = buildSafetyInstructions(sensitivityResult);
@@ -1641,37 +1117,29 @@ ${goal ? '\nCall goal: ' + goal : ''}${testimonialCtx}${safetyInstructions}
 Recommend the best content to send before this call. For each piece (up to 3):
 
 1. CONTENT — title and full URL
-2. WHY THIS PERSON — connect it specifically to their pain point or motive, not generic reasons
-3. SEND TIMING — use non-temporal labels only: "Before the call", "Day before", "A few hours before", "Right after booking". NO days of the week, NO dates, NO "tomorrow" or "Monday".
+2. WHY THIS PERSON — connect it specifically to their pain point or motive
+3. SEND TIMING — non-temporal labels only: "Before the call", "Day before", "A few hours before", "Right after booking". NO days of the week, NO dates.
 
-4. TEXT VERSION — ready-to-send DM/text:
+4. TEXT VERSION:
    - 2-4 sentences, casual, like texting a friend
    - Reference something specific about them
-   - End with a soft hook to make them watch/listen before the call
-   - No templates, no "I thought of you when I saw this", no "just wanted to share"
-   - Casual grammar fine, sentence fragments fine
+   - No "I thought of you when I saw this", no "just wanted to share"
+   - Casual grammar fine, fragments fine
 
-5. EMAIL VERSION — ready-to-send email:
-   - Subject: [short, non-salesy subject line]
-   - 3-5 sentences, same warm tone but slightly more structured
-   - Same link, different framing from the text version
-   - Still sounds human, not like a sequence
+5. EMAIL VERSION:
+   - Subject: [3-5 words, lowercase, personal — e.g. "re: our chat", "this reminded me"]
+   - Write it EXACTLY like the text version — same casual voice, same short sentences
+   - NO greeting, NO sign-off, NO email structure
+   - Just the subject line, then the message exactly as you'd text it
 
-Each content piece must have both versions. Each set of messages must be meaningfully different in opening and angle from the others.
-
-Prioritize YouTube videos and podcast episodes. Be tactical and specific.`;
-  }
-
-  if (mode === 'briefing') {
+Each piece must have both versions. Each set of messages must be meaningfully different.
+Prioritize YouTube videos and podcast episodes.`;
+  } else if (mode === 'briefing') {
     const inf = DB.influencers.find(i => String(i.id) === String(p.infId));
     const infName = inf ? inf.name : 'the influencer';
-    const infNiche = inf ? (inf.niche || '') : '';
-    const recentTitles = inf ? (inf.items || []).slice(0, 10).map(i => i.title).join(', ') : '';
-    const socialSample = inf ? (inf.socialItems || []).slice(0, 5).map(s => s.desc || s.title).join(' | ') : '';
-    const themes = inf?.analysis?.themes?.join(', ') || '';
-    prompt = `You are briefing a sales closer who is NOT an expert in this field. Your job is to explain every piece of jargon and every specific concept this prospect actually used in their own words — plus anything closely related that will likely come up on the call.
+    prompt = `You are briefing a sales closer who is NOT an expert in this field. Explain every piece of jargon and concept this prospect actually used — plus anything closely related that will likely come up.
 
-STEP 1 — SCAN for all field-specific terms, jargon, goals, and concepts mentioned anywhere in the prospect profile below. Do not guess or add generic terms — only extract what is explicitly present or directly implied.
+SCAN the prospect profile for all field-specific terms, jargon, goals, and concepts. Only extract what is explicitly present or directly implied.
 
 PROSPECT PROFILE:
 Name: ${p.name}
@@ -1680,25 +1148,23 @@ Goal/offer: ${p.offer || ''}
 Notes: ${p.notes || ''}
 Style: ${p.style || ''}
 
-STEP 2 — For every term you found, plus any closely related concepts they will almost certainly bring up given their stated goals, write a briefing entry.
-
 INFLUENCER CONTEXT:
-${infName} (${infNiche})
-Themes: ${themes}
-Recent content: ${recentTitles}
+${infName} (${inf?.niche || ''})
+Themes: ${inf?.analysis?.themes?.join(', ') || ''}
+Recent content: ${(inf?.items || []).slice(0,10).map(i=>i.title).join(', ')}
 
-Format exactly like this — one entry per term, no skipping:
+Format — one entry per term, no skipping:
 
 🎓 FIELD BRIEFING — ${infName}
 
 [Exact term from prospect's profile]
-What it means: [1 sentence, plain English, written for someone who knows nothing about this field]
-How ${infName} sees it: [Their specific angle or philosophy on this based on their content and niche — not generic, tied to their approach]
-What to say on the call: [A natural, conversational line the closer can use if this comes up — not salesy, sounds like a real person]
+What it means: [1 sentence, plain English, zero jargon]
+How ${infName} sees it: [Their specific angle based on their content — 1-2 sentences]
+What to say on the call: [A natural conversational line the closer can use]
 
 ---
 
-Be exhaustive — if Ryan says "cut/fat loss phase leading into a long bulk" and "competition prep" and "shredded", ALL of those need entries. Do not group them together. Each term gets its own full entry.`;
+Be exhaustive. Each term gets its own full entry.`;
   }
 
   try {
@@ -1719,39 +1185,28 @@ async function runFollowup(mode) {
   if (!id) { alert('Select a prospect first.'); return; }
   const transcript = document.getElementById('fu-transcript').value.trim();
   if (!transcript) { alert('Paste the Fathom transcript first.'); return; }
-
   const p = DB.prospects.find(x => String(x.id) === id);
   if (!p) return;
   const goal = document.getElementById('fu-goal').value.trim();
   const ctx = buildProspectContext(p);
   const bank = buildContentBank(p);
-
   const outId = 'fu-out-' + mode;
   const labels = { sequence: 'Follow-up sequence', content14: '14 content pieces', analysis: 'Call analysis' };
   const container = document.getElementById('followup-outputs');
-
   let block = document.getElementById(outId);
-  if (!block) {
-    block = document.createElement('div');
-    block.style.marginBottom = '1rem';
-    block.id = outId;
-    container.appendChild(block);
-  }
+  if (!block) { block = document.createElement('div'); block.style.marginBottom = '1rem'; block.id = outId; container.appendChild(block); }
+  const obBtn = (mode === 'sequence' || mode === 'content14') ? `<button class="copy-btn" onclick="promptSaveToOutbox('${outId}-text','${p.id}','${p.name.replace(/'/g,"\\'")}')">→ Outbox</button>` : '';
+  const emailBtn = mode === 'sequence' ? `<button class="copy-btn" onclick="emailSequence('${outId}-text', '${p.name}')">📧 Email to me</button>` : '';
+  block.innerHTML = `<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;flex-wrap:wrap;gap:6px"><div class="sec-label" style="margin:0">${labels[mode]}</div><div style="display:flex;gap:5px">${obBtn}${emailBtn}<button class="copy-btn" onclick="copyEl('${outId}-text')">Copy</button></div></div><div id="${outId}-text" class="ai-out loading">Generating…</div>`;
 
-  const copyBtn = mode === 'sequence'
-    ? `<button class="copy-btn" onclick="copyEl('${outId}-text')">Copy</button>
-       <button class="copy-btn" onclick="emailSequence('${outId}-text', '${p.name}')">📧 Email to me</button>`
-    : `<button class="copy-btn" onclick="copyEl('${outId}-text')">Copy</button>`;
-
-  block.innerHTML = `<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;flex-wrap:wrap;gap:6px"><div class="sec-label" style="margin:0">${labels[mode]}</div><div style="display:flex;gap:6px">${copyBtn}</div></div><div id="${outId}-text" class="ai-out loading">Generating…</div>`;
+  const EMAIL_TONE = `EMAIL VERSION tone rules: write it EXACTLY like the text version. Same casual voice, same short sentences. NO greeting ("Hi [name],"), NO sign-off ("Best,"), NO email structure. Just the subject line, then the message as you'd text it. If it reads like a newsletter, delete and rewrite.`;
 
   let prompt = '';
-
   if (mode === 'sequence') {
     const sensitivityResult = await analyzeSensitivity(p);
     const safetyInstructions = buildSafetyInstructions(sensitivityResult);
     const testimonialCtx = buildTestimonialContext(p);
-    prompt = `You are an expert sales closer. Build a complete post-call follow-up sequence for this prospect.
+    prompt = `You are an expert sales closer. Build a complete post-call follow-up sequence.
 
 ${ctx}
 ${goal ? '\nCall goal: ' + goal : ''}
@@ -1761,45 +1216,37 @@ ${transcript.slice(0, 3000)}
 
 ${bank}${testimonialCtx}${safetyInstructions}
 
-Build a follow-up sequence with 7 touchpoints. For each touchpoint output exactly this structure:
+Build 7 touchpoints. For each output exactly this structure:
 
 ---
-📌 TOUCHPOINT [1-7] — [label based on intent, NOT time: e.g. "Same-day check-in", "Short follow-up", "Value drop", "Reframe", "Story share", "Objection revisit", "Final touch"]
-🎯 GOAL: [one sentence — what this message is trying to do]
+📌 TOUCHPOINT [1-7] — [intent label: "Same-day check-in", "Short follow-up", "Value drop", "Reframe", "Story share", "Objection revisit", "Final touch"]
+🎯 GOAL: [one sentence]
 
 📱 TEXT VERSION:
-[2-4 sentences, casual, like you're texting a friend. Incomplete thoughts fine. No "I hope this finds you well", no "I wanted to reach out", no "I truly believe". Use the prospect's actual name and real specifics from the call. Never use the word "just".]
+[2-4 sentences. Casual, like texting a friend. Incomplete thoughts fine. Use the prospect's name and real specifics from the call. Never "just".]
 
 📧 EMAIL VERSION:
-Subject: [short, non-salesy subject line]
-[4-6 sentences, same message, different framing. More structured but still conversational. Reads like a real person, not a sales sequence.]
+Subject: [3-5 words, lowercase, personal]
+[Same casual voice as the text. NO greeting, NO sign-off. Same message, same tone, in email format.]
 
-📎 CONTENT TO ATTACH: [title + URL from the content bank if relevant, otherwise "None"]
-WHY: [one sentence on why this content fits this specific touchpoint]
+📎 CONTENT TO ATTACH: [title + URL, or "None"]
+WHY: [one sentence]
 ---
 
-Cover these 7 touchpoints in order:
-1. Same-day check-in
-2. Short follow-up
-3. Value drop
-4. Reframe or objection revisit
-5. Story / social proof (use transformation story if available)
-6. Perspective shift
-7. Final touch
+Cover: Same-day check-in, Short follow-up, Value drop, Reframe/objection revisit, Story/social proof, Perspective shift, Final touch.
 
 Rules:
-- NO temporal references anywhere — no days of the week, no dates, no "tomorrow", no "Monday", no "Day 3". Labels based on intent only.
+- NO temporal references — no days, no dates, no "tomorrow", no "Monday". Intent labels only.
 - Each touchpoint must reference something SPECIFIC from the call
-- Use NEPQ language: surface consequences and identity, don't push features
-- Never use the word "just"
-- Vary the opening and angle every single touchpoint — no repeated hooks
-- TONE: write like a real human who genuinely cares, not a marketer. If it reads like a template, rewrite it.`;
-
+- Use NEPQ language — surface consequences and identity
+- Never use "just"
+- Vary the opening every touchpoint
+- ${EMAIL_TONE}`;
   } else if (mode === 'content14') {
     const sensitivityResult14 = await analyzeSensitivity(p);
     const safetyInstructions14 = buildSafetyInstructions(sensitivityResult14);
     const testimonialCtx14 = buildTestimonialContext(p);
-    prompt = `You are an expert sales coach. Based on this call transcript, generate 14 content pieces from the content bank that could be sent to this prospect at any point in the follow-up sequence.
+    prompt = `You are an expert sales coach. Generate 14 content pieces this prospect could be sent at any point in follow-up.
 
 ${ctx}
 ${goal ? '\nCall goal: ' + goal : ''}
@@ -1809,23 +1256,22 @@ ${transcript.slice(0, 3000)}
 
 ${bank}${testimonialCtx14}${safetyInstructions14}
 
-Generate exactly 14 content recommendations. For each one:
+Generate exactly 14 content recommendations:
 
 ---
 #[1-14] [Content title]
 URL: [full URL]
-WHY FOR THIS PERSON: [1-2 sentences — connect it specifically to something from the call or their profile]
-BEST MOMENT TO USE: [intent-based label, NO temporal references — e.g. "After price objection", "If they go quiet", "After they mention X", "As an opener", "To rebuild momentum", "As final push"]
+WHY FOR THIS PERSON: [1-2 sentences — connect to something from the call]
+BEST MOMENT: [intent label, NO temporal references — e.g. "After price objection", "If they go quiet", "As an opener", "After they mention X"]
 
-📱 TEXT: [1-3 sentences casual text/DM introducing this piece — human, not salesy]
-📧 EMAIL SUBJECT: [short subject line]
-📧 EMAIL BODY: [3-4 sentences email version — same warmth, slightly more structured]
+📱 TEXT: [1-3 sentences casual text/DM — human, not salesy]
+📧 EMAIL SUBJECT: [3-5 words, lowercase]
+📧 EMAIL BODY: [Same casual voice as the text. NO greeting, NO sign-off. Just the message.]
 ---
 
-Include a variety of content types: YouTube videos, podcast episodes, blog posts, and transformation stories if available. Each recommendation must be meaningfully different in angle and purpose. No filler — every piece must be genuinely relevant to what came up on this specific call.`;
-
+Include variety: YouTube, podcast, blog, transformation stories. Each must be genuinely relevant to what came up on this specific call.`;
   } else if (mode === 'analysis') {
-    prompt = `Analyze this sales call transcript and give a closer honest feedback.
+    prompt = `Analyze this sales call and give honest feedback.
 
 ${ctx}
 ${goal ? '\nCall goal: ' + goal : ''}
@@ -1837,10 +1283,10 @@ Cover:
 1. WHAT WORKED — moments of rapport, good questions, effective frames
 2. WHERE YOU LOST THEM — moments of resistance, missed signals, weak responses
 3. THE REAL OBJECTION — what was the actual blocker (not just what they said)?
-4. WHAT TO DO NEXT — specific next action to move this forward, including an NEPQ or SPIN question to open with on the next touch
-5. COACHING NOTE — one specific NEPQ or SPIN technique to sharpen based on what happened on this call
+4. WHAT TO DO NEXT — specific next action, including an NEPQ or SPIN question to open with on the next touch
+5. COACHING NOTE — one specific NEPQ or SPIN technique to sharpen based on this call
 
-Be direct and honest. This closer wants to improve.`;
+Be direct and honest.`;
   }
 
   try {
@@ -1857,80 +1303,41 @@ Be direct and honest. This closer wants to improve.`;
 
 // ─── HISTORY ──────────────────────────────────────────────────────────────────
 function saveToHistory(entry) {
-  entry.id = Date.now();
-  entry.timestamp = new Date().toISOString();
-  // Store call date for digest grouping (date of the call, not when saved)
+  entry.id = Date.now(); entry.timestamp = new Date().toISOString();
   if (!entry.callDate) entry.callDate = new Date().toISOString().slice(0, 10);
   DB.history.unshift(entry);
   if (DB.history.length > 200) DB.history = DB.history.slice(0, 200);
   saveDB();
 }
 
-// ─── EMAIL SEQUENCE ───────────────────────────────────────────────────────────
 function emailSequence(elId, prospectName) {
   const text = document.getElementById(elId)?.textContent || '';
-  if (!text || text === 'Generating…') { alert('Wait for the sequence to finish generating.'); return; }
+  if (!text || text === 'Generating\u2026') { alert('Wait for generation to finish.'); return; }
   const subject = encodeURIComponent(`Follow-up sequence — ${prospectName}`);
   const body = encodeURIComponent(text);
-  window.location.href = `mailto:?subject=${subject}&body=${body}`;
+  if (body.length < 1800) window.open(`mailto:?subject=${subject}&body=${body}`, '_blank');
+  else navigator.clipboard.writeText(text).then(()=>{ alert('Sequence copied to clipboard — email will open, paste the content.'); window.open(`mailto:?subject=${subject}`, '_blank'); });
 }
 
-// ─── DAILY DIGEST ─────────────────────────────────────────────────────────────
 function buildDailyDigest() {
   const today = new Date().toISOString().slice(0, 10);
   const todayLabel = new Date().toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
-
-  // Gather today's pre-call preps
   const preps = DB.history.filter(h => h.type === 'strategy' && h.timestamp?.slice(0, 10) === today);
-  // Gather sequences due today (Day 0 items from sequences saved today, or sequences from recent days)
-  const sequences = DB.history.filter(h => h.type === 'sequence' && h.timestamp?.slice(0, 10) === today);
-  // Also grab sequences from last 14 days that have steps due today
-  const recentSeqs = DB.history.filter(h => {
-    if (h.type !== 'sequence') return false;
-    const saved = new Date(h.timestamp);
-    const daysSince = Math.floor((Date.now() - saved) / 86400000);
-    return daysSince >= 0 && daysSince <= 14;
-  });
-
-  let digest = `CLOSER'S DAILY DIGEST — ${todayLabel}\n`;
-  digest += '='.repeat(50) + '\n\n';
-
-  if (preps.length) {
-    digest += '📋 PRE-CALL PREP\n' + '-'.repeat(30) + '\n\n';
-    for (const p of preps) {
-      digest += `👤 ${p.prospectName}\n`;
-      if (p.goal) digest += `Goal: ${p.goal}\n`;
-      digest += p.content + '\n\n';
-      digest += '-'.repeat(20) + '\n\n';
-    }
-  }
-
+  const recentSeqs = DB.history.filter(h => { if (h.type !== 'sequence') return false; const daysSince = Math.floor((Date.now() - new Date(h.timestamp)) / 86400000); return daysSince >= 0 && daysSince <= 14; });
+  let digest = `CLOSER'S DAILY DIGEST — ${todayLabel}\n${'='.repeat(50)}\n\n`;
+  if (preps.length) { digest += '📋 PRE-CALL PREP\n' + '-'.repeat(30) + '\n\n'; for (const p of preps) { digest += `👤 ${p.prospectName}\n${p.goal?'Goal: '+p.goal+'\n':''}${p.content}\n\n${'-'.repeat(20)}\n\n`; } }
   if (recentSeqs.length) {
     digest += '\n📨 FOLLOW-UP SEQUENCES — MESSAGES DUE TODAY\n' + '-'.repeat(30) + '\n\n';
     for (const seq of recentSeqs) {
-      const saved = new Date(seq.timestamp);
-      const daysSince = Math.floor((Date.now() - saved) / 86400000);
-      // Extract day blocks that match today
+      const daysSince = Math.floor((Date.now() - new Date(seq.timestamp)) / 86400000);
+      const dueDays = [0,1,3,5,7,10,14];
+      if (!dueDays.includes(daysSince)) continue;
       const dayBlocks = seq.content.split('---').filter(b => b.trim());
-      const dueDays = [0, 1, 3, 5, 7, 10, 14];
-      const dueToday = dueDays.includes(daysSince);
-      if (!dueToday) continue;
-      const matchingBlock = dayBlocks.find(b => {
-        const m = b.match(/DAY\s*(\d+)/i);
-        return m && parseInt(m[1]) === daysSince;
-      });
-      if (matchingBlock) {
-        digest += `👤 ${seq.prospectName} — Day ${daysSince}\n`;
-        digest += matchingBlock.trim() + '\n\n';
-        digest += '-'.repeat(20) + '\n\n';
-      }
+      const matchingBlock = dayBlocks.find(b => { const m = b.match(/DAY\s*(\d+)/i); return m && parseInt(m[1]) === daysSince; });
+      if (matchingBlock) { digest += `👤 ${seq.prospectName} — Day ${daysSince}\n${matchingBlock.trim()}\n\n${'-'.repeat(20)}\n\n`; }
     }
   }
-
-  if (!preps.length && !recentSeqs.length) {
-    digest += 'No calls or follow-ups scheduled for today.\n';
-  }
-
+  if (!preps.length && !recentSeqs.length) digest += 'No calls or follow-ups scheduled for today.\n';
   return digest;
 }
 
@@ -1938,21 +1345,9 @@ function openDailyDigest() {
   const digest = buildDailyDigest();
   const today = new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
   const subject = encodeURIComponent(`Closer's daily digest — ${today}`);
-  // mailto has a ~2000 char URL limit in most browsers — truncate body if needed
   const fullBody = encodeURIComponent(digest);
-  if (fullBody.length < 1800) {
-    window.open(`mailto:?subject=${subject}&body=${fullBody}`, '_blank');
-  } else {
-    // Body too long — copy to clipboard and open empty email
-    navigator.clipboard.writeText(digest).then(() => {
-      alert('Digest copied to clipboard!\n\nYour email client will open — paste the digest into the body.');
-      window.open(`mailto:?subject=${subject}`, '_blank');
-    }).catch(() => {
-      // Fallback: show in a textarea for manual copy
-      const win = window.open('', '_blank');
-      win.document.write('<pre style="font-family:monospace;padding:20px;white-space:pre-wrap">' + digest.replace(/</g,'&lt;') + '</pre>');
-    });
-  }
+  if (fullBody.length < 1800) window.open(`mailto:?subject=${subject}&body=${fullBody}`, '_blank');
+  else navigator.clipboard.writeText(digest).then(() => { alert('Digest copied to clipboard!\n\nYour email client will open — paste the digest into the body.'); window.open(`mailto:?subject=${subject}`, '_blank'); }).catch(() => { const win = window.open('', '_blank'); win.document.write('<pre style="font-family:monospace;padding:20px;white-space:pre-wrap">' + digest.replace(/</g,'&lt;') + '</pre>'); });
 }
 
 function refreshHistoryFilters() {
@@ -1968,476 +1363,160 @@ function renderHistory() {
   if (!el) return;
   const pFilter = document.getElementById('hist-filter-prospect')?.value || '';
   const tFilter = document.getElementById('hist-filter-type')?.value || '';
-
   let items = DB.history;
   if (pFilter) items = items.filter(h => String(h.prospectId) === pFilter);
   if (tFilter) items = items.filter(h => h.type === tFilter);
-
   if (!items.length) { el.innerHTML = '<div class="empty">No history yet.</div>'; return; }
-
-  const typeLabels = { strategy: 'Pre-call strategy', content: 'Content recs', 'followup-content': 'Follow-up content', 'followup-email': 'Follow-up message', 'followup-analysis': 'Call analysis' };
-  const typeBadge = { strategy: 'badge-purple', content: 'badge-teal', 'followup-content': 'badge-blue', 'followup-email': 'badge-green', 'followup-analysis': 'badge-amber' };
-
+  const typeLabels = { strategy: 'Pre-call strategy', content: 'Content recs', sequence: 'Follow-up sequence', content14: '14 content pieces', analysis: 'Call analysis', briefing: 'Field briefing' };
+  const typeBadge = { strategy: 'badge-purple', content: 'badge-teal', sequence: 'badge-blue', content14: 'badge-blue', analysis: 'badge-amber', briefing: 'badge-green' };
   el.innerHTML = items.map(h => {
     const dt = new Date(h.timestamp);
     const dateStr = dt.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) + ' ' + dt.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
-    return `<div class="history-item">
-      <div class="history-meta">
-        <span class="badge ${typeBadge[h.type] || 'badge-gray'}">${typeLabels[h.type] || h.type}</span>
-        <span style="font-weight:500;color:var(--text2)">${h.prospectName}</span>
-        <span>${dateStr}</span>
-        ${h.goal ? `<span>Goal: ${h.goal}</span>` : ''}
-      </div>
-      <div class="history-preview">${h.content.slice(0, 200)}…</div>
-      <div style="margin-top:6px;display:flex;gap:6px">
-        <button class="copy-btn" onclick="copyText('${h.id}')">Copy full</button>
-        <button class="copy-btn" onclick="expandHistory('${h.id}')">View full</button>
-      </div>
-      <div id="hist-expand-${h.id}" style="display:none;margin-top:8px">
-        <div class="ai-out" style="font-size:12px">${h.content}</div>
-      </div>
-    </div>`;
+    return `<div class="history-item"><div class="history-meta"><span class="badge ${typeBadge[h.type]||'badge-gray'}">${typeLabels[h.type]||h.type}</span><span style="font-weight:500;color:var(--text2)">${h.prospectName}</span><span>${dateStr}</span>${h.goal?`<span>Goal: ${h.goal}</span>`:''}</div><div class="history-preview">${h.content.slice(0,200)}…</div><div style="margin-top:6px;display:flex;gap:6px"><button class="copy-btn" onclick="copyHistItem('${h.id}')">Copy full</button><button class="copy-btn" onclick="expandHistory('${h.id}')">View full</button></div><div id="hist-expand-${h.id}" style="display:none;margin-top:8px"><div class="ai-out" style="font-size:12px">${h.content}</div></div></div>`;
   }).join('');
 }
 
-function expandHistory(id) {
-  const el = document.getElementById('hist-expand-' + id);
-  if (el) el.style.display = el.style.display === 'none' ? 'block' : 'none';
-}
-
-function copyText(histId) {
-  const h = DB.history.find(x => String(x.id) === String(histId));
-  if (h) navigator.clipboard.writeText(h.content).catch(() => {});
-}
-
-function clearHistory() {
-  if (!confirm('Delete all history?')) return;
-  DB.history = []; saveDB(); renderHistory();
-}
+function expandHistory(id) { const el = document.getElementById('hist-expand-' + id); if (el) el.style.display = el.style.display === 'none' ? 'block' : 'none'; }
+function copyHistItem(histId) { const h = DB.history.find(x => String(x.id) === String(histId)); if (h) navigator.clipboard.writeText(h.content).catch(()=>{}); }
+function clearHistory() { if (!confirm('Delete all history?')) return; DB.history = []; saveDB(); renderHistory(); }
 
 // ─── UTILS ────────────────────────────────────────────────────────────────────
-function copyEl(id) {
-  const el = document.getElementById(id);
-  if (el) navigator.clipboard.writeText(el.textContent).catch(() => {});
-}
+function copyEl(id) { const el = document.getElementById(id); if (el) navigator.clipboard.writeText(el.textContent).catch(()=>{}); }
 
 function exportData() {
-  const blob = new Blob([JSON.stringify(DB, null, 2)], { type: 'application/json' });
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = 'closer-hq-backup-' + new Date().toISOString().slice(0,10) + '.json';
-  a.click();
+  const data = { ...DB, transformations: DB.transformations, outbox: DB.outbox };
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'closer-hq-backup-' + new Date().toISOString().slice(0,10) + '.json'; a.click();
 }
 
 function importData(event) {
-  const file = event.target.files[0];
-  if (!file) return;
+  const file = event.target.files[0]; if (!file) return;
   const reader = new FileReader();
-  reader.onload = e => {
-    try {
-      const data = JSON.parse(e.target.result);
-      if (confirm('This will replace all current data. Continue?')) {
-        DB = { ...DB, ...data };
-        saveDB(); location.reload();
-      }
-    } catch(err) { alert('Invalid backup file.'); }
-  };
+  reader.onload = e => { try { const data = JSON.parse(e.target.result); if (confirm('This will replace all current data. Continue?')) { DB = { ...DB, ...data }; saveDB(); saveTransformationsDB(); saveOutboxDB(); location.reload(); } } catch(err) { alert('Invalid backup file.'); } };
   reader.readAsText(file);
 }
 
 // ─── SOCIAL FEED ─────────────────────────────────────────────────────────────
 function renderFeedPanel() {
-  // Populate influencer select
   const sel = document.getElementById('feed-inf-sel');
-  if (sel) {
-    sel.innerHTML = '<option value="">— all influencers —</option>' + DB.influencers.map(i => `<option value="${i.id}">${i.name}</option>`).join('');
-  }
+  if (sel) sel.innerHTML = '<option value="">— all influencers —</option>' + DB.influencers.map(i => `<option value="${i.id}">${i.name}</option>`).join('');
   renderFeedRaw();
 }
 
 function renderFeedRaw() {
-  const el = document.getElementById('feed-raw');
-  if (!el) return;
+  const el = document.getElementById('feed-raw'); if (!el) return;
   const infId = document.getElementById('feed-inf-sel')?.value || '';
   const days = parseInt(document.getElementById('feed-window')?.value || '14');
   const cutoff = days > 0 ? new Date(Date.now() - days * 86400000) : null;
-
   const infs = infId ? DB.influencers.filter(i => String(i.id) === infId) : DB.influencers;
   let allPosts = [];
-  for (const inf of infs) {
-    const posts = (inf.socialItems || []).filter(p => {
-      if (!cutoff) return true;
-      if (!p.date) return true;
-      return new Date(p.date) >= cutoff;
-    }).map(p => ({ ...p, infName: inf.name }));
-    allPosts = [...allPosts, ...posts];
-  }
-
-  if (!allPosts.length) {
-    el.innerHTML = `<div class="empty">No posts found for this time window. Sync social content first.</div>`;
-    return;
-  }
-
-  // Group by influencer
+  for (const inf of infs) { const posts = (inf.socialItems || []).filter(p => { if (!cutoff) return true; if (!p.date) return true; return new Date(p.date) >= cutoff; }).map(p => ({ ...p, infName: inf.name })); allPosts = [...allPosts, ...posts]; }
+  if (!allPosts.length) { el.innerHTML = `<div class="empty">No posts found for this time window. Sync social content first.</div>`; return; }
   const byInf = {};
-  for (const p of allPosts) {
-    if (!byInf[p.infName]) byInf[p.infName] = [];
-    byInf[p.infName].push(p);
-  }
-
-  el.innerHTML = Object.entries(byInf).map(([name, posts]) => `
-    <div class="card" style="margin-bottom:.75rem">
-      <div style="font-weight:600;font-size:13px;margin-bottom:8px">${name} <span style="font-weight:400;color:var(--text3)">(${posts.length} posts)</span></div>
-      ${posts.slice(0, 10).map(p => `
-        <div class="item-row">
-          <span class="badge badge-purple" style="flex-shrink:0;font-size:9px">${p.postType || 'IG'}</span>
-          <div class="item-title">
-            <span>${p.desc ? p.desc.slice(0, 120) + (p.desc.length > 120 ? '...' : '') : p.title}</span>
-            <div class="item-meta">${p.date || ''}</div>
-          </div>
-        </div>`).join('')}
-      ${posts.length > 10 ? `<div style="font-size:11px;color:var(--text3);margin-top:4px">+ ${posts.length - 10} more posts</div>` : ''}
-    </div>`).join('');
+  for (const p of allPosts) { if (!byInf[p.infName]) byInf[p.infName] = []; byInf[p.infName].push(p); }
+  el.innerHTML = Object.entries(byInf).map(([name, posts]) => `<div class="card" style="margin-bottom:.75rem"><div style="font-weight:600;font-size:13px;margin-bottom:8px">${name} <span style="font-weight:400;color:var(--text3)">(${posts.length} posts)</span></div>${posts.slice(0,10).map(p=>`<div class="item-row"><span class="badge badge-purple" style="flex-shrink:0;font-size:9px">${p.postType||'IG'}</span><div class="item-title"><span>${p.desc?p.desc.slice(0,120)+(p.desc.length>120?'...':''):p.title}</span><div class="item-meta">${p.date||''}</div></div></div>`).join('')}${posts.length>10?`<div style="font-size:11px;color:var(--text3);margin-top:4px">+ ${posts.length-10} more posts</div>`:''}</div>`).join('');
 }
 
 async function generateFeedRecap() {
   const infId = document.getElementById('feed-inf-sel')?.value || '';
   const days = parseInt(document.getElementById('feed-window')?.value || '14');
   const cutoff = days > 0 ? new Date(Date.now() - days * 86400000) : null;
-
   const infs = infId ? DB.influencers.filter(i => String(i.id) === infId) : DB.influencers;
   let allPosts = [];
-  for (const inf of infs) {
-    const posts = (inf.socialItems || []).filter(p => {
-      if (!cutoff || !p.date) return !cutoff;
-      return new Date(p.date) >= cutoff;
-    }).map(p => ({ ...p, infName: inf.name }));
-    allPosts = [...allPosts, ...posts];
-  }
-
+  for (const inf of infs) { const posts = (inf.socialItems || []).filter(p => { if (!cutoff || !p.date) return !cutoff; return new Date(p.date) >= cutoff; }).map(p => ({ ...p, infName: inf.name })); allPosts = [...allPosts, ...posts]; }
   if (!allPosts.length) { alert('No posts to recap for this window.'); return; }
   if (!getApiKey()) { alert('Add your API key in Settings first.'); return; }
-
   document.getElementById('feed-recap-section').style.display = 'block';
   const out = document.getElementById('feed-recap-out');
-  out.className = 'ai-out loading';
-  out.textContent = 'Generating recap...';
-
+  out.className = 'ai-out loading'; out.textContent = 'Generating recap...';
   const postText = allPosts.slice(0, 40).map(p => `[${p.infName}] ${p.postType || 'Post'}: ${p.desc || p.title}`).join('\n');
   const windowLabel = days > 0 ? `last ${days} days` : 'all time';
-
-  const prompt = `You are analyzing recent Instagram posts from fitness/health influencers to brief a sales closer.
-
-Posts from the ${windowLabel}:
-${postText}
-
-For each influencer, produce a tight content recap using this format:
-
-## [Influencer Name]
-
-**🎯 Main focus this period**
-One sentence on what they've been pushing most.
-
-**😣 Problems they're highlighting**
-• [problem or pain point from posts]
-• [problem or pain point from posts]
-
-**💡 Key messages / learnings**
-• [key angle, lesson, or idea from posts]
-• [key angle, lesson, or idea from posts]
-
-**❓ Useful angles for a closer**
-• [how a closer could reference this content in a call — specific and tactical]
-• [another angle]
-
-Keep each section to 2-3 bullets max. Be specific to the actual post content, not generic.`;
-
-  try {
-    const text = await callAI(prompt, 1200);
-    out.className = 'ai-out';
-    out.textContent = text;
-  } catch(e) {
-    out.className = 'ai-out';
-    out.textContent = 'Error: ' + e.message;
-  }
+  const prompt = `You are analyzing recent Instagram posts from fitness/health influencers to brief a sales closer.\n\nPosts from the ${windowLabel}:\n${postText}\n\nFor each influencer:\n\n## [Influencer Name]\n\n**🎯 Main focus this period**\nOne sentence on what they've been pushing most.\n\n**😣 Problems they're highlighting**\n• [problem]\n• [problem]\n\n**💡 Key messages / learnings**\n• [key angle]\n• [key angle]\n\n**❓ Useful angles for a closer**\n• [tactical angle]\n• [another angle]\n\nKeep each section to 2-3 bullets max. Be specific to the actual post content.`;
+  try { const text = await callAI(prompt, 1200); out.className = 'ai-out'; out.textContent = text; }
+  catch(e) { out.className = 'ai-out'; out.textContent = 'Error: ' + e.message; }
 }
 
 // ─── TRANSFORMATIONS ─────────────────────────────────────────────────────────
-let tfBeforeImg = null;
-let tfAfterImg = null;
-let tfMainImg = null;
-let tfLastStory = '';
+let tfBeforeImg = null, tfAfterImg = null, tfMainImg = null, tfLastStory = '';
 
 function compressImage(file, maxDim = 600, quality = 0.6) {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
-    reader.onload = e => {
-      const img = new Image();
-      img.onload = () => {
-        let { width, height } = img;
-        if (width > height && width > maxDim) { height = Math.round(height * maxDim / width); width = maxDim; }
-        else if (height > maxDim) { width = Math.round(width * maxDim / height); height = maxDim; }
-        const canvas = document.createElement('canvas');
-        canvas.width = width; canvas.height = height;
-        canvas.getContext('2d').drawImage(img, 0, 0, width, height);
-        resolve(canvas.toDataURL('image/jpeg', quality));
-      };
-      img.onerror = reject;
-      img.src = e.target.result;
-    };
-    reader.onerror = reject;
-    reader.readAsDataURL(file);
+    reader.onload = e => { const img = new Image(); img.onload = () => { let {width,height} = img; if(width>height&&width>maxDim){height=Math.round(height*maxDim/width);width=maxDim;}else if(height>maxDim){width=Math.round(width*maxDim/height);height=maxDim;} const canvas=document.createElement('canvas');canvas.width=width;canvas.height=height;canvas.getContext('2d').drawImage(img,0,0,width,height);resolve(canvas.toDataURL('image/jpeg',quality)); }; img.onerror=reject; img.src=e.target.result; }; reader.onerror=reject; reader.readAsDataURL(file);
   });
 }
 
-async function handleTfImage(event, slot) {
-  const file = event.target.files[0];
-  if (!file) return;
-  const dataUrl = await compressImage(file);
-  if (slot === 'main') {
-    tfMainImg = dataUrl;
-    document.getElementById('tf-main-img').src = dataUrl;
-    document.getElementById('tf-main-img').style.display = 'block';
-    document.getElementById('tf-main-placeholder').style.display = 'none';
-  } else if (slot === 'before') {
-    tfBeforeImg = dataUrl;
-    document.getElementById('tf-before-img').src = dataUrl;
-    document.getElementById('tf-before-img').style.display = 'block';
-    document.getElementById('tf-before-placeholder').style.display = 'none';
-  } else {
-    tfAfterImg = dataUrl;
-    document.getElementById('tf-after-img').src = dataUrl;
-    document.getElementById('tf-after-img').style.display = 'block';
-    document.getElementById('tf-after-placeholder').style.display = 'none';
-  }
+function setTfImage(slot, dataUrl) {
+  if (slot === 'main') { tfMainImg = dataUrl; document.getElementById('tf-main-img').src = dataUrl; document.getElementById('tf-main-img').style.display = 'block'; document.getElementById('tf-main-placeholder').style.display = 'none'; }
+  else if (slot === 'before') { tfBeforeImg = dataUrl; document.getElementById('tf-before-img').src = dataUrl; document.getElementById('tf-before-img').style.display = 'block'; document.getElementById('tf-before-placeholder').style.display = 'none'; }
+  else { tfAfterImg = dataUrl; document.getElementById('tf-after-img').src = dataUrl; document.getElementById('tf-after-img').style.display = 'block'; document.getElementById('tf-after-placeholder').style.display = 'none'; }
 }
 
-// drag and drop for transformation images
-document.addEventListener('DOMContentLoaded', () => {
-  ['main','before','after'].forEach(slot => {
-    const zone = document.getElementById(`tf-${slot}-drop`);
-    if (!zone) return;
-    const bg = slot === 'main' ? '#fff' : 'var(--bg2)';
-    zone.addEventListener('dragover', e => { e.preventDefault(); zone.style.background = 'var(--blue-bg)'; });
-    zone.addEventListener('dragleave', () => { zone.style.background = bg; });
-    zone.addEventListener('drop', async e => {
-      e.preventDefault(); zone.style.background = bg;
-      const file = e.dataTransfer.files[0];
-      if (file && file.type.startsWith('image/')) {
-        const dataUrl = await compressImage(file);
-        if (slot === 'main') {
-          tfMainImg = dataUrl;
-          document.getElementById('tf-main-img').src = dataUrl;
-          document.getElementById('tf-main-img').style.display = 'block';
-          document.getElementById('tf-main-placeholder').style.display = 'none';
-        } else if (slot === 'before') {
-          tfBeforeImg = dataUrl;
-          document.getElementById('tf-before-img').src = dataUrl;
-          document.getElementById('tf-before-img').style.display = 'block';
-          document.getElementById('tf-before-placeholder').style.display = 'none';
-        } else {
-          tfAfterImg = dataUrl;
-          document.getElementById('tf-after-img').src = dataUrl;
-          document.getElementById('tf-after-img').style.display = 'block';
-          document.getElementById('tf-after-placeholder').style.display = 'none';
-        }
-      }
-    });
-  });
-});
+async function handleTfImage(event, slot) { const file = event.target.files[0]; if (!file) return; const dataUrl = await compressImage(file); setTfImage(slot, dataUrl); }
 
 async function generateTransformation(mode = 'story') {
   const infId = document.getElementById('tf-inf').value;
   const status = document.getElementById('tf-status');
-
   if (!infId) { status.textContent = 'Select an influencer first.'; status.style.color = 'var(--red-text)'; return; }
   if (!tfMainImg && !tfBeforeImg && !tfAfterImg) { status.textContent = 'Upload at least one photo.'; status.style.color = 'var(--red-text)'; return; }
   if (!getApiKey()) { status.textContent = 'Add your API key in Settings first.'; status.style.color = 'var(--red-text)'; return; }
-
   const inf = DB.influencers.find(i => String(i.id) === infId);
   const contextText = document.getElementById('tf-context').value.trim();
-
-  status.textContent = 'Analyzing photos and writing story...';
-  status.style.color = 'var(--text2)';
-
+  status.textContent = 'Analyzing photos...'; status.style.color = 'var(--text2)';
   const themes = inf?.analysis?.themes?.join(', ') || '';
   const frameworks = inf?.analysis?.frameworks?.join(', ') || '';
   const tone = inf?.analysis?.tone || '';
   const audience = inf?.analysis?.audience || '';
   const salesAngles = inf?.analysis?.salesAngles?.join('; ') || '';
   const recentCaptions = (inf?.socialItems || []).slice(0, 5).map(s => s.desc || s.title).filter(Boolean).join('\n---\n');
-
   let systemPrompt = '';
-
   if (mode === 'story') {
-    systemPrompt = `You are writing in the voice and style of ${inf?.name || 'a fitness influencer'} (${inf?.niche || ''}).
-
-Their content themes: ${themes}
-Their frameworks/methods: ${frameworks}
-Their tone: ${tone}
-Their audience: ${audience}
-Sales angles from their content: ${salesAngles}
-
-Sample of their actual recent captions (match this voice closely):
-${recentCaptions || 'none available'}
-
-Your task: write a short before/after transformation story based on the photos shown, in this influencer's exact voice and philosophy. This will be sent by a sales closer to a prospect as social proof during a sales conversation.
-
-${contextText ? 'Additional context provided: ' + contextText : ''}
-
-Output two things:
-
-1. STORY — a short transformation story (4-7 sentences) written exactly as ${inf?.name || 'this influencer'} would write it. Reference what you see in the photos (body composition changes, posture, visible results). Tie it to their philosophy/method — don't just describe the photos, frame the result the way this influencer frames results. Sound authentic, not like marketing copy.
-
-2. SEND MESSAGE — a short message (2-3 sentences) a closer could send alongside these photos to a prospect, introducing the story. Casual, human, not salesy. Something like "thought you'd want to see this..." but original and specific to the transformation shown.
-
-Format:
-STORY:
-[story]
-
-SEND MESSAGE:
-[message]`;
+    systemPrompt = `You are writing in the voice and style of ${inf?.name || 'a fitness influencer'} (${inf?.niche || ''}).\n\nThemes: ${themes}\nFrameworks: ${frameworks}\nTone: ${tone}\nAudience: ${audience}\nSales angles: ${salesAngles}\n\nSample captions:\n${recentCaptions || 'none available'}\n\n${contextText ? 'Context: ' + contextText : ''}\n\nWrite a short before/after transformation story in this influencer's exact voice. This will be sent as social proof during a sales conversation.\n\nOutput:\n\nSTORY:\n[4-7 sentences in the influencer's voice. Reference visible changes. Tie it to their philosophy.]\n\nSEND MESSAGE:\n[2-3 sentences a closer could send to introduce this. Casual, human, not salesy.]`;
   } else {
-    systemPrompt = `You are a body composition analyst reviewing transformation photos. This analysis is INTERNAL ONLY — for the sales closer's reference, never to be shared with the client.
-
-${contextText ? 'Context: ' + contextText : ''}
-
-Analyse the photos and provide:
-
-📊 VISUAL BODY FAT ESTIMATE
-Before: ~[X-Y]% (explain what visual cues suggest this)
-After: ~[X-Y]% (explain what visual cues suggest this)
-Estimated change: ~[X]% reduction
-
-Note: These are visual estimates only. Accuracy affected by lighting, angle, clothing, and hydration. Not a clinical measurement.
-
-💪 VISIBLE COMPOSITION CHANGES
-• [specific change — e.g. "Visible abdominal definition where previously none", "Shoulder/arm muscle separation now apparent"]
-• [specific change]
-• [specific change]
-
-📐 AREAS OF MOST CHANGE
-[Which body areas changed most visibly and what that suggests about the training/nutrition approach]
-
-⏱ ESTIMATED TIMEFRAME (if not provided)
-[Based on the degree of change visible, rough estimate of how long this likely took — only if context doesn't specify]
-
-🔍 PHOTO QUALITY NOTE
-[Flag anything that affects estimate accuracy — different lighting, angle changes between before/after, clothing differences, etc.]`;
+    systemPrompt = `You are a body composition analyst. This analysis is INTERNAL ONLY — never share with the client.\n\n${contextText ? 'Context: ' + contextText : ''}\n\n📊 VISUAL BODY FAT ESTIMATE\nBefore: ~[X-Y]% (visual cues)\nAfter: ~[X-Y]% (visual cues)\nEstimated change: ~[X]% reduction\n\nNote: Visual estimates only.\n\n💪 VISIBLE COMPOSITION CHANGES\n• [specific change]\n• [specific change]\n• [specific change]\n\n📐 AREAS OF MOST CHANGE\n[Which areas changed most and what it suggests]\n\n⏱ ESTIMATED TIMEFRAME\n[If not provided, estimate based on degree of change]\n\n🔍 PHOTO QUALITY NOTE\n[Flag anything affecting accuracy]`;
   }
-
   try {
-    // Build image content — supports single combined image or separate before/after
     const imgContent = [];
-    if (tfMainImg) {
-      imgContent.push({ type: 'text', text: 'This is a before/after transformation image (before on left, after on right):' });
-      imgContent.push({ type: 'image', source: { type: 'base64', media_type: tfMainImg.split(';')[0].split(':')[1], data: tfMainImg.split(',')[1] } });
-    } else {
-      if (tfBeforeImg) {
-        imgContent.push({ type: 'text', text: 'BEFORE photo:' });
-        imgContent.push({ type: 'image', source: { type: 'base64', media_type: tfBeforeImg.split(';')[0].split(':')[1], data: tfBeforeImg.split(',')[1] } });
-      }
-      if (tfAfterImg) {
-        imgContent.push({ type: 'text', text: 'AFTER photo:' });
-        imgContent.push({ type: 'image', source: { type: 'base64', media_type: tfAfterImg.split(';')[0].split(':')[1], data: tfAfterImg.split(',')[1] } });
-      }
-    }
-    imgContent.push({ type: 'text', text: 'Write the story and send message as instructed.' });
-
-    const res = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'x-api-key': getApiKey(), 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true' },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-6',
-        max_tokens: 800,
-        system: systemPrompt,
-        messages: [{ role: 'user', content: imgContent }]
-      })
-    });
+    if (tfMainImg) { imgContent.push({ type: 'text', text: 'This is a before/after transformation image (before on left, after on right):' }); imgContent.push({ type: 'image', source: { type: 'base64', media_type: tfMainImg.split(';')[0].split(':')[1], data: tfMainImg.split(',')[1] } }); }
+    else { if (tfBeforeImg) { imgContent.push({ type: 'text', text: 'BEFORE photo:' }); imgContent.push({ type: 'image', source: { type: 'base64', media_type: tfBeforeImg.split(';')[0].split(':')[1], data: tfBeforeImg.split(',')[1] } }); } if (tfAfterImg) { imgContent.push({ type: 'text', text: 'AFTER photo:' }); imgContent.push({ type: 'image', source: { type: 'base64', media_type: tfAfterImg.split(';')[0].split(':')[1], data: tfAfterImg.split(',')[1] } }); } }
+    imgContent.push({ type: 'text', text: 'Write as instructed.' });
+    const res = await fetch('https://api.anthropic.com/v1/messages', { method: 'POST', headers: { 'Content-Type': 'application/json', 'x-api-key': getApiKey(), 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true' }, body: JSON.stringify({ model: 'claude-sonnet-4-6', max_tokens: 800, system: systemPrompt, messages: [{ role: 'user', content: imgContent }] }) });
     const d = await res.json();
     if (d.error) throw new Error(d.error.message);
     const text = (d.content || []).map(b => b.text || '').join('');
-    tfLastStory = text;
-
-    if (mode === 'story') {
-      document.getElementById('tf-result-story').style.display = 'block';
-      document.getElementById('tf-story-out').textContent = text;
-      tfLastStory = text;
-      status.textContent = 'Story generated! Save to library to use in pre-call prep and follow-up sequences.';
-    } else {
-      document.getElementById('tf-result-analysis').style.display = 'block';
-      document.getElementById('tf-analysis-out').textContent = text;
-      status.textContent = 'Analysis complete — internal reference only.';
-    }
+    if (mode === 'story') { tfLastStory = text; document.getElementById('tf-result-story').style.display = 'block'; document.getElementById('tf-story-out').textContent = text; status.textContent = 'Story generated! Save to library to use in sequences.'; }
+    else { document.getElementById('tf-result-analysis').style.display = 'block'; document.getElementById('tf-analysis-out').textContent = text; status.textContent = 'Analysis complete — internal reference only.'; }
     status.style.color = 'var(--green-text)';
-  } catch(e) {
-    status.textContent = 'Error: ' + e.message;
-    status.style.color = 'var(--red-text)';
-  }
+  } catch(e) { status.textContent = 'Error: ' + e.message; status.style.color = 'var(--red-text)'; }
 }
 
 function saveTransformation() {
   const infId = document.getElementById('tf-inf').value;
   const inf = DB.influencers.find(i => String(i.id) === infId);
   const contextText = document.getElementById('tf-context').value.trim();
-
-  const entry = {
-    id: Date.now(),
-    infId, infName: inf?.name || '',
-    main: tfMainImg, before: tfBeforeImg, after: tfAfterImg,
-    context: contextText,
-    story: tfLastStory,
-    timestamp: new Date().toISOString()
-  };
-
+  const entry = { id: Date.now(), infId, infName: inf?.name || '', main: tfMainImg, before: tfBeforeImg, after: tfAfterImg, context: contextText, story: tfLastStory, timestamp: new Date().toISOString() };
   DB.transformations.unshift(entry);
   const ok = saveTransformationsDB();
   const status = document.getElementById('tf-status');
-
   if (!ok) {
-    // Try without images if storage is full
     DB.transformations.shift();
-    const lightEntry = { ...entry, before: null, after: null };
+    const lightEntry = { ...entry, before: null, after: null, main: null };
     DB.transformations.unshift(lightEntry);
     const ok2 = saveTransformationsDB();
-    if (ok2) {
-      status.textContent = 'Saved, but storage is full — photos were not stored (text only). Consider exporting and clearing old transformations.';
-      status.style.color = 'var(--amber-text)';
-    } else {
-      DB.transformations.shift();
-      status.textContent = 'Could not save — storage full. Try deleting old transformations first.';
-      status.style.color = 'var(--red-text)';
-      return;
-    }
-  } else {
-    status.textContent = 'Saved to library!';
-    status.style.color = 'var(--green-text)';
-  }
-
+    if (ok2) { status.textContent = 'Saved (text only — storage full). Consider exporting and clearing old transformations.'; status.style.color = 'var(--amber-text)'; }
+    else { DB.transformations.shift(); status.textContent = 'Could not save — storage full. Delete old transformations first.'; status.style.color = 'var(--red-text)'; return; }
+  } else { status.textContent = 'Saved to library!'; status.style.color = 'var(--green-text)'; }
   renderTfLibrary();
-  // Reset form
-  tfBeforeImg = null; tfAfterImg = null; tfLastStory = '';
-  tfMainImg = null;
-  document.getElementById('tf-main-img').style.display = 'none';
-  document.getElementById('tf-main-placeholder').style.display = 'block';
-  document.getElementById('tf-before-img').style.display = 'none';
-  document.getElementById('tf-before-placeholder').style.display = 'none';
-  document.getElementById('tf-after-img').style.display = 'none';
-  document.getElementById('tf-after-placeholder').style.display = 'none';
+  tfBeforeImg = null; tfAfterImg = null; tfMainImg = null; tfLastStory = '';
+  ['tf-main-img','tf-before-img','tf-after-img'].forEach(id => { const el = document.getElementById(id); if(el) el.style.display='none'; });
+  ['tf-main-placeholder','tf-before-placeholder','tf-after-placeholder'].forEach(id => { const el = document.getElementById(id); if(el) el.style.display=''; });
   document.getElementById('tf-context').value = '';
   document.getElementById('tf-result-story').style.display = 'none';
   document.getElementById('tf-result-analysis').style.display = 'none';
-  document.getElementById('tf-main-input').value = '';
-  document.getElementById('tf-before-input').value = '';
-  document.getElementById('tf-after-input').value = '';
+  ['tf-main-input','tf-before-input','tf-after-input'].forEach(id => { const el = document.getElementById(id); if(el) el.value=''; });
 }
 
-function deleteTransformation(id) {
-  if (!confirm('Delete this transformation?')) return;
-  DB.transformations = DB.transformations.filter(t => t.id !== id);
-  saveTransformationsDB();
-  renderTfLibrary();
-}
+function deleteTransformation(id) { if (!confirm('Delete?')) return; DB.transformations = DB.transformations.filter(t => t.id !== id); saveTransformationsDB(); renderTfLibrary(); }
 
 function renderTransformationsPanel() {
   const sel = document.getElementById('tf-inf');
@@ -2451,36 +1530,14 @@ function renderTfLibrary() {
   if (!el) return;
   if (!DB.transformations.length) { el.innerHTML = '<div class="empty">No transformations saved yet.</div>'; if (cnt) cnt.textContent = ''; return; }
   if (cnt) cnt.textContent = `(${DB.transformations.length})`;
-
   el.innerHTML = DB.transformations.map(t => {
     const date = new Date(t.timestamp).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
-    const images = t.main
-      ? `<img src="${t.main}" style="width:100%;border-radius:var(--radius);object-fit:cover;max-height:140px;margin-bottom:8px">`
-      : (t.before && t.after)
-      ? `<div style="display:flex;gap:6px;margin-bottom:8px"><img src="${t.before}" style="width:50%;border-radius:var(--radius);object-fit:cover;max-height:120px"><img src="${t.after}" style="width:50%;border-radius:var(--radius);object-fit:cover;max-height:120px"></div>`
-      : (t.before || t.after)
-      ? `<img src="${t.before || t.after}" style="width:100%;border-radius:var(--radius);object-fit:cover;max-height:120px;margin-bottom:8px">`
-      : '';
-    return `<div class="card">
-      <div class="card-header">
-        <div>
-          <span class="badge badge-blue">${t.infName}</span>
-          <span style="font-size:11px;color:var(--text3);margin-left:6px">${date}</span>
-        </div>
-        <button class="btn btn-sm btn-danger" onclick="deleteTransformation(${t.id})">✕</button>
-      </div>
-      ${images}
-      ${t.context ? `<div style="font-size:11px;color:var(--text3);margin-bottom:6px">${t.context}</div>` : ''}
-      <div style="font-size:12px;line-height:1.6;white-space:pre-wrap;max-height:150px;overflow-y:auto;background:var(--bg2);padding:8px 10px;border-radius:var(--radius)">${t.story}</div>
-      <button class="copy-btn" style="margin-top:6px" onclick="copyTfStory(${t.id})">Copy</button>
-    </div>`;
+    const images = t.main ? `<img src="${t.main}" style="width:100%;border-radius:var(--radius);object-fit:cover;max-height:140px;margin-bottom:8px">` : (t.before && t.after) ? `<div style="display:flex;gap:6px;margin-bottom:8px"><img src="${t.before}" style="width:50%;border-radius:var(--radius);object-fit:cover;max-height:120px"><img src="${t.after}" style="width:50%;border-radius:var(--radius);object-fit:cover;max-height:120px"></div>` : (t.before || t.after) ? `<img src="${t.before||t.after}" style="width:100%;border-radius:var(--radius);object-fit:cover;max-height:120px;margin-bottom:8px">` : '';
+    return `<div class="card"><div class="card-header"><div><span class="badge badge-blue">${t.infName}</span><span style="font-size:11px;color:var(--text3);margin-left:6px">${date}</span></div><button class="btn btn-sm btn-danger" onclick="deleteTransformation(${t.id})">✕</button></div>${images}${t.context?`<div style="font-size:11px;color:var(--text3);margin-bottom:6px">${t.context}</div>`:''}<div style="font-size:12px;line-height:1.6;white-space:pre-wrap;max-height:150px;overflow-y:auto;background:var(--bg2);padding:8px 10px;border-radius:var(--radius)">${t.story}</div><button class="copy-btn" style="margin-top:6px" onclick="copyTfStory(${t.id})">Copy</button></div>`;
   }).join('');
 }
 
-function copyTfStory(id) {
-  const t = DB.transformations.find(x => x.id === id);
-  if (t) navigator.clipboard.writeText(t.story).catch(() => {});
-}
+function copyTfStory(id) { const t = DB.transformations.find(x => x.id === id); if (t) navigator.clipboard.writeText(t.story).catch(()=>{}); }
 
 // ─── INIT ─────────────────────────────────────────────────────────────────────
 renderInfluencers();
