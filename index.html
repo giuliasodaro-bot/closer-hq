@@ -557,7 +557,44 @@ async function fetchYouTube(rawUrl) {
 
 // ─── PODCAST ──────────────────────────────────────────────────────────────────
 async function fetchPodcast(rssUrl) {
-  const xml = await proxyFetch(rssUrl);
+  let xml = null;
+
+  // Method 1: direct fetch (works if CORS is open)
+  try {
+    const r = await fetch(rssUrl, { signal: AbortSignal.timeout(10000) });
+    if (r.ok) { const t = await r.text(); if (t.length > 200 && t.includes('<item')) xml = t; }
+  } catch(e) {}
+
+  // Method 2: rss2json — handles most podcast feeds including Libsyn
+  if (!xml) {
+    try {
+      const r = await fetch(`https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(rssUrl)}`, { signal: AbortSignal.timeout(12000) });
+      const d = await r.json();
+      if (d.status === 'ok' && d.items?.length) {
+        return d.items.slice(0, 100).map(i => {
+          const isAudio = u => /\.(mp3|m4a|ogg|wav|aac)/i.test(u || '');
+          const url = (!isAudio(i.link) && i.link) ? i.link : (i.enclosure?.link || i.link || '');
+          return { type: 'podcast', title: i.title || '', url, desc: (i.description || '').replace(/<[^>]+>/g, '').slice(0, 300), date: (i.pubDate || '').slice(0, 10) };
+        }).filter(i => i.title);
+      }
+    } catch(e) {}
+  }
+
+  // Method 3: allorigins raw endpoint
+  if (!xml) {
+    try {
+      const r = await fetch(`https://api.allorigins.win/raw?url=${encodeURIComponent(rssUrl)}`, { signal: AbortSignal.timeout(12000) });
+      if (r.ok) { const t = await r.text(); if (t.length > 200 && t.includes('<')) xml = t; }
+    } catch(e) {}
+  }
+
+  // Method 4: proxy chain fallback
+  if (!xml) {
+    try { xml = await proxyFetch(rssUrl); } catch(e) {}
+  }
+
+  if (!xml) throw new Error('Could not fetch podcast feed — the host may be blocking proxies. Try adding a direct episode URL instead.');
+
   const doc = new DOMParser().parseFromString(xml, 'text/xml');
   return Array.from(doc.querySelectorAll('item')).slice(0, 100).map(i => {
     const enclosureUrl = i.querySelector('enclosure')?.getAttribute('url') || '';
